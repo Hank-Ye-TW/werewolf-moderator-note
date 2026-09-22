@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>上帝手記・狼人殺主持工具</title>
+<meta name="description" content="給實體局主持人用的狼人殺工具：夜晚流程講稿、警長競選、紀錄表自動整理，可匯出 PDF／CSV。純前端，資料只留在你的裝置上。">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#eef0fb; --muted:#a7addd; --line:#33396b;
+  --bg-0:#0a0c1e; --bg-1:#12153a; --bg-2:#171b4a;
+  --accent:#e0a82e; --on-accent:#241a00;
+  --wolf:#e2695f; --god:#6fa3e6; --good:#5ecb96; --third:#b998f0;
+  --sans:'Noto Sans TC','PingFang TC','Heiti TC','Microsoft JhengHei',system-ui,sans-serif;
+  --serif:'Noto Serif TC','Songti TC','PMingLiU',serif;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:inherit}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(120vmax 90vmax at 82% -10%, var(--bg-2), transparent 60%),
+    radial-gradient(90vmax 70vmax at 10% 10%, #1c2158 0%, transparent 55%),
+    var(--bg-0);
+  color:var(--ink);
+  font:400 1rem/1.65 var(--sans);
+  min-height:100svh;
+}
+a{color:inherit}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+
+/* ---- 月相：一次性淡入，唯一的動效焦點 ---- */
+.moonwrap{display:flex;justify-content:center;padding-top:clamp(48px,9vh,96px)}
+.moon{
+  --p:0.62; /* 盈缺比例 */
+  width:clamp(96px,14vw,132px);height:clamp(96px,14vw,132px);
+  border-radius:50%;
+  background:#f4ecc9;
+  box-shadow:0 0 70px 6px rgba(224,168,46,.28);
+  position:relative;overflow:hidden;
+  opacity:0;transform:scale(.85);
+  animation:rise 1.1s cubic-bezier(.2,.8,.2,1) .15s forwards;
+}
+.moon::after{
+  content:'';position:absolute;inset:0;background:var(--bg-0);
+  border-radius:50%;
+  transform:translateX(calc((1 - var(--p)) * 100%));
+}
+@keyframes rise{to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.moon{animation:none;opacity:1;transform:none}}
+
+header.hero{text-align:center;padding:20px 0 clamp(40px,7vh,72px)}
+.kicker{font:700 .92rem var(--sans);color:var(--accent);letter-spacing:.02em;margin:0 0 14px}
+h1{
+  font:900 clamp(2.1rem,5.6vw,3.4rem)/1.28 var(--serif);
+  margin:0 0 20px;color:#fff;
+}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{
+  max-width:34em;margin:0 auto;color:var(--muted);
+  font-size:clamp(1.02rem,2vw,1.15rem);line-height:1.75;
+}
+.cta-row{display:flex;justify-content:center;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font:700 1.05rem var(--sans);padding:15px 30px;border-radius:999px;
+  text-decoration:none;border:1.5px solid transparent;
+}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:#eebb4b}
+.btn.ghost{border-color:var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---- 陣營色點：借用紀錄表本身的配色系統當資訊裝置 ---- */
+.camps{
+  display:flex;justify-content:center;gap:22px;flex-wrap:wrap;
+  margin-top:38px;padding-top:30px;border-top:1px solid var(--line);
+}
+.camp{display:flex;align-items:center;gap:8px;font:500 .95rem var(--sans);color:var(--muted)}
+.camp i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.camp.wolf i{background:var(--wolf)}
+.camp.god i{background:var(--god)}
+.camp.good i{background:var(--good)}
+.camp.third i{background:var(--third)}
+
+/* ---- 內容：主持人實際會用到的東西，散文式描述而非卡片牆 ---- */
+main{padding:clamp(56px,9vh,96px) 0 100px}
+.split{display:grid;grid-template-columns:1fr;gap:44px}
+@media(min-width:760px){.split{grid-template-columns:0.85fr 1.15fr;gap:60px}}
+.split h2{
+  font:900 1.7rem/1.4 var(--serif);color:#fff;margin:0 0 10px;
+  position:sticky;top:28px;
+}
+.split .sub{color:var(--muted);font-size:.98rem;line-height:1.7;margin:0}
+.feat{border-top:1px solid var(--line);padding:26px 0}
+.feat:first-child{border-top:none;padding-top:0}
+.feat h3{font:700 1.12rem var(--sans);margin:0 0 8px;color:#fff}
+.feat p{margin:0;color:var(--muted);font-size:.98rem;line-height:1.75}
+
+footer{
+  border-top:1px solid var(--line);padding:28px 0 max(28px,env(safe-area-inset-bottom));
+  text-align:center;color:var(--muted);font-size:.88rem;
+}
+footer p{margin:6px 0}
+footer a{text-decoration:underline;text-underline-offset:3px}
+</style>
+</head>
+<body>
+
+<div class="moonwrap" aria-hidden="true"><div class="moon"></div></div>
+
+<header class="hero wrap">
+  <p class="kicker">🐺 上帝手記</p>
+  <h1>天黑請閉眼，<br><em>剩下的交給手機</em>。</h1>
+  <p class="lede">給實體局主持人的狼人殺工具：每一步該講什麼、該問誰，畫面直接告訴你；出局、警長、投票自動整理成一張紀錄表，局後直接匯出。</p>
+  <div class="cta-row">
+    <a class="btn primary" href="./werewolf-god.html">開始主持</a>
+    <a class="btn ghost" href="#detail">看看功能</a>
+  </div>
+  <div class="camps">
+    <span class="camp wolf"><i></i>狼人陣營</span>
+    <span class="camp god"><i></i>神職</span>
+    <span class="camp good"><i></i>平民</span>
+    <span class="camp third"><i></i>第三方</span>
+  </div>
+</header>
+
+<main class="wrap" id="detail">
+  <div class="split">
+    <div>
+      <h2>主持時最容易漏掉的事，它幫你記著。</h2>
+      <p class="sub">板子規則、講稿順序、誰還沒睜眼——這些原本要自己背，現在畫面會照順序帶你走一輪。</p>
+    </div>
+    <div>
+      <div class="feat">
+        <h3>照順序走完整晚</h3>
+        <p>板子上的角色會依口號順序一一列出，該講的台詞、該問的問題都寫在畫面上；首夜結束前，沒登記完身分會直接提醒你，不怕漏發身分。</p>
+      </div>
+      <div class="feat">
+        <h3>警長競選、投票放逐都算好了</h3>
+        <p>上警名單、發言順序、自爆規則、誰能投票——系統依照場上存活狀況即時判斷，你只要點座位。</p>
+      </div>
+      <div class="feat">
+        <h3>紀錄表自動長出來</h3>
+        <p>誰守了誰、誰驗了誰、每晚出局名單，會即時整理成一張完整的上帝表格；局後可以直接匯出 PDF、CSV 或純文字。</p>
+      </div>
+      <div class="feat">
+        <h3>板子隨你調</h3>
+        <p>內建常見板子可以直接用，也能自己加減角色、調整睜眼順序，另存成自己的板子，下次直接套用。</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>純前端工具，所有紀錄只存在你自己的裝置上（瀏覽器 localStorage），不會上傳到任何伺服器。</p>
+  <p><a href="./werewolf-god.html">開始主持一局</a></p>
+</footer>
+
+</body>
+</html>
