@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>狼人殺・上帝手記</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sans:'Noto Sans TC','PingFang TC','Heiti TC','Microsoft JhengHei',system-ui,sans-serif;
+  --serif:'Noto Serif TC','Songti TC','PMingLiU',serif;
+  --bg:#e8ecf3; --surface:#fbfcfe; --surface2:#eef1f7; --ink:#14172b; --muted:#5f647c; --line:#cfd5e3;
+  --primary:#2b2f6b; --on-primary:#ffffff; --accent:#e0a82e; --on-accent:#2b1e00; --danger:#b8322a;
+  --wolf:#b8322a; --wolf-bg:#f5d9d6; --god:#2a63ad; --god-bg:#d8e5f5; --good:#2f7d57; --good-bg:#d6ecdf; --third:#7443ae; --third-bg:#e6dbf4;
+  --head:#f1c24a; --on-head:#2b1e00;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0e1c; --surface:#151a30; --surface2:#1e2440; --ink:#eceef8; --muted:#9aa1c2; --line:#2d345a;
+    --primary:#f1cf6b; --on-primary:#1a1630; --accent:#f1cf6b; --on-accent:#1a1630; --danger:#ff8578;
+    --wolf:#ff8578; --wolf-bg:#3a1e2a; --god:#84b8f2; --god-bg:#1c2b49; --good:#74d3a4; --good-bg:#183a2f; --third:#c8a6f7; --third-bg:#32234e;
+    --head:#d9aa32; --on-head:#1b1300;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0e1c; --surface:#151a30; --surface2:#1e2440; --ink:#eceef8; --muted:#9aa1c2; --line:#2d345a;
+  --primary:#f1cf6b; --on-primary:#1a1630; --accent:#f1cf6b; --on-accent:#1a1630; --danger:#ff8578;
+  --wolf:#ff8578; --wolf-bg:#3a1e2a; --god:#84b8f2; --god-bg:#1c2b49; --good:#74d3a4; --good-bg:#183a2f; --third:#c8a6f7; --third-bg:#32234e;
+  --head:#d9aa32; --on-head:#1b1300;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:disabled{cursor:default}
+button:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4,p{margin:0}
+h2{font:900 1.3rem/1.3 var(--serif)}
+h3{font:700 1.05rem/1.4 var(--sans)}
+h4{font:700 .95rem/1.4 var(--sans);color:var(--muted);margin:14px 0 8px}
+.muted{color:var(--muted);font-size:.92rem}
+.center{text-align:center}
+
+/* 頂部列 */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font:900 1.15rem var(--serif);white-space:nowrap}
+.logo{font-size:1.4rem}
+.tabs{display:flex;gap:6px;flex:1;overflow-x:auto}
+.tab{padding:0 18px;min-height:46px;border-radius:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tab.on{background:var(--primary);color:var(--on-primary)}
+.tools{display:flex;gap:6px}
+.tool{min-height:46px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;white-space:nowrap}
+.tool:disabled{opacity:.4}
+.wrap{max-width:1440px;margin:0 auto;padding:18px}
+
+/* 通用元件 */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:980px){.grid2{grid-template-columns:1fr 1fr}.grid2>.card{margin-bottom:0}}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{min-height:50px;padding:0 20px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface2);font-weight:700}
+.btn.primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:transparent}
+.btn.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.big{min-height:58px;font-size:1.1rem;padding:0 26px}
+.btn:disabled{opacity:.4}
+.chip{min-height:42px;padding:0 15px;border-radius:999px;border:1.5px solid var(--line);font-weight:700;background:var(--surface)}
+.chip.lg{min-height:48px;padding:0 18px}
+.chip.cur{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.chip.done{border-color:var(--good);color:var(--good)}
+.chip:disabled{opacity:.35}
+.steps,.chips{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-block;padding:2px 12px;border-radius:999px;font-size:.85rem;font-weight:700}
+.pill.c-wolf{background:var(--wolf-bg);color:var(--wolf)}
+.pill.c-god{background:var(--god-bg);color:var(--god)}
+.pill.c-good{background:var(--good-bg);color:var(--good)}
+.pill.c-third{background:var(--third-bg);color:var(--third)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:var(--muted)}
+.dot.c-wolf{background:var(--wolf)}.dot.c-god{background:var(--god)}.dot.c-good{background:var(--good)}.dot.c-third{background:var(--third)}
+.note{margin:10px 0;padding:10px 14px;border-radius:12px;background:var(--surface2);border-left:5px solid var(--accent);font-size:.95rem}
+.note.warn{border-left-color:var(--danger)}
+.hint{margin:0 0 16px;padding:14px 18px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+/* 座位 */
+.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:10px}
+.seats.big{grid-template-columns:repeat(auto-fill,minmax(82px,1fr));margin:12px 0}
+.seat{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:68px;padding:6px 4px 9px;border-radius:14px;background:var(--surface2);border:2px solid var(--line)}
+.seat b{font:900 1.45rem/1.1 var(--serif)}
+.seat small{font-size:.74rem;color:var(--muted);line-height:1.2}
+.seat em{font-style:normal;font-size:.7rem;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat.c-wolf{box-shadow:inset 0 -5px 0 var(--wolf)}
+.seat.c-god{box-shadow:inset 0 -5px 0 var(--god)}
+.seat.c-good{box-shadow:inset 0 -5px 0 var(--good)}
+.seat.c-third{box-shadow:inset 0 -5px 0 var(--third)}
+.seat.sel{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.seat.sel small,.seat.sel em{color:var(--on-primary)}
+.seat.dead{opacity:.42}
+.seat.dead b{text-decoration:line-through}
+.seat:disabled{opacity:.3}
+.tg{position:absolute;top:-7px;font-style:normal;font-size:.75rem;font-weight:700;border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;padding:0 4px}
+.tg.sh{right:-6px;background:var(--accent);color:var(--on-accent)}
+.tg.cd{left:-6px;background:var(--ink);color:var(--bg)}
+.tg.ex{left:-6px;top:auto;bottom:-6px;background:var(--good);color:#fff}
+.tg.lv{right:-6px;top:auto;bottom:-6px;background:var(--third);color:#fff}
+.tg.cv{right:-6px;top:auto;bottom:-6px;background:var(--wolf);color:#fff}
+
+/* 開局 */
+.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.pname{display:flex;flex-direction:column;min-width:0}
+.pname .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36ch}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);font-size:1.3rem;font-weight:700;background:var(--surface2)}
+.stepper b{min-width:30px;text-align:center;font:900 1.2rem var(--serif)}
+.grp{display:flex;align-items:center}
+.order{font:700 1.05rem/1.8 var(--serif)}
+.startbar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;justify-content:flex-end;gap:10px;padding-top:6px}
+
+/* 主持 */
+.play{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:900px){.play{grid-template-columns:236px minmax(0,1fr) 300px;align-items:start}}
+.play .card{margin-bottom:16px}
+.rail{position:relative}
+.rail .seats{grid-template-columns:repeat(auto-fill,minmax(66px,1fr))}
+@media(min-width:900px){.rail{position:sticky;top:calc(84px + env(safe-area-inset-top,0px))}.rail .seats{grid-template-columns:repeat(2,1fr)}}
+.counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stagebar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.stagebar h1{font:900 1.7rem/1.2 var(--serif)}
+.kicker{color:var(--muted);font-size:.9rem;font-weight:700}
+.stephead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.script{margin:12px 0;padding:14px 20px;border-left:6px solid var(--accent);background:var(--surface2);border-radius:0 16px 16px 0}
+.say{font:700 1.5rem/1.75 var(--serif);margin:.15em 0}
+.say.soft{font:500 1.02rem/1.6 var(--sans);color:var(--muted)}
+.si{display:inline-block;margin-right:10px}
+.si.dead{text-decoration:line-through;opacity:.6}
+.nav{margin-top:18px;justify-content:space-between}
+.verdict{margin:12px 0;padding:16px;border-radius:16px;font:900 1.5rem var(--serif);text-align:center}
+.verdict.good{background:var(--good-bg);color:var(--good)}
+.verdict.bad{background:var(--wolf-bg);color:var(--wolf)}
+.n0row{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.n0row .say{font-size:1.15rem}
+.check{flex:none;width:44px;height:44px;border-radius:12px;border:2px solid var(--line);font-size:1.3rem;font-weight:900;color:var(--on-primary)}
+.n0row.done .check{background:var(--good);border-color:var(--good)}
+.n0row.done{opacity:.6}
+.rd{border-bottom:1px dashed var(--line);padding:8px 0}
+.rd summary{cursor:pointer;font-weight:700;min-height:36px;display:flex;align-items:center}
+.rd p{font-size:.93rem;margin:6px 0}
+.rd ul{margin:4px 0 6px;padding-left:20px;font-size:.9rem;color:var(--muted)}
+.timer{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.tdisp{font:900 3rem/1 var(--serif);font-variant-numeric:tabular-nums}
+.tdisp.end{color:var(--danger)}
+.trig{border-color:var(--accent);border-width:2px}
+.speak{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.speak span{min-width:48px;padding:6px 10px;border-radius:12px;background:var(--surface2);font:900 1.2rem var(--serif);text-align:center}
+.speak span.first{background:var(--primary);color:var(--on-primary)}
+
+/* 紀錄表 */
+.sheetwrap{overflow-x:auto;border:2px solid var(--ink);border-radius:10px;background:var(--surface)}
+table.sheet{border-collapse:collapse;width:100%;min-width:780px}
+.sheet th,.sheet td{border:1px solid var(--line);padding:4px 6px;text-align:center;height:54px;font-size:1rem}
+.sheet thead th{background:var(--head);color:var(--on-head);font-weight:700}
+.sheet .title{font:900 1.5rem var(--serif);padding:12px;background:var(--surface);color:var(--ink);height:auto}
+.sheet th.rolecell{font-weight:700;width:96px}
+.sheet tr.camp-wolf th.rolecell{background:var(--wolf-bg);color:var(--wolf)}
+.sheet tr.camp-god th.rolecell{background:var(--god-bg);color:var(--god)}
+.sheet tr.camp-good th.rolecell{background:var(--good-bg);color:var(--good)}
+.sheet tr.camp-third th.rolecell{background:var(--third-bg);color:var(--third)}
+.sheet td.seatcell{width:92px;position:relative;cursor:pointer}
+.sheet td.seatcell b{font:900 1.35rem var(--serif)}
+.sheet td.seatcell small{display:block;font-size:.72rem;color:var(--muted);line-height:1.1}
+.sheet td.seatcell i{font-style:normal;font-weight:700;font-size:.8rem;margin:0 2px}
+.sheet .up{font-size:.7rem;border:1px solid var(--ink);border-radius:999px;padding:0 4px}.vrec{background:var(--surface2);margin-top:12px}.sheet .plus{color:var(--ink)}.sheet .badge{background:var(--accent);color:var(--on-accent);border-radius:999px;padding:0 6px}.sheet .x{color:var(--danger)}
+.sheet tr.isdead td.seatcell b{text-decoration:line-through;opacity:.6}
+.sheet td.cellbtn{cursor:pointer;font:500 1.15rem var(--sans)}
+.sheet td.off{color:var(--muted);opacity:.6}
+.sheet tfoot td,.sheet tfoot th{background:var(--surface2)}
+.sheet td.edit{cursor:pointer}
+.sheet .lbl{font-weight:700;background:var(--surface2)}
+.sheet .foot{padding:12px;font-weight:700;background:var(--surface);height:auto}
+
+/* 彈窗 */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(6,8,20,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{width:min(600px,100%);max-height:90vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px}
+.modal h2{margin-bottom:12px}
+.modal label{display:block;font-weight:700;margin:12px 0 6px}
+.modal input[type=text],.modal textarea{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);color:var(--ink)}
+.modal textarea{min-height:110px;resize:vertical}
+.modal .btnrow{margin-top:16px}
+
+.inp{font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);color:var(--ink);min-height:50px;flex:1;min-width:140px}
+.regbox{background:var(--surface2);margin-bottom:14px}
+.tallyrow{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.tl{display:flex;align-items:center;gap:4px;padding:4px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface2)}
+.tl b{min-width:34px;text-align:center;font:900 1.1rem var(--serif)}
+.tl span{min-width:22px;text-align:center;font-weight:700}
+.tl button{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--line);font-weight:700;background:var(--surface)}
+.modal label input[type=checkbox]{width:22px;height:22px;margin-right:8px;vertical-align:middle}
+@page{size:A4 landscape;margin:10mm}
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .noprint,.topbar,#modal{display:none!important}
+  body{background:#fff;color:#000;font-size:12px}
+  .wrap{padding:0;max-width:none}
+  .sheetwrap{overflow:visible;border:1.5px solid #000;border-radius:0;break-inside:avoid;page-break-inside:avoid}
+  table.sheet{min-width:0;width:100%}
+  .sheet tr{break-inside:avoid;page-break-inside:avoid}
+  .sheet th,.sheet td{height:auto;padding:3px 4px;font-size:11px;border-color:#555}
+  .sheet td.cellbtn{font-size:11px}
+  .sheet .title{font-size:16px;padding:6px}
+  .sheet .foot{font-size:10.5px;padding:6px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .seat,.btn,.chip,.tab{transition:background-color .12s,border-color .12s,color .12s}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<script>
+(function(){
+'use strict';
+
+/* ================= 基本工具 ================= */
+var $=function(s,r){return (r||document).querySelector(s);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var CN=['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六'];
+var sum=function(o){return Object.keys(o).reduce(function(a,k){return a+(o[k]||0);},0);};
+
+/* ================= 角色庫（草稿規則，可在「角色庫」頁修改） ================= */
+var CAMPS={wolf:'狼人陣營',god:'神職',third:'第三方',good:'平民'};
+var CAMP_ORDER=['wolf','god','third','good'];
+var ROLES={
+  fear:{name:'恐魔',short:'恐魔',camp:'wolf',sort:1,order:10,targets:1,verb:'恐',none:'不恐',
+    desc:'狼人陣營。每晚最先睜眼，可恐嚇一名玩家。',
+    tips:['每晚最先睜眼，之後才輪到狼人。','不恐嚇時，紀錄表記「不恐」。','恐嚇的實際效果依你們的板子規則，可在角色庫補充。'],
+    script:['恐魔請睜眼。','今晚你要恐嚇誰？（不恐嚇請比 X）','恐魔請閉眼。']},
+  nightmare:{name:'夢魘',short:'夢魘',camp:'wolf',sort:1,order:8,targets:1,verb:'恐',none:'不恐',canBoom:false,noSelfKnife:true,
+    desc:'狼人陣營。每晚先單獨睜眼恐懼一名玩家，該人當晚無法使用技能；之後再與狼隊一起睜眼刀人。不能自爆，可被自刀排除。',
+    tips:['不能連續兩晚恐懼同一人。','不能自爆、不能自刀。','首夜恐懼到其他小狼時，當晚狼人判定空刀。','被恐懼者當晚技能鎖定：攝夢人沒有夢遊者、女巫看不到刀口也不能用藥、預言家不能查驗、獵人死亡不能開槍。'],
+    script:['夢魘請睜眼。','今晚你要恐懼誰？','夢魘請閉眼。']},
+  wolfking:{name:'黑狼王',short:'狼王',camp:'wolf',sort:2,
+    desc:'狼人陣營。被放逐或被刀殺出局時，可開槍帶走一名玩家。',
+    tips:['狼人睜眼時向上帝比大拇指，讓上帝確認身分。','被毒殺、自爆出局時不能開槍。'],
+    onDeath:{noShoot:['毒','自爆']}},
+  bloodmoon:{name:'血月使者',short:'血月',camp:'wolf',sort:3,
+    desc:'狼人陣營。夜晚與狼人一同睜眼，向上帝比小拇指表明身分。',
+    tips:['特殊技能（自爆／血月效果）請依你們的板子規則，在角色庫補充。']},
+  wolf:{name:'狼人',short:'狼',camp:'wolf',sort:4,
+    desc:'夜晚與同伴睜眼，討論並決定刀殺一名玩家。',
+    tips:['可以空刀，也可以自刀。','白天可自爆：立即出局並直接進入黑夜（不投票）。'],
+    script:['狼人請睜眼。','請討論戰術，決定今晚要刀誰。','狼人請閉眼。']},
+  magician:{name:'魔術師',short:'魔術',camp:'god',sort:1,order:20,targets:2,verb:'換',none:'不交換',
+    desc:'每晚可交換兩名玩家的號碼牌，當晚所有夜間技能的對象隨之互換。',
+    tips:['選兩個號碼即為交換；不交換記「X」。','系統結算時會自動套用交換（刀、毒、守、驗、獵皆互換）。'],
+    script:['魔術師請睜眼。','今晚你要交換哪兩位玩家的號碼？（不交換請比 X）','魔術師請閉眼。']},
+  guard:{name:'守衛',short:'守衛',camp:'god',sort:2,order:35,targets:1,verb:'守',none:'不守',
+    desc:'每晚守護一名玩家，被守護者不會被狼人刀殺。',
+    tips:['不能連續兩晚守護同一人。','同守同救：被守衛守護、又被女巫解藥救的玩家仍會出局。','可以守護自己。'],
+    script:['守衛請睜眼。','今晚你要守護誰？','守衛請閉眼。']},
+  dreamer:{name:'攝夢人',short:'攝夢',camp:'god',sort:3,order:42,targets:1,verb:'攝',none:'不攝夢',
+    desc:'每晚攝夢一名玩家，該玩家當夜免疫夜間傷害；連續兩晚攝夢同一人，該人夢死；攝夢人出局時，被攝夢者一併出局。',
+    tips:['結算採用：被攝夢者免疫當夜的刀與毒（請依板子規則確認）。','連續兩晚攝夢同一人 → 夢死（依第4局手記推得，請確認）。'],
+    script:['攝夢人請睜眼。','今晚你要攝夢誰？','攝夢人請閉眼。']},
+  witch:{name:'女巫',short:'女巫',camp:'god',sort:4,order:45,kind:'witch',
+    desc:'擁有一瓶解藥與一瓶毒藥，各限用一次。',
+    tips:['同一夜只能使用一瓶藥。','被毒殺的獵人／黑狼王不能開槍。','首夜可否自救，依你們的板子規則。'],
+    script:['女巫請睜眼。','女巫請閉眼。']},
+  demonhunter:{name:'獵魔人',short:'獵魔',camp:'god',sort:5,order:50,from:2,targets:1,verb:'獵',none:'不獵殺',
+    desc:'第二晚起，每晚可獵殺一名玩家。',
+    tips:['手記標註：第二晚開獵。','結算採用：獵中狼人陣營 → 該玩家出局；獵中好人陣營 → 獵魔人自己出局（依第1局手記推得，請確認）。'],
+    script:['獵魔人請睜眼。','今晚你要獵殺誰？（不獵殺請比 X）','獵魔人請閉眼。']},
+  seer:{name:'預言家',short:'預言',camp:'god',sort:6,order:60,kind:'seer',targets:1,verb:'驗',none:'不查驗',
+    desc:'每晚查驗一名玩家的陣營，上帝以手勢回覆：拇指向上＝好人、向下＝壞人。',
+    tips:['查驗結果由系統依身分自動判定，只需比手勢。','第三方陣營一般視為好人；規則不同時請自行判斷。'],
+    script:['預言家請睜眼。','今晚你要查驗誰？','預言家請閉眼。']},
+  hunter:{name:'獵人',short:'獵人',camp:'god',sort:7,order:70,kind:'hunter',
+    desc:'被放逐或被刀殺出局時，可開槍帶走一名玩家。',
+    tips:['每晚都會睜眼，上帝以手勢告知今晚能否開槍（O 可開、X 不可開）。','哪些死因會悶槍，依板子的「獵人禁槍死因」設定；預設只有被毒殺。','只有出局且槍可用時才宣布技能，否則不要宣布。'],
+    script:['獵人請睜眼。','獵人請閉眼。'],onDeath:{noShoot:['毒']}},
+  idiot:{name:'傻瓜',short:'傻瓜',camp:'god',sort:8,
+    desc:'白天被放逐時，可翻牌免死一次，之後失去投票權。夜晚不睜眼。',
+    tips:['放逐投票選到傻瓜時，系統會詢問是否翻牌免死。','你的手記另有備註「不退刀」，可在此補充你們的規則。']},
+  zombie:{name:'殭屍',short:'殭屍',camp:'third',sort:1,order:10,targets:2,verb:'染',none:'不感染',
+    desc:'第三方陣營。每晚睜眼選擇玩家進行感染（手記每晚記兩個號碼），由上帝繞場完成感染。',
+    tips:['勝利條件與感染效果請依你們的板子規則，在角色庫補充。'],
+    script:['殭屍請睜眼。','今晚你要感染誰？（可指兩位）','（上帝依殭屍所指，繞場完成感染）','殭屍請閉眼。']},
+  wolfbeauty:{name:'狼美人',short:'狼美',camp:'wolf',sort:5,order:41,inTeam:true,canBoom:false,noSelfKnife:true,targets:1,verb:'睡',none:'不睡',
+    steps:[{k:'wolfbeauty',order:41}],
+    desc:'狼人陣營，不能自爆。與狼人一同睜眼刀人，之後單獨睜眼，可睡一人（可不使用）。她出局時（被騎士驗中除外），最近睡的人一併出局，且被悶槍。',
+    tips:['白天出局，帶走前一晚睡的人；夜晚出局，帶走當晚睡的人。','獵人槍、狼王槍帶走她，也會連帶。','只有被騎士驗中時，她自己單獨出局。'],
+    script:['狼美人請睜眼。','今晚你要睡誰？（不睡請比 X）','狼美人請閉眼。']},
+  mechwolf:{name:'機械狼',short:'機狼',camp:'wolf',sort:6,order:37,loner:true,canBoom:false,
+    steps:[{k:'mechwolf',order:37,kind:'mech'}],
+    desc:'狼人陣營，不能自爆，不與狼隊互認。首夜選一個座位學習他的身分，第 2 晚起可用學到的技能。其他狼全數出局後，才在狼人殺人階段睜眼。',
+    tips:['學到通靈師：每晚可查真實身分。','學到女巫：1 瓶毒藥（整局 1 次）。','學到守衛：1 個無敵護盾，可護任何人、擋任何夜間傷害（含毒），成功擋下 1 次後失效。','學到狼人：覺醒刀，整局 1 次，第 2 晚起任選一晚。','學到其他身分：只是被通靈師查到時顯示的身分。','必須先於狼人睜眼，因為要告知他是否要在狼人階段睜眼。']},
+  wolfbrother:{name:'狼兄',short:'狼兄',camp:'wolf',sort:7,order:8,sheetKey:null,inTeam:true,canBoom:false,noSelfKnife:true,
+    steps:[{k:'brothers',order:8,kind:'brothers',title:'狼兄弟',short:'狼兄弟'}],
+    desc:'狼人陣營，不能自爆，沒有其他技能。出局後，狼弟會在下一晚發動復仇刀。',
+    tips:['首夜狼兄、狼弟先睜眼互認（不溝通）。','狼人階段，狼兄可告知其他小狼狼弟在哪裡。','狼兄未出局時，狼弟被預言家驗是好人。']},
+  wolfyounger:{name:'狼弟',short:'狼弟',camp:'wolf',sort:8,order:8,sheetKey:'brothers',loner:true,canBoom:false,
+    steps:[{k:'brothers',order:8,kind:'brothers',title:'狼兄弟',short:'狼兄弟'}],
+    desc:'狼人陣營，不能自爆。狼兄出局的下一晚，發動 1 次復仇刀；其他狼全數出局後才加入狼隊刀人，但一直算狼陣營。',
+    tips:['復仇刀整局只有 1 次，與狼人照常的刀並行。','復仇刀可被解藥、守衛擋；同一人被兩刀時只擋 1 刀。','好人必須連狼弟也放逐才會贏。']},
+  gargoyle:{name:'石像鬼',short:'石像鬼',camp:'wolf',sort:9,order:44,loner:true,canBoom:false,
+    steps:[{k:'gargoyle',order:44,kind:'garg'}],
+    desc:'狼人陣營，不能自爆，與其他狼互不相認。每晚單獨睜眼查驗 1 人的具體身分；其他狼全數出局後，才在狼人殺人階段睜眼刀人。',
+    tips:['其他狼還在時，不參與刀人。','其他狼全數出局後，狼人階段睜眼刀人，仍每晚驗人。']},
+  gargoyle2:{name:'覺醒石像鬼',short:'覺醒石',camp:'wolf',sort:10,order:43,sheetKey:'gconv',inTeam:true,
+    steps:[{k:'gconv',order:43,kind:'gconv',title:'覺醒石像鬼（轉化）',short:'轉化'},{k:'convlearn',order:90,kind:'convlearn',title:'轉化者',short:'轉化者'}],
+    desc:'狼人陣營。首夜與狼人一起刀人後，單獨睜眼，把一位與狼人相鄰的好人轉化成狼人；轉化者在首夜最後睜眼。',
+    tips:['相鄰包含石像鬼自己，12 號與 1 號相鄰。','轉化者不入狼隊、不能自爆；被驗是狼；神職可正常使用技能。','其他狼全出局後，轉化者失去原技能，改為帶刀入狼隊。','轉化發生在預言家首夜查驗之後，首夜金水可能是轉化者。']},
+  knight:{name:'騎士',short:'騎士',camp:'god',sort:9,
+    desc:'白天任何人發言時可翻牌，驗 1 人（整局 1 次）：驗到狼人，該狼出局並直接進夜晚；驗到好人，騎士自己淘汰，白天繼續。',
+    tips:['警長競選（上警、發言、退水、投票）期間不能翻牌。','狼美人被騎士驗中時，只有她自己出局，不連帶。','夜晚不睜眼（首夜只確認身分）。']},
+  medium:{name:'通靈師',short:'通靈',camp:'god',sort:10,order:75,kind:'medium',targets:1,verb:'查',none:'不查驗',
+    desc:'進階預言家：每晚查驗 1 人，得知的是真實身分，不只是好壞。',
+    tips:['查到機械狼，看到的是機械狼學到的身分。'],
+    script:['通靈師請睜眼。','今晚你要查驗誰？','通靈師請閉眼。']},
+  gravekeeper:{name:'守墓人',short:'守墓',camp:'god',sort:11,order:7,kind:'grave',
+    desc:'每晚得知前一個白天被放逐者的好壞（不是確切身分）。',
+    tips:['只有被投票放逐的人算；自爆、騎士、槍帶走的不算。','平票沒人出局時，不會得知任何資訊。'],
+    script:['守墓人請睜眼。','守墓人請閉眼。']},
+  dreamer2:{name:'覺醒攝夢人',short:'覺攝夢',camp:'god',sort:12,order:5,targets:1,verb:'夢',none:'不選',
+    steps:[{k:'dreamer2',order:5,kind:'dream2',title:'覺醒攝夢人',short:'攝夢人'},{k:'dreamer2end',order:95,kind:'dream2end',title:'覺醒攝夢人（得知結果）',short:'夢遊結果'}],
+    desc:'每晚選 1 位夢遊者，免疫當晚所有夜間傷害；夜晚最後得知夢遊者今晚有沒有行動。第 2 晚起可同時決定是否讓夢遊者出局（夢殺）。',
+    tips:['不能連續兩晚選同一人；可以選自己。','夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。','攝夢人自己出局，與夢遊者無關。','「有行動」：預言家驗人、女巫用藥、狼人非空刀、守墓人當天有人被放逐等；空刀、獵人夜槍開不出來都算沒行動。']},
+  blackmarket:{name:'黑市商人',short:'黑市',camp:'god',sort:13,order:42.2,
+    steps:[{k:'blackmarket',order:42.2,kind:'bm',title:'黑市商人',short:'黑市'},{k:'lucky',order:42.4,kind:'lucky',title:'幸運兒',short:'幸運兒'}],
+    desc:'首夜選 1 位幸運兒，並決定給他預言家查驗、女巫毒藥、獵人獵槍其中一種。選到好人：交易成功；選到狼人陣營（含狼弟）：交易失敗，黑市商人第 1 晚出局。',
+    tips:['幸運兒在繞場階段睜眼，得知自己的身分與技能。','幸運兒的技能第 2 晚起才能用，整局 1 次，在幸運兒自己的睜眼階段使用。','幸運兒若本來就是神職，本職照常、禮物技能另外算。','獵槍型不是夜間動作，是死亡時可開槍。']},
+  thief:{name:'盜賊',short:'盜賊',camp:'third',sort:2,order:1,
+    steps:[{k:'thief',order:1,kind:'thief'}],
+    desc:'首夜最早睜眼，從白天抽定的 2 張牌中選 1 張作為新身分，另一張埋掉（本局沒有這個身分）。',
+    tips:['2 張牌不會都是狼人牌。','若其中有狼人牌，盜賊必須選狼人牌，不能改選好人。','選項不會有邱比特。']},
+  cupid:{name:'邱比特',short:'邱比特',camp:'third',sort:3,order:2,targets:2,verb:'連',none:'不連線',
+    steps:[{k:'cupid',order:2,kind:'cupid'},{k:'cupidtour',order:3,kind:'note',title:'繞場點情侶',short:'點情侶'}],
+    desc:'首夜選 2 位玩家配對成情侶（不能選自己），與情侶共享勝利條件。邱比特出局不影響勝負，也不計入任何陣營人數。',
+    tips:['2 狼：與狼陣營同勝；2 好人：與好人同勝；1 狼 1 好人：情侶與邱比特成第三方，需屠城才勝。','一方死亡，另一方殉情（殉情者的槍被悶掉）。'],
+    script:['邱比特請睜眼。','請選擇兩位玩家連線。','邱比特請閉眼。']},
+  villager:{name:'平民',short:'民',camp:'good',sort:1,
+    desc:'沒有技能，靠發言與投票找出狼人。',tips:['首夜出局者是否有遺言，依你們的規則。']}
+};
+Object.keys(ROLES).forEach(function(k){ROLES[k].id=k;});
+
+var DEFAULT_RULES={boom:'double',hunterNoShoot:['毒'],regMode:'eyes'};
+var NOSHOOT_CAUSES=['刀','毒','放逐','夢死','獵殺','開槍'];
+var HARD_MUTE=['殉情','連帶','夢殺'];
+var STEP={wolves:{key:'wolves',role:'wolf',roles:['wolf'],kind:'wolves',order:40,title:'狼人',short:'狼人'}};
+Object.keys(ROLES).forEach(function(id){
+  var r=ROLES[id];
+  var add=function(s){var o=STEP[s.k];if(!o){o=STEP[s.k]={key:s.k,role:id,roles:[],kind:s.kind||'target',order:s.order,title:s.title||r.name,short:s.short||s.title||r.name};}if(o.roles.indexOf(id)<0)o.roles.push(id);};
+  if(r.steps)r.steps.forEach(add);else if(r.order!=null)add({k:id,order:r.order,kind:r.kind});
+});
+function stepTitle(k){return STEP[k]?STEP[k].title:(ROLES[k]?ROLES[k].name:k);}
+function isTeamRole(id){var r=ROLES[id];return !!r&&r.camp==='wolf'&&!r.loner&&(r.order==null||!!r.inTeam);}
+function ordVal(k){return STEP[k]?STEP[k].order:(ROLES[k]&&ROLES[k].order!=null?ROLES[k].order:90);}
+function defaultOrder(pool){
+  var keys=[],add=function(k){if(keys.indexOf(k)<0)keys.push(k);};
+  Object.keys(pool).forEach(function(id){
+    var r=ROLES[id];if(!r||!(pool[id]>0)||id==='villager')return;
+    if(r.camp==='wolf')add('wolves');
+    if(r.steps)r.steps.forEach(function(s){add(s.k);});
+    else if(!(r.camp==='wolf'&&r.order==null))add(id);
+  });
+  return keys.map(function(k,i){return {k:k,i:i};}).sort(function(a,b){return ordVal(a.k)-ordVal(b.k)||a.i-b.i;}).map(function(x){return x.k;});
+}
+var BOARDS=[
+  {id:'b1',name:'血月・獵魔人局',note:'血月＋3狼＋女巫＋獵魔人＋預言家＋傻瓜＋4民（第1局手記）',pool:{bloodmoon:1,wolf:3,witch:1,demonhunter:1,seer:1,idiot:1,villager:4}},
+  {id:'b2',name:'預女獵守・黑狼王局',note:'預言家＋女巫＋獵人＋守衛＋黑狼王＋3小狼＋4民（手記標示12(13)人，可自行加1民）',pool:{seer:1,witch:1,hunter:1,guard:1,wolfking:1,wolf:3,villager:4}},
+  {id:'b3',name:'殭屍・魔術師局',note:'黑狼王＋3狼＋魔術師＋女巫＋獵人＋預言家＋殭屍＋3民（第3局手記）',pool:{wolfking:1,wolf:3,magician:1,witch:1,hunter:1,seer:1,zombie:1,villager:3}},
+  {id:'b4',name:'恐魔・攝夢人局',note:'恐魔＋黑狼王＋2小狼＋預言家＋女巫＋獵人＋攝夢人＋4民（第4局手記）',pool:{fear:1,wolfking:1,wolf:2,seer:1,witch:1,hunter:1,dreamer:1,villager:4}},
+  {id:'b5',name:'預女守騎・狼美人局',note:'預言家＋女巫＋守衛＋騎士＋狼美人＋3小狼＋4民（12人）',pool:{seer:1,witch:1,guard:1,knight:1,wolfbeauty:1,wolf:3,villager:4},order:['guard','wolves','wolfbeauty','witch','seer','knight']},
+  {id:'b6',name:'通女守獵・機械狼局',note:'通靈師＋女巫＋守衛＋獵人＋機械狼＋3小狼＋4民（12人）。首夜依序舉手、不睜眼。',pool:{medium:1,witch:1,guard:1,hunter:1,mechwolf:1,wolf:3,villager:4},order:['guard','mechwolf','wolves','witch','hunter','medium'],rules:{regMode:'hands'}},
+  {id:'b7',name:'盜賊・邱比特局',note:'14張牌：預言家＋女巫＋獵人＋傻瓜＋5民＋2小狼＋黑狼王＋盜賊＋邱比特；發12人，剩2張給盜賊選一、另一張埋掉。黑狼王可被自刀，被狼刀出局可開槍（悶槍除外）。',pool:{seer:1,witch:1,hunter:1,idiot:1,villager:5,wolf:2,wolfking:1,thief:1,cupid:1},extraCards:2,order:['thief','cupid','cupidtour','wolves','witch','seer','hunter','idiot']},
+  {id:'b8',name:'狼兄弟・黑市商人局',note:'狼兄＋狼弟＋2小狼＋預言家＋女巫＋獵人＋黑市商人＋4民（12人）',pool:{wolfbrother:1,wolfyounger:1,wolf:2,seer:1,witch:1,hunter:1,blackmarket:1,villager:4},order:['brothers','wolves','blackmarket','lucky','witch','seer','hunter']},
+  {id:'b9',name:'覺醒石像鬼・攝夢人局',note:'小狼＋狼王＋覺醒石像鬼＋預言家＋女巫＋獵人＋守墓人＋覺醒攝夢人＋4民（12人）',pool:{wolf:1,wolfking:1,gargoyle2:1,seer:1,witch:1,hunter:1,gravekeeper:1,dreamer2:1,villager:4},order:['dreamer2','wolves','gconv','witch','hunter','gravekeeper','seer','dreamer2end','convlearn']},
+  {id:'b10',name:'石像鬼・守墓人局',note:'3小狼＋石像鬼＋預言家＋女巫＋守墓人＋獵人＋4民（12人）',pool:{wolf:3,gargoyle:1,seer:1,witch:1,gravekeeper:1,hunter:1,villager:4},order:['gravekeeper','wolves','gargoyle','witch','seer','hunter']},
+  {id:'b11',name:'獵人局（娛樂）',note:'8獵人＋4小狼。首夜狼人互認不殺人；每天放逐到狼人才天黑；獵人開槍連鎖到打中狼人為止。',pool:{hunter:8,wolf:4},order:['wolves'],rules:{huntGame:true,noSheriff:true,hostage:true,fill:'hunter',hunterNoShoot:[]}},
+  {id:'b12',name:'夢魘・攝夢人局',note:'夢魘＋3小狼＋預言家＋女巫＋攝夢人＋獵人＋4民（12人）。夢魘每晚先單獨恐懼1人（該人當晚技能鎖定），再與狼隊一起刀人；首夜恐懼到小狼則當晚空刀。',pool:{nightmare:1,wolf:3,seer:1,witch:1,dreamer:1,hunter:1,villager:4},order:['nightmare','wolves','witch','seer','dreamer','hunter']}
+];
+BOARDS.forEach(function(b){if(!b.order)b.order=defaultOrder(b.pool);b.rules=Object.assign(JSON.parse(JSON.stringify(DEFAULT_RULES)),b.rules||{});});
+
+/* ================= 狀態 ================= */
+var KEY='werewolf-god-notes-v1';
+function newSh(){return {step:'cand',status:'idle',order:null,booms:0,boomSeats:[],boomSeat:null,boomDay:null,goNight:false,withdrawn:[],resumed:false};}
+function newGame(){return {id:Date.now(),created:new Date().toISOString(),boardName:'',players:0,pool:{},seats:{},names:{},order:[],rules:JSON.parse(JSON.stringify(DEFAULT_RULES)),
+  phase:'setup',day:0,stage:'setup',step:0,nights:{},days:{},deaths:[],cand:[],sheriff:null,sheriffDone:false,badgeLost:false,sh:newSh(),votes:{},extras:[],lovers:null,thief:null,conv:null,mech:null,lucky:null,knight:null,extraCards:0,playing:[],seatPerson:{},trig:{},idiot:{},winner:null};}
+function freshApp(){return {v:2,theme:null,settings:{},roster:[],lastSeating:null,roleEdits:{},customBoards:[],history:[],cur:newGame(),ui:{tab:'setup'}};}
+function loadApp(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){
+      var o=JSON.parse(raw);
+      if(o&&o.v===2&&o.cur){
+        var f=freshApp();for(var k in f){if(o[k]===undefined)o[k]=f[k];}
+        for(var s in f.settings){if(o.settings[s]===undefined)o.settings[s]=f.settings[s];}
+        if(o.settings.sheriffWhen==='n0')o.settings.sheriffWhen='pre';
+        return o;
+      }
+      if(o&&o.v===1){
+        var g=freshApp();g.theme=o.theme||null;g.roleEdits=o.roleEdits||{};g.history=o.history||[];
+        g.customBoards=(o.customBoards||[]).map(function(b){b.order=defaultOrder(b.pool||{});b.rules=JSON.parse(JSON.stringify(DEFAULT_RULES));return b;});
+        return g;
+      }
+    }
+  }catch(e){}
+  return freshApp();
+}
+function fixGame(g){
+  if(!g)return;
+  if(g.extra&&!g.extras)g.extras=[{seat:g.extra.seat,day:g.extra.day}];
+  delete g.extra;
+  var def=newGame();['extras','lovers','thief','conv','mech','lucky','knight','extraCards'].forEach(function(k){if(g[k]===undefined)g[k]=def[k];});
+}
+var APP=loadApp();
+[APP.cur].concat(APP.history||[]).forEach(fixGame);
+var UI={modal:null,hist:null,voteSel:null,boom:false,regRole:null,addOpen:false,sBoom:false,vrecOpen:{},voteTarget:null,rosterEdit:false,delId:null};
+var UNDO=[];
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(APP));}catch(e){}}
+
+function R(id){var b=ROLES[id]||{};var e=APP.roleEdits[id]||{};var o={};for(var k in b)o[k]=b[k];for(var j in e)o[j]=e[j];return o;}
+function boardName(G){return G.boardName||'自訂板子';}
+var seatsList=function(G){var a=[];for(var i=1;i<=G.players;i++)a.push(i);return a;};
+var roleOf=function(G,n){return ROLES[G.seats[n]];};
+var campOf=function(G,n){
+  var id=G.seats[n],r=ROLES[id];if(!r)return 'good';
+  if(G.conv&&G.conv.seat===n)return 'wolf';
+  if(id==='cupid'){
+    if(!G.lovers)return 'good';
+    var lt=loversType(G);
+    if(lt==='third')return 'third';
+    if(G.lovers.indexOf(n)>=0)return lt;
+    return 'good';
+  }
+  if(G.lovers&&G.lovers.indexOf(n)>=0&&loversType(G)==='third')return 'third';
+  if(id==='thief')return 'good';
+  return r.camp;
+};
+var seatsOfRole=function(G,id){return seatsList(G).filter(function(n){return G.seats[n]===id;});};
+var isDead=function(G,n){return G.deaths.some(function(x){return x.seat===n;});};
+var deadAtStart=function(G,n,d){return G.deaths.some(function(x){return x.seat===n&&x.day<d;});};
+var aliveSeats=function(G){return seatsList(G).filter(function(n){return !isDead(G,n);});};
+var wolfGroup=function(G){return seatsList(G).filter(function(n){return campOf(G,n)==='wolf';});};
+var remaining=function(G,id){
+  var r=(G.pool[id]||0)-seatsOfRole(G,id).length;
+  if(G.thief&&G.thief.chosen){if(id==='thief')r-=1;if(id===G.thief.buried)r-=1;}
+  return r;
+};
+function night(G,d,create){if(!G.nights[d]){if(!create)return {act:{}};G.nights[d]={act:{}};}return G.nights[d];}
+function presentRoles(G){var s={};Object.keys(G.pool).forEach(function(k){if(G.pool[k]>0)s[k]=1;});Object.keys(G.seats).forEach(function(n){s[G.seats[n]]=1;});return s;}
+function byCamp(a,b){return CAMP_ORDER.indexOf(a.camp)-CAMP_ORDER.indexOf(b.camp)||a.sort-b.sort;}
+function sortedSeats(G){return seatsList(G).filter(function(n){return G.seats[n];}).sort(function(a,b){return byCamp(roleOf(G,a),roleOf(G,b))||a-b;});}
+function sheriffOn(){return !rules(APP.cur).noSheriff;}
+
+function mutate(fn){UNDO.push(JSON.stringify(APP.cur));if(UNDO.length>60)UNDO.shift();fn(APP.cur);render();}
+function undo(){var s=UNDO.pop();if(!s)return;APP.cur=JSON.parse(s);UI.modal=null;render();}
+
+/* ================= 夜間流程 ================= */
+function rules(G){return G.rules||DEFAULT_RULES;}
+function stepKeys(G){return (G.order&&G.order.length)?G.order:defaultOrder(G.pool);}
+function syncOrder(G){
+  var want=defaultOrder(G.pool);
+  var cur=(G.order||[]).filter(function(k){return want.indexOf(k)>=0;});
+  want.forEach(function(k){if(cur.indexOf(k)<0){var v=ordVal(k),i=0;while(i<cur.length&&ordVal(cur[i])<=v)i++;cur.splice(i,0,k);}});
+  G.order=cur;
+}
+/* ---- 新機制輔助 ---- */
+function loversType(G){
+  var L=G.lovers;if(!L||L.length<2)return null;
+  var cs=seatsOfRole(G,'cupid')[0];
+  if(cs!=null&&L.indexOf(cs)>=0){
+    var other=L[0]===cs?L[1]:L[0],oid=G.seats[other];
+    return (oid&&ROLES[oid]&&ROLES[oid].camp==='wolf')?'wolf':'good';
+  }
+  var w=L.filter(function(n){var id=G.seats[n];return id&&ROLES[id]&&ROLES[id].camp==='wolf';}).length;
+  return w===2?'wolf':(w===0?'good':'third');
+}
+function pairLabel(G){
+  var L=G.lovers;if(!L||L.length<2)return '';
+  var cs=seatsOfRole(G,'cupid')[0],lt=loversType(G);
+  if(cs!=null&&L.indexOf(cs)>=0)return lt==='wolf'?'邱比特配到狼 → 邱比特跟隨狼陣營勝利':'邱比特配到好人 → 邱比特跟隨好人陣營勝利';
+  return lt==='wolf'?'2 狼 → 共享狼陣營勝利':(lt==='good'?'2 好人 → 共享好人陣營勝利':'1 狼 1 好人（邱比特沒連自己）→ 情侶＋邱比特成第三方，需屠城才勝');
+}
+function isLoner(G,n){var id=G.seats[n];return !!id&&!!ROLES[id]&&(!!ROLES[id].loner||!!(G.conv&&G.conv.seat===n));}
+function coreWolves(G,d){return wolfGroup(G).filter(function(n){return !isLoner(G,n)&&!deadAtStart(G,n,d);});}
+function coreAliveNow(G){return wolfGroup(G).filter(function(n){return !isLoner(G,n)&&!isDead(G,n);}).length;}
+function lostSkill(G,n){return !!(G.conv&&G.conv.seat===n)&&coreAliveNow(G)===0;}
+function wolfTeam(G,d){var c=coreWolves(G,d);return c.length?c:wolfGroup(G).filter(function(n){return !deadAtStart(G,n,d);});}
+function broAlive(G,d){return seatsOfRole(G,'wolfbrother').some(function(n){return !deadAtStart(G,n,d);});}
+function seerVerdict(G,seat,d){
+  if(G.seats[seat]==='wolfyounger'&&broAlive(G,d))return 'good';
+  if(G.conv&&G.conv.seat===seat&&G.conv.day>=d)return 'good';
+  return campOf(G,seat)==='wolf'?'bad':'good';
+}
+function prevExile(G,d){var dd=G.days[d-1];return (d>=2&&dd&&dd.kind==='vote'&&dd.out!=null)?dd.out:null;}
+function revengeOn(G,d){
+  if(d<2||!seatsOfRole(G,'wolfyounger').length)return false;
+  return seatsOfRole(G,'wolfbrother').some(function(b){return G.deaths.some(function(x){return x.seat===b&&x.day===d-1;});});
+}
+function mechType(G){
+  if(!G.mech)return null;var id=G.seats[G.mech.from],r=ROLES[id];if(!r)return null;
+  if(id==='medium'||id==='seer')return 'verify';
+  if(id==='witch')return 'poison';
+  if(id==='guard')return 'shield';
+  if(id==='hunter')return 'gun';
+  if(r.camp==='wolf')return 'knife';
+  return null;
+}
+function mechSpent(G,d){
+  var t=mechType(G),spent=false;
+  for(var k=2;k<d;k++){
+    var a=night(G,k).act.mechwolf;if(!a||!a.t||!a.t.length)continue;
+    if(t==='poison'||t==='knife')spent=true;
+    if(t==='shield'&&resolveNight(G,k).info.shield)spent=true;
+  }
+  return spent;
+}
+function luckyUsed(G,d){for(var k=2;k<d;k++){var a=night(G,k).act.lucky;if(a&&a.t&&a.t.length)return true;}return false;}
+function luckyFail(G){return !!(G.lucky&&G.lucky.seat!=null&&G.seats[G.lucky.seat]&&ROLES[G.seats[G.lucky.seat]].camp==='wolf');}
+function identityShown(G,seat){var id=G.seats[seat];if(id==='mechwolf'&&G.mech&&G.seats[G.mech.from])id=G.seats[G.mech.from];return ROLES[id]?ROLES[id].name:'（未登記）';}
+function didAct(G,d,s){
+  var id=G.seats[s],act=night(G,d).act;
+  var mergedConv=!!(G.conv&&G.conv.seat===s&&lostSkill(G,s));
+  if(!id||!ROLES[id]||(id==='hunter'&&!mergedConv))return false;
+  var acted=false,has=function(a){return !!(a&&((a.t&&a.t.length)||a.save!=null||a.poison!=null));};
+  if(wolfTeam(G,d).indexOf(s)>=0&&has(act.wolves))acted=true;
+  if(id==='hunter'&&mergedConv)return acted;
+  if(id==='gravekeeper'){acted=true;}
+  else if(id!=='wolfbrother'){
+    Object.keys(STEP).forEach(function(k){
+      var st=STEP[k];if(st.roles.indexOf(id)<0||st.kind==='note'||k==='dreamer2end'||k==='convlearn'||k==='wolves')return;
+      if(has(act[k]))acted=true;
+    });
+  }
+  if(G.lucky&&G.lucky.seat===s&&d>=2&&has(act.lucky))acted=true;
+  return acted;
+}
+function nightSteps(G,d){
+  d=d||G.day||1;
+  var list=[{key:'start',kind:'start',title:'天黑請閉眼',short:'閉眼'}];
+  if(d===1&&rules(G).regMode==='hands')list.push({key:'handreg',kind:'handreg',title:'首夜舉手登記',short:'舉手登記'});
+  var hasWolf=Object.keys(G.pool).some(function(id){return G.pool[id]>0&&ROLES[id]&&ROLES[id].camp==='wolf';});
+  if(rules(G).huntGame){if(hasWolf)list.push({key:'wolves',kind:'wolves',role:'wolf',title:'狼人',short:'狼人'});return list;}
+  var deferred=null,convDeferred=null;
+  stepKeys(G).forEach(function(k){
+    if(k==='wolves'){if(hasWolf)list.push({key:'wolves',kind:'wolves',role:'wolf',title:'狼人',short:'狼人'});return;}
+    var s=STEP[k];
+    if(!s){
+      var r0=ROLES[k];if(!r0||!(G.pool[k]>0)||d>1)return;
+      list.push({key:k,kind:'idle',role:k,title:r0.name,short:r0.name});return;
+    }
+    if(!s.roles.some(function(id){return G.pool[id]>0;}))return;
+    var show=true;
+    if(k==='thief'||k==='cupid'||k==='cupidtour'||k==='gconv'||k==='blackmarket')show=(d===1);
+    else if(k==='convlearn')show=(d===1)||!!G.conv;
+    else if(k==='brothers')show=(d===1||revengeOn(G,d));
+    else if(k==='lucky')show=(d===1||(!!G.lucky&&G.lucky.gift!=='gun'&&!luckyFail(G)));
+    if(!show)return;
+    var entry={key:k,kind:s.kind,role:s.role,title:s.title,short:s.short};
+    if(k==='lucky'&&d>=2){deferred=entry;return;}
+    if(k==='convlearn'&&d>=2){convDeferred=entry;return;}
+    list.push(entry);
+  });
+  if(convDeferred){
+    var di=-1;for(var ii=0;ii<list.length;ii++){if(list[ii].key==='dreamer2'){di=ii;break;}}
+    if(di>=0)list.splice(di+1,0,convDeferred);else list.push(convDeferred);
+  }
+  if(deferred)list.push(deferred);
+  return list;
+}
+function swapper(G,d){
+  var a=night(G,d).act.magician;if(!a||!a.t||a.t.length<2)return function(x){return x;};
+  var m=seatsOfRole(G,'magician')[0];if(m!=null&&deadAtStart(G,m,d))return function(x){return x;};
+  var p=a.t[0],q=a.t[1];return function(x){return x===p?q:(x===q?p:x);};
+}
+function t1(G,d,k){var a=night(G,d).act[k];return a&&a.t&&a.t.length?a.t[0]:null;}
+function witchVictim(G,d){var w=t1(G,d,'wolves');return w!=null?swapper(G,d)(w):null;}
+function potions(G,before){
+  var save=false,poison=false;
+  Object.keys(G.nights).forEach(function(k){if(before!=null&&+k>=before)return;var w=G.nights[k].act.witch;if(w){if(w.save!=null)save=true;if(w.poison!=null)poison=true;}});
+  return {save:save,poison:poison};
+}
+function witchVictims(G,d){
+  var sw=swapper(G,d),out=[];
+  knifeHits(G,d,sw).forEach(function(h){if(out.indexOf(h.seat)<0)out.push(h.seat);});
+  return out;
+}
+function hunterGesture(G,d){
+  var hs=seatsOfRole(G,'hunter'),nt=night(G,d),res=resolveNight(G,d),ns=rules(G).hunterNoShoot||[];
+  var dying=res.deaths.filter(function(x){return hs.indexOf(x.seat)>=0;})[0];
+  var fearedHunter=dying&&isFeared(G,d,dying.seat);
+  var auto=(fearedHunter||(dying&&(ns.indexOf(dying.cause)>=0||HARD_MUTE.indexOf(dying.cause)>=0)))?'X':'O';
+  return {auto:auto,g:(nt.act.hunter&&nt.act.hunter.g)||auto,cause:dying?dying.cause:null};
+}
+function knifeHits(G,d,sw){
+  var act=night(G,d).act,h=[];
+  var w=t1(G,d,'wolves');
+  var nmT=(d===1)?t1(G,d,'nightmare'):null,nmVoid=(nmT!=null&&G.seats[nmT]==='wolf');
+  if(w!=null&&!nmVoid)h.push({seat:sw(w),src:'wolves'});
+  var b=t1(G,d,'brothers');if(b!=null&&revengeOn(G,d))h.push({seat:b,src:'revenge'});
+  var m=act.mechwolf;if(m&&m.mode==='knife'&&m.t&&m.t.length&&d>=2&&!mechSpent(G,d))h.push({seat:m.t[0],src:'mech'});
+  return h;
+}
+function resolveNight(G,d){
+  var act=night(G,d).act,sw=swapper(G,d),lines=[],dead={},by={},info={shield:false};
+  var alive=function(n){return !deadAtStart(G,n,d);};
+  var nmFeared=t1(G,d,'nightmare');
+  var witchSeat0=seatsOfRole(G,'witch')[0],dreamerSeat0=seatsOfRole(G,'dreamer')[0];
+  var w=(nmFeared!=null&&witchSeat0===nmFeared)?{}:(act.witch||{});
+  var guarded=t1(G,d,'guard')!=null?sw(t1(G,d,'guard')):null;
+  var dreamed=(t1(G,d,'dreamer')!=null&&!(nmFeared!=null&&dreamerSeat0===nmFeared))?sw(t1(G,d,'dreamer')):null;
+  var dz2=act.dreamer2,dreamed2=(dz2&&dz2.t&&dz2.t.length)?dz2.t[0]:null;
+  var sleeper=dreamed!=null?dreamed:dreamed2;
+  var mech=act.mechwolf,shield=null;
+  if(mech&&mech.mode==='shield'&&mech.t&&mech.t.length&&d>=2&&!mechSpent(G,d))shield=mech.t[0];
+  var mg=act.magician;if(mg&&mg.t&&mg.t.length===2&&sw(mg.t[0])!==mg.t[0])lines.push('魔術師交換 '+mg.t[0]+'↔'+mg.t[1]+'：本夜夜間技能對象互換。');
+  var hits=knifeHits(G,d,sw),cnt={};
+  hits.forEach(function(h){cnt[h.seat]=(cnt[h.seat]||0)+1;});
+  if(!hits.length)lines.push('狼人空刀（或未記錄）。');
+  Object.keys(cnt).map(Number).forEach(function(v){
+    var n=cnt[v],g=guarded===v,s=(w.save!=null&&w.save===v);
+    if(sleeper===v){lines.push(v+'號被刀，但被攝夢免疫。');return;}
+    if(shield===v){info.shield=true;lines.push(v+'號被刀，被無敵護盾擋下（護盾用掉）。');return;}
+    if(g&&s){dead[v]='刀';lines.push(v+'號被刀，同時被守衛守護與女巫解藥 → 同守同救，兩者皆失效，出局。');return;}
+    var blocks=(g||s)?1:0;
+    if(n-blocks>0){dead[v]='刀';lines.push(v+'號被'+(n>1?'刀 '+n+' 次':'狼人刀殺')+(blocks?'，'+(g?'守衛':'解藥')+'只擋下 1 刀，仍然出局。':'。'));}
+    else lines.push(v+'號被刀，被'+(g?'守衛守住':'女巫解藥救活')+'。');
+  });
+  var poisons=[];
+  if(w.poison!=null)poisons.push(sw(w.poison));
+  if(mech&&mech.mode==='poison'&&mech.t&&mech.t.length&&d>=2&&!mechSpent(G,d))poisons.push(mech.t[0]);
+  var lk=act.lucky;if(lk&&lk.mode==='poison'&&lk.t&&lk.t.length&&d>=2&&!luckyUsed(G,d))poisons.push(lk.t[0]);
+  poisons.forEach(function(p){
+    if(sleeper===p)lines.push(p+'號被毒，但被攝夢免疫。');
+    else if(shield===p){info.shield=true;lines.push(p+'號被毒，被無敵護盾擋下（護盾用掉）。');}
+    else{dead[p]='毒';lines.push(p+'號被毒殺。');}
+  });
+  var dh=t1(G,d,'demonhunter'),dhSeat=seatsOfRole(G,'demonhunter')[0];
+  if(d>=2&&dh!=null&&dhSeat!=null&&alive(dhSeat)){
+    var tg=sw(dh);
+    if(campOf(G,tg)==='wolf'){dead[tg]='獵殺';lines.push('獵魔人獵中狼人陣營 '+tg+'號 → 該玩家出局。');}
+    else{dead[dhSeat]='反噬';lines.push('獵魔人獵中好人陣營 '+tg+'號 → 獵魔人自己出局。');}
+  }
+  var dr=seatsOfRole(G,'dreamer')[0];
+  var prevA=night(G,d-1).act.dreamer;var prevT=(prevA&&prevA.t&&prevA.t.length)?swapper(G,d-1)(prevA.t[0]):null;
+  if(dreamed!=null&&prevT===dreamed){dead[dreamed]='夢死';lines.push('連續兩晚攝夢 '+dreamed+'號 → 夢死。');}
+  if(dr!=null&&dead[dr]&&dreamed!=null&&!dead[dreamed]){dead[dreamed]='夢死';lines.push('攝夢人出局，被攝夢的 '+dreamed+'號 一併出局。');}
+  var d2=seatsOfRole(G,'dreamer2')[0];
+  if(dz2&&dz2.kill&&d>=2&&dreamed2!=null&&dreamed2!==d2&&(d2==null||alive(d2))){dead[dreamed2]='夢殺';lines.push('覺醒攝夢人夢殺 '+dreamed2+'號（悶槍、不能被解藥救）。');}
+  if(d===1&&G.lucky&&G.lucky.seat!=null&&luckyFail(G)){
+    var bm=seatsOfRole(G,'blackmarket')[0];
+    if(bm!=null){dead[bm]='黑市';lines.push('黑市商人選到狼陣營 '+G.lucky.seat+'號 → 交易失敗，黑市商人出局。');}
+  }
+  var again=true;
+  while(again){
+    again=false;
+    Object.keys(dead).map(Number).forEach(function(s){
+      if(G.seats[s]==='wolfbeauty'){
+        var sl=t1(G,d,'wolfbeauty');
+        if(sl!=null&&dead[sl]===undefined&&alive(sl)){dead[sl]='連帶';by[sl]=s;lines.push('狼美人出局，連帶 '+sl+'號 出局（悶槍）。');again=true;}
+      }
+      if(G.lovers&&G.lovers.indexOf(s)>=0){
+        var o=G.lovers[0]===s?G.lovers[1]:G.lovers[0];
+        if(o!=null&&dead[o]===undefined&&alive(o)){dead[o]='殉情';by[o]=s;lines.push('情侶 '+s+'號 出局，'+o+'號 殉情（悶槍）。');again=true;}
+      }
+    });
+  }
+  var out=Object.keys(dead).map(Number).filter(alive).sort(function(a,b){return a-b;}).map(function(n){var o={seat:n,cause:dead[n]};if(by[n]!=null)o.by=by[n];return o;});
+  return {deaths:out,lines:lines,info:info};
+}
+function seatVillagers(G){var f=rules(G).fill||'villager';seatsList(G).forEach(function(n){if(!G.seats[n])G.seats[n]=f;});}
+function finishNight(G){
+  var d=G.day,nt=night(G,d,true),res=resolveNight(G,d);
+  nt.draft=res.deaths;nt.explain=res.lines;nt.committed=false;
+  if(d===1)seatVillagers(G);
+  var sh=G.sh||(G.sh=newSh());
+  if(sheriffOn()&&sh.status==='interrupted'){sh.status='active';sh.resumed=true;sh.step='withdraw';sh.goNight=false;G.stage='sheriff';}
+  else if(sheriffOn()&&d===1&&!G.sheriffDone){sh.status='active';sh.step='cand';G.stage='sheriff';}
+  else G.stage='dawn';
+}
+function commitDeaths(G,d){
+  var nt=night(G,d,true);
+  G.deaths=G.deaths.filter(function(x){return !(x.day===d&&x.phase==='N'&&x.cause!=='開槍');});
+  (nt.draft||[]).forEach(function(x){if(!isDead(G,x.seat))G.deaths.push({seat:x.seat,day:d,phase:'N',cause:x.cause,by:x.by});});
+  nt.committed=true;
+}
+function removeDeathsWhere(G,pred){
+  var gone=G.deaths.filter(pred).map(function(x){return x.seat;});
+  G.deaths=G.deaths.filter(function(x){return !pred(x);});
+  gone.forEach(function(n){delete G.trig[n];});
+  var more=G.deaths.filter(function(x){return x.by!=null&&gone.indexOf(x.by)>=0;});
+  if(more.length)removeDeathsWhere(G,function(x){return x.by!=null&&gone.indexOf(x.by)>=0;});
+}
+
+function addDeath(G,x){
+  if(isDead(G,x.seat))return;
+  G.deaths.push(x);
+  var id=G.seats[x.seat];
+  if(id==='wolfbeauty'&&x.cause!=='騎士驗中'){
+    var sl=t1(G,x.day,'wolfbeauty');
+    if(sl!=null&&!isDead(G,sl))addDeath(G,{seat:sl,day:x.day,phase:x.phase,cause:'連帶',by:x.seat});
+  }
+  if(G.lovers&&G.lovers.indexOf(x.seat)>=0){
+    var o=G.lovers[0]===x.seat?G.lovers[1]:G.lovers[0];
+    if(o!=null&&!isDead(G,o))addDeath(G,{seat:o,day:x.day,phase:x.phase,cause:'殉情',by:x.seat});
+  }
+}
+
+/* ================= 觸發（開槍／警徽）與勝負提示 ================= */
+function canShoot(G,x){
+  var id=G.seats[x.seat],r=ROLES[id];if(!r)return null;
+  var gunLucky=!!(G.lucky&&G.lucky.seat===x.seat&&G.lucky.gift==='gun'&&!luckyFail(G));
+  var gunMech=!!(G.mech&&mechType(G)==='gun'&&seatsOfRole(G,'mechwolf')[0]===x.seat);
+  var gun=(id==='hunter'||(r.onDeath&&true));
+  if(!gun&&!gunLucky&&!gunMech)return null;
+  if(HARD_MUTE.indexOf(x.cause)>=0)return false;
+  if(lostSkill(G,x.seat))return false;
+  if(!gun&&gunMech)return (rules(G).hunterNoShoot||[]).indexOf(x.cause)<0;
+  if(id==='hunter'){
+    if(x.phase==='N'&&x.cause!=='開槍'){var a=night(G,x.day).act.hunter;if(a&&a.g)return a.g==='O';}
+    return (rules(G).hunterNoShoot||[]).indexOf(x.cause)<0;
+  }
+  if(!(r.onDeath))return (rules(G).hunterNoShoot||[]).indexOf(x.cause)<0;
+  return (r.onDeath.noShoot||[]).indexOf(x.cause)<0;
+}
+function pendingTriggers(G){
+  var out=[];
+  G.deaths.forEach(function(x){
+    var c=canShoot(G,x);
+    if(c!==null&&!G.trig[x.seat])out.push({type:'shoot',seat:x.seat,cause:x.cause,can:c});
+  });
+  if(G.sheriff!=null&&isDead(G,G.sheriff))out.push({type:'badge',seat:G.sheriff});
+  return out;
+}
+function counts(G){var c={wolf:0,god:0,good:0,third:0};aliveSeats(G).forEach(function(n){if(G.seats[n]==='cupid')return;c[campOf(G,n)]++;});return c;}
+function hasCampSeat(G,camp){return seatsList(G).some(function(n){var r=roleOf(G,n);return r&&G.seats[n]!=='cupid'&&r.camp===camp;});}
+function winHint(G){
+  var c=counts(G),rl=rules(G);
+  if(G.lovers&&loversType(G)==='third'&&c.third>0){
+    if(c.wolf+c.god+c.good===0)return {text:'情侶第三方存活，其餘玩家已全數出局（屠城）→ 第三方勝利',w:'third'};
+    return null;
+  }
+  if(c.wolf===0)return {text:'狼人陣營已全數出局 → 好人陣營勝利',w:'good'};
+  if(c.third>0)return null;
+  if(hasCampSeat(G,'god')&&c.god===0)return {text:'神職已全數出局（屠神）→ 狼人陣營勝利',w:'wolf'};
+  if(hasCampSeat(G,'good')&&c.good===0)return {text:'平民已全數出局（屠民）→ 狼人陣營勝利',w:'wolf'};
+  if(rl.hostage&&c.wolf>=c.god+c.good)return {text:'狼人數量已不少於其餘玩家（綁票）→ 狼人陣營勝利',w:'wolf'};
+  return null;
+}
+function seqFrom(G,pool,start,dir){
+  var N=G.players,seq=[];
+  for(var k=0;k<N;k++){var n=(((start-1+dir*k)%N)+N)%N+1;if(pool.indexOf(n)>=0)seq.push(n);}
+  return seq;
+}
+function sheriffAlive(G){return G.sheriff!=null&&!isDead(G,G.sheriff);}
+function sheriffStart(G,dir){
+  var N=G.players,alive=aliveSeats(G);
+  for(var k=1;k<N;k++){var n=(((G.sheriff-1+dir*k)%N)+N)%N+1;if(alive.indexOf(n)>=0)return n;}
+  return null;
+}
+function dayOrder(G,d){
+  var o=G.days[d]&&G.days[d].order;if(!o)return null;
+  var alive=aliveSeats(G);
+  if(o.mode==='sheriff'){
+    if(!sheriffAlive(G))return null;
+    var st=sheriffStart(G,o.dir);if(st==null)return {o:o,seq:[G.sheriff]};
+    var seq=seqFrom(G,alive.filter(function(n){return n!==G.sheriff;}),st,o.dir);seq.push(G.sheriff);
+    return {o:o,seq:seq};
+  }
+  if(sheriffAlive(G))return null;
+  return {o:o,seq:seqFrom(G,alive,o.start,o.dir)};
+}
+function seqTxt(seq){return '<div class="speak">'+seq.map(function(n,i){return '<span'+(i===0?' class="first"':'')+'>'+n+'</span>';}).join('')+'</div>';}
+function votesOf(G,key){return (G.votes&&G.votes[key])||{};}
+function voteWeight(G,key,m){return (key.charAt(0)==='D'&&G.sheriff===m)?1.5:1;}
+function weightedCount(G,key,arr){return (arr||[]).reduce(function(s,m){return s+voteWeight(G,key,m);},0);}
+function voteGroups(G,key){
+  var v=votesOf(G,key),g={};
+  Object.keys(v).forEach(function(k){(g[v[k]]=g[v[k]]||[]).push(+k);});
+  Object.keys(g).forEach(function(t){g[t].sort(function(a,b){return a-b;});});
+  return g;
+}
+function voteRecHTML(G,key,voters,targets,note){
+  var open=!!UI.vrecOpen[key],v=votesOf(G,key),cnt=Object.keys(v).length;
+  var head='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="vrecToggle" data-key="'+key+'">'+(open?'收起投票明細':'記錄誰投了誰（選填）'+(cnt?'・已記 '+cnt+' 人':''))+'</button></div>';
+  if(!open)return head;
+  var tl=targets.concat([0]);
+  var cur=(UI.voteTarget&&UI.voteTarget.key===key&&tl.indexOf(UI.voteTarget.seat)>=0)?UI.voteTarget.seat:null;
+  var g=voteGroups(G,key);
+  var tgrid=targets.map(function(t){return seatBtn(G,t,{a:'vtTarget',d:{key:key},sel:cur===t,sub:weightedCount(G,key,g[t])+' 票'});}).join('')+
+    '<button class="seat c-none'+(cur===0?' sel':'')+'" data-a="vtTarget" data-key="'+key+'" data-seat="0"><b>棄</b><small>'+((g[0]||[]).length)+' 人</small></button>';
+  var vgrid=seatsList(G).map(function(m){var t=v[m];return seatBtn(G,m,{a:'vtVoter',d:{key:key},dis:voters.indexOf(m)<0,sel:t!==undefined&&t===cur,sub:t===0?'棄票':(t!==undefined?'→'+t:'')});}).join('');
+  var parts=targets.filter(function(t){return g[t];}).map(function(t){return t+' 號 '+weightedCount(G,key,g[t])+' 票（'+g[t].map(function(m){return m+(voteWeight(G,key,m)>1?'(警1.5)':'');}).join('、')+'）';});
+  if(g[0])parts.push('棄票 '+g[0].length+' 人（'+g[0].join('、')+'）');
+  var unrec=voters.filter(function(m){return v[m]===undefined;});
+  if(cnt&&unrec.length)parts.push('未記錄 '+unrec.length+' 人（'+unrec.join('、')+'）');
+  return head+(key.charAt(0)==='D'&&G.sheriff!=null?'<p class="muted">警長 '+G.sheriff+' 號的投票算 1.5 票。</p>':'')+'<div class="card vrec"><h4>① 先點被投的人（「棄」＝不投票）</h4><div class="seats">'+tgrid+'</div><h4>② 再點投給他的人</h4>'+(note?'<p class="muted">'+esc(note)+'</p>':'')+
+    '<div class="seats">'+vgrid+'</div>'+(cur==null?'<p class="muted" style="margin-top:8px">請先點上方被投的人。</p>':'')+
+    '<p class="muted" style="margin-top:10px">'+(parts.length?esc(parts.join('；')):'尚未記錄。')+'</p><p class="muted">沒點到的人會顯示為「未記錄」，和「棄票」不同。</p><div class="btnrow"><button class="btn" data-a="vtClear" data-key="'+key+'">清除這一輪</button></div></div>';
+}
+
+/* ================= 共用畫面元件 ================= */
+function hasExtra(G,n){return (G.extras||[]).some(function(x){return x.seat===n;});}
+function extraSeats(G){return (G.extras||[]).map(function(x){return x.seat;}).sort(function(a,b){return a-b;});}
+function seatBtn(G,n,o){
+  o=o||{};var r=roleOf(G,n),dead=isDead(G,n)&&!o.noDead;
+  var cls=['seat',r?('c-'+r.camp):'c-none',o.sel?'sel':'',dead?'dead':''].join(' ');
+  var sub=o.sub!=null?o.sub:(r?r.short:'');
+  var tags=(G.sheriff===n?'<i class="tg sh">警</i>':'')+(G.cand.indexOf(n)>=0?'<i class="tg cd">上</i>':'')+(hasExtra(G,n)?'<i class="tg ex">＋</i>':'')+(G.lovers&&G.lovers.indexOf(n)>=0?'<i class="tg lv">♡</i>':'')+(G.conv&&G.conv.seat===n?'<i class="tg cv">轉</i>':'');
+  var nm=(G.names[n]&&o.name!==false)?'<em>'+esc(G.names[n])+'</em>':'';
+  var data=Object.keys(o.d||{}).map(function(k){return ' data-'+k+'="'+esc(o.d[k])+'"';}).join('');
+  return '<button class="'+cls+'"'+(o.dis?' disabled':'')+' data-a="'+o.a+'"'+data+' data-seat="'+n+'">'+tags+'<b>'+n+'</b><small>'+esc(sub)+'</small>'+nm+'</button>';
+}
+function picker(G,o){
+  return '<div class="seats big">'+seatsList(G).map(function(n){
+    return seatBtn(G,n,{a:o.a||'pick',d:o.d||{key:o.key},sel:(o.sel||[]).indexOf(n)>=0,dis:(!o.allowDead&&isDead(G,n))||(o.dis||[]).indexOf(n)>=0,sub:o.sub?o.sub(n):undefined,noDead:o.allowDead});
+  }).join('')+'</div>';
+}
+function scriptBox(lines){
+  return '<div class="script">'+lines.map(function(l){
+    if(typeof l==='string')return '<p class="say">'+esc(l)+'</p>';
+    return '<p class="say'+(l.soft?' soft':'')+'">'+esc(l.t)+'</p>';
+  }).join('')+'</div>';
+}
+function noteBox(list,warn){return list.map(function(n){return '<div class="note'+(warn?' warn':'')+'">'+esc(n)+'</div>';}).join('');}
+function stepHead(title,camp,seatsHTML){return '<div class="stephead"><span class="pill c-'+camp+'">'+CAMPS[camp]+'</span><h2>'+esc(title)+'</h2><div class="muted">'+seatsHTML+'</div></div>';}
+function seatInfo(G,ids,d){
+  if(!ids.length)return '（此角色未分配座位）';
+  return ids.map(function(n){var dd=deadAtStart(G,n,d);return '<span class="si'+(dd?' dead':'')+'"><b>'+n+'</b>號'+(G.names[n]?'（'+esc(G.names[n])+'）':'')+(dd?' 已出局':'')+'</span>';}).join('');
+}
+function stageLabel(G){
+  if(G.phase==='over')return '本局結束';
+  return {sheriff:'警長競選',night:'第'+G.day+'夜',dawn:'第'+G.day+'天・天亮',day:'第'+G.day+'天・白天'}[G.stage]||'';
+}
+
+/* ================= 頂部 ================= */
+function topbar(){
+  var tabs=[['setup','開局'],['play','主持'],['sheet','紀錄表'],['roles','角色庫'],['hist','歷史']];
+  return '<header class="topbar noprint"><div class="brand"><span class="logo">🐺</span><span>上帝手記</span></div><nav class="tabs">'+
+    tabs.map(function(t){return '<button class="tab'+(APP.ui.tab===t[0]?' on':'')+'" data-a="tab" data-t="'+t[0]+'">'+t[1]+'</button>';}).join('')+
+    '</nav><div class="tools"><button class="tool" data-a="undo"'+(UNDO.length?'':' disabled')+'>↶ 復原</button><button class="tool" data-a="theme" aria-label="切換日夜">◐</button></div></header>';
+}
+
+/* ================= 開局 ================= */
+function rulesCard(G){
+  var r=rules(G),h='<div class="card"><h2>板子規則</h2>';
+  if(sheriffOn()){
+    h+='<h4>自爆規則（警長競選期間）</h4><div class="chips">'+
+      [['double','雙爆吞警徽'],['single','單爆吞警徽']].map(function(o){return '<button class="chip lg'+(r.boom===o[0]?' cur':'')+'" data-a="rule" data-k="boom" data-v="'+o[0]+'">'+o[1]+'</button>';}).join('')+
+      '</div><p class="muted" style="margin-top:8px">'+(r.boom==='single'?'開始投票前，可自爆的狼人自爆一次，警徽即遺失。':'開始投票前，第 2 次自爆時警徽遺失；第 1 次自爆只中斷競選，隔天接續退水與投票。')+'</p>';
+  }
+  h+='<h4>首夜確認身分的方式</h4><div class="chips">'+[['eyes','睜眼・點座位'],['hands','依序舉手・不睜眼']].map(function(o){return '<button class="chip lg'+((r.regMode||'eyes')===o[0]?' cur':'')+'" data-a="rule" data-k="regMode" data-v="'+o[0]+'">'+o[1]+'</button>';}).join('')+'</div><p class="muted" style="margin-top:8px">'+((r.regMode||'eyes')==='hands'?'首夜先讓神職與特殊狼牌依序舉手，上帝一次登記所有身分（通靈師、機械狼局需要）。':'首夜每個角色睜眼時，上帝當場點座位登記。')+'</p>';
+  if(G.pool.hunter>0&&!r.huntGame){
+    h+='<h4>導致獵人不能開槍的死因</h4><div class="chips">'+NOSHOOT_CAUSES.map(function(c){
+      return '<button class="chip lg'+((r.hunterNoShoot||[]).indexOf(c)>=0?' cur':'')+'" data-a="ruleNoShoot" data-c="'+c+'">'+c+'</button>';
+    }).join('')+'</div><p class="muted" style="margin-top:8px">被選中的死因出局時，獵人的槍被悶掉，不宣布技能。（連帶、殉情、夢殺一律悶槍。）</p>';
+  }
+  if(r.huntGame)h+='<div class="note">獵人局：無警長；首夜狼人互認不殺人；每天放逐到狼人才天黑；獵人開槍連鎖到打中狼人為止；狼人可自爆；狼人數量不少於其餘玩家即綁票獲勝。</div>';
+  return h+'</div>';
+}
+function canStart(G){return G.players>=6&&Object.keys(G.pool).some(function(id){return G.pool[id]>0&&ROLES[id]&&ROLES[id].camp==='wolf';});}
+function personOf(id){return APP.roster.filter(function(p){return p.id===id;})[0];}
+function seatedMap(G){var o={};Object.keys(G.seatPerson||{}).forEach(function(n){o[G.seatPerson[n]]=+n;});return o;}
+function rosterCard(G){
+  var pl=G.playing||[],edit=!!UI.rosterEdit;
+  var chips=APP.roster.map(function(p){
+    var on=pl.indexOf(p.id)>=0;
+    return '<button class="chip lg'+(on&&!edit?' cur':'')+'" data-a="'+(edit?'personEdit':'playToggle')+'" data-id="'+p.id+'">'+esc(p.name)+(edit?'　✎':'')+'</button>';
+  }).join('');
+  return '<div class="card"><h2>3　今天誰下場　<span class="muted">'+pl.length+' / '+G.players+' 人</span></h2>'+
+    (APP.roster.length?'<p class="muted" style="margin:6px 0 10px">'+(edit?'點名字可改名或刪除。':'點名字，選出今天有下場的玩家。')+'</p><div class="chips">'+chips+'</div>':'<p class="muted" style="margin-top:8px">先輸入會參加的玩家，之後每局只要點選，不必重打。</p>')+
+    '<div class="btnrow" style="margin-top:12px"><input type="text" class="inp" id="f-newname" maxlength="12" placeholder="新增玩家名字"><button class="btn" data-a="rosterAdd">新增</button>'+(APP.roster.length?'<button class="btn'+(edit?' on':'')+'" data-a="rosterEdit">'+(edit?'完成管理':'管理名單')+'</button>':'')+'</div></div>';
+}
+function seatCard(G){
+  var seated=Object.keys(G.seatPerson||{}).length,L=APP.lastSeating;
+  return '<div class="card"><h2>4　座位入座　<span class="muted">已入座 '+seated+' / '+G.players+'</span></h2><p class="muted" style="margin:6px 0">玩家先自行入座；依實際位置點座位號碼，再選是誰。</p>'+
+    (G.players?'<div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sitTap',sub:''});}).join('')+'</div>':'<p class="muted">先選擇板子。</p>')+
+    '<div class="btnrow">'+(L&&Object.keys(L.seatPerson||{}).length?'<button class="btn" data-a="reuseSeating">沿用上局座位</button>':'')+(seated?'<button class="btn" data-a="clearSeats">清除入座</button>':'')+'</div></div>';
+}
+function viewSetup(){
+  var G=APP.cur;
+  if(G.phase!=='setup'){
+    return '<div class="card"><h2>這一局進行中</h2><p class="muted" style="margin:8px 0 14px">'+esc(boardName(G))+'・'+G.players+'人・'+stageLabel(G)+'</p><div class="btnrow"><button class="btn primary" data-a="tab" data-t="play">回到主持</button><button class="btn" data-a="newGame">結束並開新局</button></div></div>';
+  }
+  var boards=[{id:'blank',name:'空白／自訂',note:'從零開始，自行加入角色與人數',pool:{}}].concat(BOARDS,APP.customBoards);
+  var cur=boards.filter(function(b){return b.name===G.boardName;})[0];
+  var chips=boards.map(function(b){
+    var del=b.id&&String(b.id).charAt(0)==='c'?'<button class="chip" data-a="delBoard" data-id="'+b.id+'" aria-label="刪除板子">✕</button>':'';
+    return '<span class="btnrow" style="gap:4px"><button class="chip lg'+(G.boardName===b.name?' cur':'')+'" data-a="board" data-id="'+b.id+'">'+esc(b.name)+'</button>'+del+'</span>';
+  }).join('');
+  var inPool=Object.keys(G.pool).filter(function(id){return G.pool[id]>0&&ROLES[id];}).sort(function(a,b){return byCamp(ROLES[a],ROLES[b]);});
+  var poolHTML=inPool.length?CAMP_ORDER.map(function(c){
+    var ids=inPool.filter(function(id){return ROLES[id].camp===c;});if(!ids.length)return '';
+    return '<h4 class="grp"><i class="dot c-'+c+'"></i>'+CAMPS[c]+'</h4>'+ids.map(function(id){
+      return '<div class="prow"><div class="pname"><b>'+esc(ROLES[id].name)+'</b><span class="muted">'+esc(R(id).desc)+'</span></div><div class="stepper"><button data-a="poolAdj" data-r="'+id+'" data-dl="-1" aria-label="減少">−</button><b>'+G.pool[id]+'</b><button data-a="poolAdj" data-r="'+id+'" data-dl="1" aria-label="增加">＋</button></div></div>';
+    }).join('');
+  }).join(''):'<p class="muted" style="margin-top:8px">尚未加入任何角色。</p>';
+  var notIn=Object.keys(ROLES).filter(function(id){return !(G.pool[id]>0);}).sort(function(a,b){return byCamp(ROLES[a],ROLES[b]);});
+  var addHTML='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="addToggle">'+(UI.addOpen?'收起':'＋ 加入其他角色')+'</button></div>'+
+    (UI.addOpen?CAMP_ORDER.map(function(c){
+      var ids=notIn.filter(function(id){return ROLES[id].camp===c;});if(!ids.length)return '';
+      return '<h4 class="grp"><i class="dot c-'+c+'"></i>'+CAMPS[c]+'</h4><div class="chips">'+ids.map(function(id){return '<button class="chip lg" data-a="poolAdd" data-r="'+id+'">'+esc(ROLES[id].name)+'</button>';}).join('')+'</div>';
+    }).join(''):'');
+  var keys=stepKeys(G),last=keys.length-1;
+  var orderHTML=keys.length?keys.map(function(k,i){
+    var title=stepTitle(k),r=k==='wolves'?null:(ROLES[k]||(STEP[k]&&ROLES[STEP[k].role]));
+    var sub=k==='wolves'?'狼人陣營一起睜眼':(!STEP[k]?'只在首夜睜眼確認身分':(r&&r.from?'第'+CN[r.from]+'夜起行動':''));
+    return '<div class="prow"><div class="pname"><b>'+(i+1)+'　'+esc(title)+'</b><span class="muted">'+esc(sub)+'</span></div><div class="stepper"><button data-a="ordMove" data-k="'+k+'" data-dl="-1"'+(i===0?' disabled':'')+' aria-label="上移">↑</button><button data-a="ordMove" data-k="'+k+'" data-dl="1"'+(i===last?' disabled':'')+' aria-label="下移">↓</button></div></div>';
+  }).join(''):'<p class="muted" style="margin-top:8px">加入角色後自動產生。</p>';
+  return '<div class="grid2"><div>'+
+    '<div class="card"><h2>1　選擇板子</h2><div class="chips" style="margin-top:12px">'+chips+'</div><p class="muted" style="margin-top:10px">'+esc(cur?cur.note:'角色池已修改，成為自訂板子。')+'</p>'+(G.players?'<div class="btnrow" style="margin-top:10px"><button class="btn" data-a="saveBoard">另存為我的板子</button></div>':'')+'</div>'+
+    '<div class="card"><h2>2　角色池　<span class="muted">共 '+sum(G.pool)+' 張牌'+(G.extraCards?'（發 '+G.players+' 人，剩 '+G.extraCards+' 張）':'')+'</span></h2>'+poolHTML+addHTML+'<p class="muted" style="margin-top:10px">實體面殺：玩家先自行抽牌入座。身分會在首夜依口號順序，由你當場點座位登記。</p></div>'+
+    rosterCard(G)+seatCard(G)+
+    '</div><div>'+
+    '<div class="card"><h2>夜間口號順序</h2><p class="muted" style="margin:6px 0">依板子決定誰先睜眼，可用箭頭調整。</p>'+orderHTML+'</div>'+
+    rulesCard(G)+
+    '<div class="startbar"><button class="btn primary big" data-a="start"'+(canStart(G)?'':' disabled')+'>開始遊戲 → 首夜</button></div>'+
+    '</div></div>';
+}
+
+/* ================= 主持 ================= */
+function viewPlay(G){
+  if(G.phase==='setup')return '<div class="card center"><h2>尚未開始</h2><p class="muted" style="margin:8px 0 16px">請先到「開局」選擇板子並分配座位。</p><button class="btn primary" data-a="tab" data-t="setup">前往開局</button></div>';
+  var main=G.phase==='over'?viewOver(G):({sheriff:viewSheriff,night:viewNight,dawn:viewDawn,day:viewDay}[G.stage]||viewDay)(G);
+  var hint=(G.phase==='play'&&(G.stage==='dawn'||G.stage==='day'))?winHint(G):null;
+  var hintHTML=hint?'<div class="hint"><span>'+esc(hint.text)+'（依屠邊規則）</span><button class="btn" data-a="win" data-w="'+hint.w+'">結束本局</button></div>':'';
+  var bar='<div class="stagebar"><div><div class="kicker">'+esc(boardName(G))+'</div><h1>'+esc(stageLabel(G))+'</h1></div>'+(G.phase==='play'?'<button class="btn danger" data-a="endGame">結束本局</button>':'')+'</div>';
+  return '<div class="play"><aside class="card rail">'+railHTML(G)+'</aside><section>'+bar+hintHTML+main+'</section><aside>'+tipsHTML(G)+'</aside></div>';
+}
+function railHTML(G){
+  var c=counts(G);
+  return '<h3 style="margin-bottom:10px">玩家</h3><div class="seats">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'seatModal'});}).join('')+'</div>'+
+    '<div class="counts"><span class="pill c-wolf">狼 '+c.wolf+'</span><span class="pill c-god">神 '+c.god+'</span><span class="pill c-good">民 '+c.good+'</span>'+(c.third?'<span class="pill c-third">三方 '+c.third+'</span>':'')+'</div>'+
+    '<p class="muted" style="margin-top:10px">點玩家可改暱稱、更正身分、標示上警、警長、出局。</p>';
+}
+function tipsHTML(G){
+  var present=Object.keys(presentRoles(G)).map(function(id){return ROLES[id];}).sort(byCamp);
+  var cur=null;if(G.stage==='night'&&G.phase==='play'){var stp=nightSteps(G,G.day);var st=stp[Math.min(G.step,stp.length-1)];cur=st.role||null;}
+  return '<div class="card"><h3 style="margin-bottom:6px">角色速查</h3>'+present.map(function(r){
+    var rr=R(r.id),open=(cur===r.id);
+    return '<details class="rd"'+(open?' open':'')+'><summary><i class="dot c-'+r.camp+'"></i>'+esc(r.name)+'<span class="muted">　'+seatsOfRole(G,r.id).join('、')+'號</span></summary><p>'+esc(rr.desc)+'</p><ul>'+(rr.tips||[]).map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ul></details>';
+  }).join('')+'</div>';
+}
+
+/* --- 夜晚 --- */
+var NOREG={note:1,dream2end:1,convlearn:1,lucky:1,start:1};
+function handRoleIds(G){
+  return Object.keys(G.pool).filter(function(id){return G.pool[id]>0&&ROLES[id]&&id!=='villager';}).sort(function(a,b){
+    var ka=ROLES[a].camp==='wolf'&&isTeamRole(a)&&ROLES[a].order==null?40:ordVal(ROLES[a].steps?ROLES[a].steps[0].k:a);
+    var kb=ROLES[b].camp==='wolf'&&isTeamRole(b)&&ROLES[b].order==null?40:ordVal(ROLES[b].steps?ROLES[b].steps[0].k:b);
+    return ka-kb||byCamp(ROLES[a],ROLES[b]);
+  });
+}
+function regIds(G,st){
+  if(st.kind==='handreg')return handRoleIds(G);
+  if(NOREG[st.kind])return [];
+  if(st.kind==='wolves')return Object.keys(G.pool).filter(function(id){return G.pool[id]>0&&isTeamRole(id);}).sort(function(a,b){return ROLES[a].sort-ROLES[b].sort;});
+  if(st.kind==='brothers')return ['wolfbrother','wolfyounger'].filter(function(id){return G.pool[id]>0;});
+  return (st.role&&G.pool[st.role]>0)?[st.role]:[];
+}
+function regBox(G,st){
+  var ids=regIds(G,st);if(!ids.length)return '';
+  var sel=ids.indexOf(UI.regRole)>=0?UI.regRole:(ids.filter(function(id){return remaining(G,id)>0;})[0]||ids[0]);
+  UI.regRole=sel;
+  var chips=ids.map(function(id){return '<button class="chip lg'+(sel===id?' cur':'')+'" data-a="regRole" data-r="'+id+'">'+esc(R(id).name)+'　'+seatsOfRole(G,id).length+' / '+G.pool[id]+'</button>';}).join('');
+  var grid='<div class="seats">'+seatsList(G).map(function(n){
+    var c=G.seats[n];
+    return seatBtn(G,n,{a:'regSeat',sel:ids.indexOf(c)>=0,dis:!!c&&ids.indexOf(c)<0,sub:c?ROLES[c].short:''});
+  }).join('')+'</div>';
+  var done=ids.every(function(id){return remaining(G,id)<=0;});
+  return '<div class="card regbox"><h3>首夜登記身分'+(done?'　✓':'')+'</h3><p class="muted" style="margin-top:4px">'+(ids.length>1?'先選角色，再點座位；再點一次可取消。':'看到誰睜眼就點誰的座位；再點一次可取消。')+'</p><div class="chips" style="margin:10px 0">'+chips+'</div>'+grid+'</div>';
+}
+function regMissing(G){
+  var fill=rules(G).fill||'villager';return Object.keys(G.pool).filter(function(id){return id!=='villager'&&id!==fill&&G.pool[id]>0&&ROLES[id]&&remaining(G,id)>0;}).map(function(id){return ROLES[id].name+' ×'+remaining(G,id);});
+}
+function wolfMissing(G){
+  return Object.keys(G.pool).some(function(id){return ROLES[id]&&ROLES[id].camp==='wolf'&&remaining(G,id)>0;});
+}
+function viewNight(G){
+  var d=G.day,steps=nightSteps(G,d),i=Math.min(G.step,steps.length-1),st=steps[i],nt=night(G,d);
+  var chips=steps.map(function(s,idx){
+    var done=idx<i||(s.key!=='start'&&nt.act[s.key]!==undefined);
+    return '<button class="chip'+(idx===i?' cur':'')+(done&&idx!==i?' done':'')+'" data-a="step" data-i="'+idx+'">'+esc(s.short)+'</button>';
+  }).join('');
+  var body;
+  switch(st.kind){
+    case 'start':body=stepStart(G,steps,d);break;
+    case 'wolves':body=stepWolves(G,d);break;
+    case 'witch':body=stepWitch(G,d);break;
+    case 'seer':body=stepSeer(G,d);break;
+    case 'hunter':body=stepHunter(G,d);break;
+    case 'idle':body=stepIdle(G,st,d);break;
+    case 'handreg':body=stepHandReg(G,d);break;
+    case 'thief':body=stepThief(G,d);break;
+    case 'note':body=stepNote(G,st,d);break;
+    case 'brothers':body=stepBrothers(G,d);break;
+    case 'mech':body=stepMech(G,d);break;
+    case 'medium':body=stepMedium(G,d);break;
+    case 'grave':body=stepGrave(G,d);break;
+    case 'dream2':body=stepDream2(G,d);break;
+    case 'dream2end':body=stepDream2End(G,d);break;
+    case 'bm':body=stepBM(G,d);break;
+    case 'lucky':body=stepLucky(G,d);break;
+    case 'gconv':body=stepGconv(G,d);break;
+    case 'convlearn':body=stepConvLearn(G,d);break;
+    case 'garg':body=stepGarg(G,d);break;
+    default:body=stepTarget(G,st,d);
+  }
+  var reg=(d===1&&st.kind!=='start'&&(rules(G).regMode!=='hands'||st.kind==='handreg'))?regBox(G,st):'';
+  var last=i===steps.length-1,miss=(d===1&&last)?regMissing(G):[];
+  var nav='<div class="btnrow nav"><button class="btn" data-a="prev"'+(i===0?' disabled':'')+'>← 上一步</button>'+(last?'<button class="btn primary big" data-a="finishNight"'+(miss.length?' disabled':'')+'>天亮・結算昨夜 →</button>':'<button class="btn primary big" data-a="next">下一步 →</button>')+'</div>';
+  return '<div class="card"><div class="steps">'+chips+'</div></div><div class="card">'+reg+body+(miss.length?noteBox(['首夜身分尚未登記完：'+miss.join('、')+'。請回到該角色的步驟登記；沒被叫到的座位會自動成為平民。'],true):'')+nav+'</div>';
+}
+function stepStart(G,steps,d){
+  var first=steps[1]?steps[1].title:'';
+  return '<div class="stephead"><h2>第 '+d+' 夜</h2></div>'+scriptBox(['天黑請閉眼。'])+
+    '<div class="note">確認所有玩家都已閉眼，再進入下一步。'+(first?'第一位是：'+esc(first)+'。':'')+'</div>'+
+    (d===1?(rules(G).regMode==='hands'?'<div class="note">首夜：先進行「舉手登記」，依序請角色舉手（不睜眼），由你一次登記所有身分；之後各角色再依口號睜眼行動。</div>':'<div class="note">首夜：板子上的神職與狼人都會睜眼。每一步先登記座位，再處理行動；沒被叫到的座位自動成為平民。</div>'):'<div class="note">第二夜起，只叫有夜間行動的角色。</div>')+
+    '<div class="note">本夜口號順序：'+esc(steps.slice(1).map(function(s){return s.title;}).join(' › '))+'</div>';
+}
+function stepIdle(G,st,d){
+  var r=R(st.role);
+  return stepHead(r.name,r.camp,seatInfo(G,seatsOfRole(G,st.role),d))+scriptBox([r.name+'請睜眼，向上帝確認身分，然後閉眼。'])+noteBox(['此角色只在首夜睜眼確認身分，之後的夜晚不會再叫。']);
+}
+function picked0(a){return (a&&a.t)||[];}
+function stepTarget(G,st,d){
+  var r=R(st.role),nt=night(G,d),a=nt.act[st.key]||{t:[],none:false};
+  var seats=seatsOfRole(G,st.role),allDead=seats.length>0&&seats.every(function(n){return deadAtStart(G,n,d);});
+  var locked=r.from&&d<r.from,dis=[],notes=[],warn=[];
+  if(st.role==='guard'){var pg=t1(G,d-1,'guard');if(pg!=null){dis.push(pg);notes.push('不能連續守護同一人：昨晚守了 '+pg+' 號。');}}
+  if(st.role==='dreamer'){var pd=t1(G,d-1,'dreamer');if(pd!=null){if((a.t||[])[0]===pd)warn.push('⚠ 連續第二晚攝夢 '+pd+' 號 → 該玩家將夢死。');else notes.push('昨晚攝夢：'+pd+' 號（連續攝夢同一人會夢死）。');}}
+  if(st.role==='wolfbeauty'){var pw=t1(G,d-1,'wolfbeauty');if(pw!=null){dis.push(pw);notes.push('不能連續兩晚睡同一人：昨晚睡了 '+pw+' 號。');}}
+  if(st.role==='nightmare'){var pn=t1(G,d-1,'nightmare');if(pn!=null){dis.push(pn);notes.push('不能連續兩晚恐懼同一人：昨晚恐懼了 '+pn+' 號。');}}
+  var feared=st.role==='dreamer'&&seats.some(function(n){return isFeared(G,d,n);});
+  if(feared)notes.push('夢魘恐懼：攝夢人今晚被恐懼，沒有夢遊者，照常唸台詞並停頓。');
+  if(st.role==='cupid'){notes.push('選 2 位玩家連線，可以選自己。');if(picked0(a).length===2)notes.push('配對結果：'+pairLabel(G)+'（依目前登記的身分判斷）。');}
+  if(locked)notes.push(r.name+'要到第 '+r.from+' 夜才能使用技能；本夜照常唸台詞、停頓後閉眼即可。');
+  if(allDead)notes.push(r.name+'已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
+  var lines=r.script||[r.name+'請睜眼。',r.name+'請閉眼。'];
+  var picked=a.t||[];
+  var input='';
+  if(!locked&&!allDead&&!feared){
+    input=picker(G,{key:st.key,sel:picked,dis:dis})+'<div class="btnrow"><button class="btn'+(a.none?' on':'')+'" data-a="none" data-key="'+st.key+'">'+esc(r.none||'不使用')+'</button><span class="muted">'+(picked.length?'已記錄：'+picked.join('、')+' 號':(a.none?'已記錄：'+esc(r.none||'不使用'):'尚未記錄'))+'</span></div>';
+  }
+  return stepHead(r.name,r.camp,seatInfo(G,seats,d))+scriptBox(lines)+noteBox(notes)+noteBox(warn,true)+input;
+}
+function stepWolves(G,d){
+  var a=night(G,d).act.wolves||{t:[]},base=R('wolf').script||['狼人請睜眼。','請討論戰術，決定今晚要刀誰。','狼人請閉眼。'],present=presentRoles(G);
+  var hunt=rules(G).huntGame&&d===1;
+  var L=[base[0]];
+  if(present.wolfking)L.push({t:'（身分手勢）黑狼王請給上帝一個手勢（大拇指）。',soft:true});
+  if(present.bloodmoon)L.push({t:'（身分手勢）血月使者請比小拇指。',soft:true});
+  if(hunt){L.push('請互相確認隊友，這一夜不殺人。');L.push(base[base.length-1]);}
+  else base.slice(1).forEach(function(x){L.push(x);});
+  var all=wolfGroup(G),core=all.filter(function(n){return !isLoner(G,n);}),coreLive=core.filter(function(n){return !deadAtStart(G,n,d);});
+  var show=core,notes=[];
+  if(d>=2&&!coreLive.length){show=all;notes.push('其他狼人已全數出局：不與狼隊互認的狼（機械狼、狼弟、石像鬼、轉化者）今晚一起在狼人階段睜眼刀人。');}
+  else if(all.length>core.length)notes.push('有不與狼隊互認的狼，其他狼人還在時他們不參與這一步。');
+  if(present.wolfbrother&&d===1)notes.push('狼兄可在這一步告知其他小狼：狼弟在哪裡。');
+  var notes=notes||[];
+  if(present.mechwolf&&d>=2&&!coreLive.length)notes.push('機械狼要在這一步睜眼（他在自己的步驟已被告知）。');
+  var info=show.map(function(n){var dd=deadAtStart(G,n,d);return '<span class="si'+(dd?' dead':'')+'"><b>'+n+'</b>號'+esc(R(G.seats[n]).name)+'</span>';}).join('');
+  var picked=a.t||[];
+  var noKnife=seatsList(G).filter(function(n){return !isDead(G,n)&&R(G.seats[n])&&R(G.seats[n]).noSelfKnife;});
+  if(noKnife.length)notes.push('不能自刀：'+noKnife.join('、')+' 號。');
+  if(d===1){var nmFirst=t1(G,d,'nightmare');if(nmFirst!=null&&G.seats[nmFirst]==='wolf')notes.push('夢魘首夜恐懼到其他小狼（'+nmFirst+' 號）：今晚狼人判定空刀，無論剛才選了誰。');}
+  var input=hunt?'':picker(G,{key:'wolves',sel:picked,dis:noKnife,sub:function(n){var r=roleOf(G,n);return r?r.short:'';}})+
+    '<div class="btnrow"><button class="btn'+(a.none?' on':'')+'" data-a="none" data-key="wolves">空刀</button><span class="muted">'+(picked.length?'刀：'+picked[0]+' 號':(a.none?'已記錄：空刀':'尚未記錄'))+'</span></div>';
+  return stepHead('狼人','wolf',info)+scriptBox(L)+noteBox(notes)+input;
+}
+function stepWitch(G,d){
+  var nt=night(G,d),w=nt.act.witch||{},vics=witchVictims(G,d),victim=vics.length?vics[0]:null,used=potions(G,d),base=R('witch').script||['女巫請睜眼。','女巫請閉眼。'];
+  var seats=seatsOfRole(G,'witch'),allDead=seats.length>0&&seats.every(function(n){return deadAtStart(G,n,d);});
+  var witchFeared0=function(){return seats.some(function(n){return isFeared(G,d,n);});};
+  var lines=[base[0]];
+  lines.push(witchFeared0()?'（夢魘恐懼，今晚看不到刀口）':(vics.length?'今晚 '+vics.join('、')+' 號被殺（比出號碼）。'+(used.save?'':'你要使用解藥嗎？'):'今晚沒有人被殺。'));
+  if(!witchFeared0()&&!used.poison)lines.push('你要使用毒藥嗎？要毒誰？');
+  lines.push(base[base.length-1]);
+  var mode=w.save!=null?'save':((w.poison!=null||w.pmode)?'poison':(w.none?'none':''));
+  var notes=[];
+  var witchFeared=seats.some(function(n){return isFeared(G,d,n);});
+  var wt=t1(G,d,'wolves');if(wt!=null&&victim!==wt)notes.push('魔術師交換：狼人選 '+wt+' 號，實際被刀的是 '+victim+' 號。');
+  if(used.save)notes.push('解藥已在先前使用。');if(used.poison)notes.push('毒藥已在先前使用。');
+  if(allDead)notes.push('女巫已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
+  if(witchFeared)notes.push('夢魘恐懼：女巫今晚看不到刀口，也不能用解藥、毒藥，照常唸台詞並停頓。');
+  if(vics.length&&seats.indexOf(victim)>=0&&vics.indexOf(seats[0])>=0)notes.push('女巫今晚也在被殺名單中，但不能自救。');
+  var ctl='';
+  if(!allDead&&!witchFeared){
+    ctl='<div class="btnrow" style="margin:12px 0"><button class="btn big'+(mode==='none'?' on':'')+'" data-a="witch" data-m="none">不使用</button>'+
+      (vics.length?vics.map(function(v){var selfv=seats.indexOf(v)>=0;return '<button class="btn big'+(mode==='save'&&w.save===v?' on':'')+'" data-a="witch" data-m="save" data-seat="'+v+'"'+((used.save||selfv)?' disabled':'')+'>解藥救 '+v+' 號'+(selfv?'（不能自救）':'')+'</button>';}).join(''):'<button class="btn big" disabled>解藥救 —</button>')+
+      '<button class="btn big'+(mode==='poison'?' on':'')+'" data-a="witch" data-m="poison"'+(used.poison?' disabled':'')+'>使用毒藥</button></div>';
+    if(mode==='poison')ctl+='<p class="muted">選擇要毒的玩家：</p>'+picker(G,{a:'witchPoison',d:{},sel:w.poison!=null?[w.poison]:[]});
+  }
+  return stepHead('女巫','god',seatInfo(G,seats,d))+scriptBox(lines)+noteBox(notes)+ctl;
+}
+function stepSeer(G,d){
+  var a=night(G,d).act.seer||{t:[]},sw=swapper(G,d),r=R('seer'),base=r.script||['預言家請睜眼。','今晚你要查驗誰？','預言家請閉眼。'];
+  var seats=seatsOfRole(G,'seer'),allDead=seats.length>0&&seats.every(function(n){return deadAtStart(G,n,d);});
+  var picked=a.t||[],lines=base.slice(0,-1),res='',notes=[];
+  var seerFeared=seats.some(function(n){return isFeared(G,d,n);});
+  if(allDead)notes.push('預言家已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
+  if(seerFeared)notes.push('夢魘恐懼：預言家今晚不能查驗，照常唸台詞並停頓。');
+  if(seerFeared){}
+  else if(picked.length&&d===1&&wolfMissing(G)){notes.push('狼人尚未全部登記，暫不判斷查驗結果。請先在狼人步驟登記。');}
+  else if(picked.length){
+    var tg=sw(picked[0]),bad=seerVerdict(G,tg,d)==='bad';
+    res='<div class="verdict '+(bad?'bad':'good')+'">'+tg+' 號：'+(bad?'壞人（拇指向下）':'好人（拇指向上）')+'</div>';
+    if(tg!==picked[0])notes.push('魔術師交換：驗 '+picked[0]+' 號，實際查到 '+tg+' 號。');
+    if(campOf(G,tg)==='third')notes.push('目標為第三方陣營：預設回覆好人，規則不同請自行判斷。');
+    if(G.seats[tg]==='wolfyounger'&&broAlive(G,d))notes.push('狼兄還在世：狼弟被驗顯示好人。');
+    if(G.conv&&G.conv.seat===tg&&G.conv.day>=d)notes.push('這位玩家是首夜被轉化的狼人，但轉化發生在查驗之後，所以本夜查驗顯示好人。');
+    lines.push({t:'（上帝比手勢：'+(bad?'向下':'向上')+'）',soft:true});
+  }
+  lines.push(base[base.length-1]);
+  var input=(allDead||seerFeared)?'':picker(G,{key:'seer',sel:picked})+'<div class="btnrow"><button class="btn'+(a.none?' on':'')+'" data-a="none" data-key="seer">'+esc(r.none||'不查驗')+'</button><span class="muted">'+(picked.length?'已記錄：查驗 '+picked[0]+' 號':(a.none?'已記錄：不查驗':'尚未記錄'))+'</span></div>';
+  return stepHead('預言家','god',seatInfo(G,seats,d))+scriptBox(lines)+noteBox(notes)+res+input;
+}
+function stepHunter(G,d){
+  var r=R('hunter'),base=r.script||['獵人請睜眼。','獵人請閉眼。'],hg=hunterGesture(G,d),ns=rules(G).hunterNoShoot||[];
+  var seats=seatsOfRole(G,'hunter'),allDead=seats.length>0&&seats.every(function(n){return deadAtStart(G,n,d);});
+  var lines=[base[0],{t:'（上帝比手勢：'+(hg.g==='O'?'O，可開槍':'X，不可開槍')+'）',soft:true},base[base.length-1]];
+  var notes=[];
+  if(allDead)notes.push('獵人已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
+  if(seats.some(function(n){return isFeared(G,d,n);}))notes.push('夢魘恐懼：獵人今晚若死亡不能開槍。');
+  notes.push('系統預設：'+(hg.auto==='X'?'獵人今晚因「'+hg.cause+'」出局，槍被悶掉 → X':'獵人今晚沒有因禁槍死因出局 → O')+'；可手動更改。');
+  notes.push('本板子的禁槍死因：'+(ns.length?ns.join('、'):'（無）')+'；連帶、殉情、夢殺一律悶槍。');
+  return stepHead('獵人','god',seatInfo(G,seats,d))+scriptBox(lines)+noteBox(notes)+
+    '<div class="btnrow"><button class="btn big'+(hg.g==='O'?' on':'')+'" data-a="gesture" data-g="O">O・可開槍</button><button class="btn big'+(hg.g==='X'?' on':'')+'" data-a="gesture" data-g="X">X・不可開槍</button></div>';
+}
+
+/* --- 新角色步驟 --- */
+function roleBanner(G,id,d){var r=R(id);return stepHead(r.name,r.camp,seatInfo(G,seatsOfRole(G,id),d));}
+function noteDead(G,id,d,notes){var s=seatsOfRole(G,id);if(s.length>0&&s.every(function(n){return deadAtStart(G,n,d);}))notes.push(R(id).name+'已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');}
+function isFeared(G,d,seat){var nm=t1(G,d,'nightmare');return nm!=null&&seat!=null&&nm===seat;}
+function pickBlock(G,key,a,o){
+  o=o||{};var picked=a.t||[];
+  return picker(G,{key:key,sel:picked,dis:o.dis||[]})+'<div class="btnrow"><button class="btn'+(a.none?' on':'')+'" data-a="none" data-key="'+key+'">'+esc(o.none||'不使用')+'</button><span class="muted">'+(picked.length?'已記錄：'+picked.join('、')+' 號':(a.none?'已記錄：'+esc(o.none||'不使用'):'尚未記錄'))+'</span></div>';
+}
+function stepHandReg(G,d){
+  var names=handRoleIds(G).map(function(id){return R(id).name;}).join('、');
+  return '<div class="stephead"><h2>首夜舉手登記</h2></div>'+scriptBox(['請下列角色依序舉手（不睜眼），讓上帝確認身分：',names+'。','沒被叫到、沒舉手的人自動成為平民。'])+
+    '<div class="note">這個板子需要讓上帝一次得知所有身分（例如通靈師、機械狼要先知道別人的身分）。請在上方登記；登記完成再進入下一步。</div>';
+}
+function stepNote(G,st,d){
+  var L=G.lovers,lt=loversType(G);
+  return stepHead(st.title,'third','')+scriptBox(['（上帝繞場，輕拍兩位情侶的肩膀，讓他們睜眼互相確認，再閉眼。）'])+
+    (L&&L.length===2?'<div class="note">情侶：'+L.join(' ♡ ')+' 號。'+pairLabel(G)+'（依目前登記的身分）。</div>':noteBox(['尚未在「邱比特」步驟選好情侶。'],true));
+}
+function stepThief(G,d){
+  var th=G.thief||{opts:[],chosen:null,buried:null},seat=th.seat!=null?th.seat:seatsOfRole(G,'thief')[0],opts=th.opts||[];
+  var isW=function(id){return ROLES[id]&&ROLES[id].camp==='wolf';};
+  var cand=Object.keys(G.pool).filter(function(id){return G.pool[id]>0&&ROLES[id]&&id!=='thief'&&id!=='cupid';}).sort(function(a,b){return byCamp(ROLES[a],ROLES[b]);});
+  var chips=cand.map(function(id){return '<button class="chip lg" data-a="thOpt" data-r="'+id+'"'+(th.chosen?' disabled':'')+'>'+esc(ROLES[id].name)+'</button>';}).join('');
+  var notes=[],warn=[],pick='';
+  if(opts.length===2&&isW(opts[0])&&isW(opts[1]))warn.push('⚠ 兩張都是狼人牌：規則上不會出現，請重新抽定。');
+  if(opts.length===2&&th.chosen&&(isW(opts[0])||isW(opts[1]))&&!isW(th.chosen))warn.push('⚠ 候選中有狼人牌，盜賊必須選狼人牌，不能改選好人。');
+  if(opts.length===2){
+    if(seat==null)notes.push('請先在上方登記盜賊的座位，再選擇新身分。');
+    pick='<h4>盜賊選了哪一張？（另一張埋掉）</h4><div class="chips">'+opts.map(function(id,i){return '<button class="chip lg'+(th.chosen&&th.chosen===id&&th.pickI===i?' cur':'')+'" data-a="thPick" data-i="'+i+'"'+((seat==null||th.chosen)?' disabled':'')+'>'+esc(ROLES[id].name)+'</button>';}).join('')+'</div>';
+  }
+  if(th.chosen)pick+='<div class="note">盜賊 '+seat+' 號的新身分：'+esc(ROLES[th.chosen].name)+'；埋掉：'+esc(ROLES[th.buried].name)+'（本局沒有這個身分）。</div>';
+  return roleBanner(G,'thief',d)+scriptBox(['盜賊請睜眼。','（出示白天抽定的兩張牌）請選擇其中一張作為你的新身分。','盜賊請閉眼。'])+noteBox(notes)+noteBox(warn,true)+
+    '<h4>白天抽定的兩張牌（點 2 次）　已選：'+(opts.length?opts.map(function(id){return esc(ROLES[id].name);}).join('、'):'尚未選')+'</h4><div class="chips">'+chips+'</div>'+
+    '<div class="btnrow"><button class="btn" data-a="thClear"'+(th.chosen?' disabled':'')+'>清除候選</button>'+(th.chosen?'<button class="btn" data-a="thUndo">重選</button>':'')+'</div>'+pick;
+}
+function stepBrothers(G,d){
+  var a=night(G,d).act.brothers||{t:[]},bs=seatsOfRole(G,'wolfbrother'),ys=seatsOfRole(G,'wolfyounger'),notes=[];
+  var head=stepHead('狼兄弟','wolf',seatInfo(G,bs.concat(ys),d));
+  if(d===1){
+    return head+scriptBox(['狼兄、狼弟請睜眼，互相確認身分（不溝通）。','狼兄、狼弟請閉眼。'])+noteBox(['狼兄不能自爆、沒有技能；狼弟不能自爆。','緊接著的狼人階段，狼兄可以告知其他小狼：狼弟在哪裡。']);
+  }
+  if(ys.length&&ys.every(function(n){return deadAtStart(G,n,d);}))notes.push('狼弟已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
+  notes.push('狼兄已出局，今晚是狼弟的復仇刀（整局 1 次），與狼人照常的刀並行。可被解藥或守衛擋；若同一人被兩刀，只擋 1 刀。');
+  return head+scriptBox(['狼弟請睜眼。','今晚是復仇刀，你要刀誰？','狼弟請閉眼。'])+noteBox(notes)+pickBlock(G,'brothers',a,{none:'不使用復仇刀'});
+}
+function stepMech(G,d){
+  var a=night(G,d).act.mechwolf||{t:[]},notes=[],head=roleBanner(G,'mechwolf',d),seats=seatsOfRole(G,'mechwolf');
+  if(d===1){
+    var lf=G.mech?G.mech.from:null,learned=(lf!=null&&G.seats[lf])?R(G.seats[lf]).name:null;
+    return head+scriptBox(['機械狼請睜眼。','請選擇一個座位，學習他的身分。',{t:'（上帝告知他學到的身分）',soft:true},'機械狼請閉眼。'])+
+      noteBox(['技能第 2 晚起才能使用；首夜只學習身分。','機械狼不與狼隊互認、不能自爆。'])+
+      '<h4>學習對象</h4>'+picker(G,{a:'mechLearn',d:{},sel:lf!=null?[lf]:[],allowDead:true,dis:seats})+
+      (learned?'<div class="verdict good">學到：'+lf+' 號・'+esc(learned)+'</div>':'<p class="muted">尚未選擇。</p>');
+  }
+  var coreDead=coreWolves(G,d).length===0,ty=mechType(G),spent=mechSpent(G,d),learned2=G.mech&&G.seats[G.mech.from]?R(G.seats[G.mech.from]).name:'（尚未學習）';
+  var lines=['機械狼請睜眼。',{t:coreDead?'（告知：其他狼人已全數出局，今晚請在狼人殺人階段一同睜眼。）':'（告知：今晚不用在狼人階段睜眼。）',soft:true}];
+  notes.push('學到的身分：'+learned2+'。');
+  var body='';
+  if(ty==null)notes.push('這個身分沒有夜間技能。');
+  else if(ty==='gun'){
+    notes.push('學到獵人：不是夜間動作，死亡時（含第 1 天白天被放逐）可開槍；適用悶槍。照常唸台詞、停頓後閉眼即可。');
+  }else if(spent){
+    notes.push(ty==='shield'?'無敵護盾已成功擋下過 1 次，失效。':(ty==='poison'?'毒藥已使用過。':'覺醒刀已使用過。'));
+  }else if(ty==='verify'){
+    lines.push('今晚你要查驗誰？');
+    body=pickBlock(G,'mechwolf',a,{none:'不查驗'});
+    if(picked0(a).length){var s=a.t[0];body+='<div class="verdict good">'+s+' 號：'+esc(G.seats[G.mech.from]==='seer'?(seerVerdict(G,s,d)==='bad'?'壞人':'好人'):identityShown(G,s))+'</div>';}
+  }else{
+    var pm=(ty==='shield')?t1(G,d-1,'mechwolf'):null,mdis=[];
+    if(pm!=null){mdis.push(pm);notes.push('不能連續兩晚守同一人：昨晚守了 '+pm+' 號。');}
+    lines.push(ty==='poison'?'今晚你要毒誰？（不使用請比 X）':(ty==='shield'?'今晚你要護誰？（不使用請比 X）':'今晚你要刀誰？（不使用請比 X）'));
+    notes.push(ty==='poison'?'無敵毒藥：整局 1 瓶。':(ty==='shield'?'無敵護盾：擋任何夜間傷害（含毒），成功擋下 1 次後失效；沒擋到東西還能再用。':'覺醒刀：整局 1 次，可被解藥或守衛擋；與狼隊的刀同一人時只擋 1 刀。'));
+    body=pickBlock(G,'mechwolf',a,{none:'不使用',dis:mdis});
+  }
+  lines.push('機械狼請閉眼。');
+  return head+scriptBox(lines)+noteBox(notes)+body;
+}
+function stepMedium(G,d){
+  var a=night(G,d).act.medium||{t:[]},notes=[],res='';noteDead(G,'medium',d,notes);
+  if(picked0(a).length){var s=a.t[0];res='<div class="verdict good">'+s+' 號：'+esc(identityShown(G,s))+'</div>';if(G.seats[s]==='mechwolf')notes.push('機械狼：顯示他學到的身分。');}
+  var lines=['通靈師請睜眼。','今晚你要查驗誰？'];if(res)lines.push({t:'（上帝告知該玩家的身分）',soft:true});lines.push('通靈師請閉眼。');
+  return roleBanner(G,'medium',d)+scriptBox(lines)+noteBox(notes)+res+pickBlock(G,'medium',a,{none:'不查驗'});
+}
+function stepGrave(G,d){
+  var ex=prevExile(G,d),notes=[],res='';noteDead(G,'gravekeeper',d,notes);
+  if(ex!=null){var bad=campOf(G,ex)==='wolf';res='<div class="verdict '+(bad?'bad':'good')+'">前一個白天被放逐的 '+ex+' 號：'+(bad?'壞人（拇指向下）':'好人（拇指向上）')+'</div>';}
+  else notes.push(d===1?'第一夜沒有前一個白天，不會得知任何資訊，照常唸台詞並停頓。':'昨天白天沒有人被放逐（平票、無人出局），守墓人不會得知任何資訊，照常唸台詞並停頓。');
+  var lines=['守墓人請睜眼。'];if(ex!=null)lines.push({t:'（上帝比手勢：'+(campOf(G,ex)==='wolf'?'向下':'向上')+'）',soft:true});lines.push('守墓人請閉眼。');
+  return roleBanner(G,'gravekeeper',d)+scriptBox(lines)+noteBox(notes)+res;
+}
+function stepDream2(G,d){
+  var a=night(G,d).act.dreamer2||{t:[]},prev=t1(G,d-1,'dreamer2'),notes=[],dis=[];noteDead(G,'dreamer2',d,notes);
+  if(prev!=null){dis.push(prev);notes.push('不能連續兩晚選同一人：昨晚選了 '+prev+' 號。');}
+  notes.push('夢遊者免疫當晚所有夜間傷害；可以選自己。');
+  var picked=picked0(a);
+  return roleBanner(G,'dreamer2',d)+scriptBox(['覺醒攝夢人請睜眼。','今晚你要讓誰成為夢遊者？','覺醒攝夢人請閉眼。'])+noteBox(notes)+picker(G,{key:'dreamer2',sel:picked,dis:dis})+'<p class="muted">'+(picked.length?'夢遊者：'+picked[0]+' 號':'尚未記錄')+'</p>';
+}
+function stepDream2End(G,d){
+  var a=night(G,d).act.dreamer2||{t:[]},tg=picked0(a).length?a.t[0]:null,notes=[],body='',lines=['覺醒攝夢人請睜眼。'];
+  if(tg==null)notes.push('今晚還沒有選擇夢遊者，請回到「覺醒攝夢人」步驟。');
+  else{
+    var auto=didAct(G,d,tg),acted=(a.acted!==undefined&&a.acted!==null)?a.acted:auto;
+    lines.push({t:'（上帝告知：夢遊者 '+tg+' 號今晚'+(acted?'有':'沒有')+'行動。）',soft:true});
+    body='<div class="verdict '+(acted?'good':'bad')+'">夢遊者 '+tg+' 號今晚：'+(acted?'有行動':'沒有行動')+'</div>'+
+      '<div class="btnrow"><button class="btn'+(a.acted===true?' on':'')+'" data-a="dz2Acted" data-v="1">改為：有行動</button><button class="btn'+(a.acted===false?' on':'')+'" data-a="dz2Acted" data-v="0">改為：沒行動</button><button class="btn" data-a="dz2Acted" data-v="">還原自動判斷</button></div>';
+    notes.push('自動判斷：'+(auto?'有行動':'沒行動')+'（依今晚已記錄的行動；狼人空刀、獵人夜槍開不出來都算沒行動）。');
+    if(d>=2){
+      var self=seatsOfRole(G,'dreamer2').indexOf(tg)>=0;
+      body+='<h4>是否讓夢遊者出局？</h4><div class="btnrow"><button class="btn danger'+(a.kill?' on':'')+'" data-a="dz2Kill"'+(self?' disabled':'')+'>'+(a.kill?'已決定：夢殺 '+tg+' 號（點擊取消）':'夢殺 '+tg+' 號')+'</button></div>';
+      if(self)notes.push('夢遊者是自己，不能夢殺。');else notes.push('夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。');
+    }else notes.push('第二夜起才能讓夢遊者出局。');
+  }
+  lines.push('覺醒攝夢人請閉眼。');
+  return roleBanner(G,'dreamer2',d)+scriptBox(lines)+noteBox(notes)+body;
+}
+function stepBM(G,d){
+  var L=G.lucky||{seat:null,gift:null},bs=seatsOfRole(G,'blackmarket'),notes=[],warn=[];
+  var gifts=[['seer','預言家查驗'],['poison','女巫毒藥'],['gun','獵人獵槍']];
+  if(L.seat!=null&&G.seats[L.seat]){if(luckyFail(G))warn.push('⚠ '+L.seat+' 號是狼人陣營 → 交易失敗，黑市商人第 1 晚出局，幸運兒不會被通知。');else notes.push('交易成功：幸運兒是 '+L.seat+' 號，之後在「幸運兒」步驟睜眼。');}
+  return roleBanner(G,'blackmarket',d)+scriptBox(['黑市商人請睜眼。','請選擇一位幸運兒，並決定給他的禮物：預言家查驗、女巫毒藥或獵人獵槍。','黑市商人請閉眼。'])+noteBox(notes)+noteBox(warn,true)+
+    '<h4>幸運兒</h4>'+picker(G,{a:'bmLucky',d:{},sel:L.seat!=null?[L.seat]:[],dis:bs,allowDead:false})+
+    '<h4>禮物（3 選 1）</h4><div class="chips">'+gifts.map(function(g){return '<button class="chip lg'+(L.gift===g[0]?' cur':'')+'" data-a="bmGift" data-g="'+g[0]+'">'+g[1]+'</button>';}).join('')+'</div>';
+}
+function stepLucky(G,d){
+  var L=G.lucky,head;
+  if(!L||L.seat==null)return stepHead('幸運兒','god','')+noteBox(['尚未在「黑市商人」步驟選擇幸運兒。'],true);
+  head=stepHead('幸運兒','god',seatInfo(G,[L.seat],d));
+  var gname={seer:'預言家查驗',poison:'女巫毒藥',gun:'獵人獵槍'}[L.gift]||'（尚未選擇禮物）';
+  if(luckyFail(G))return head+noteBox(['黑市商人選到狼人陣營，交易失敗：幸運兒不睜眼，不需通知。這一步照常停頓即可。'],true);
+  if(d===1)return head+scriptBox(['（上帝繞場輕拍幸運兒）幸運兒請睜眼。','你是幸運兒，獲得技能：'+gname+'。'+(L.gift==='gun'?'（死亡時可以開槍，含今晚被狼刀未被救、或明天白天被放逐）':'（第 2 晚起，在夜晚最後單獨睜眼時可使用 1 次）'),'幸運兒請閉眼。'])+noteBox(['若幸運兒本來就是神職，本職照常，禮物技能另外算，不併入本職睜眼。']);
+  var a=night(G,d).act.lucky||{t:[]},used=luckyUsed(G,d),notes=[],body='',lines=['幸運兒請睜眼。'];
+  noteDead(G,'lucky',d,notes);
+  if(used){notes.push('幸運兒的技能已使用過（整局 1 次）。照常唸台詞並停頓。');}
+  else if(L.gift==='seer'){
+    lines.push('今晚你要查驗誰？');body=pickBlock(G,'lucky',a,{none:'不查驗'});
+    if(picked0(a).length){var s=a.t[0],bad=seerVerdict(G,s,d)==='bad';body+='<div class="verdict '+(bad?'bad':'good')+'">'+s+' 號：'+(bad?'壞人（拇指向下）':'好人（拇指向上）')+'</div>';}
+  }else if(L.gift==='poison'){lines.push('今晚你要毒誰？（不使用請比 X）');body=pickBlock(G,'lucky',a,{none:'不使用'});}
+  lines.push('幸運兒請閉眼。');
+  return head+scriptBox(lines)+noteBox(notes)+body;
+}
+function convCandidates(G,d){
+  var N=G.players,out=[];
+  wolfGroup(G).filter(function(w){return !(G.conv&&G.conv.seat===w);}).forEach(function(w){
+    [-1,1].forEach(function(dl){var n=(((w-1+dl)%N)+N)%N+1;if(campOf(G,n)!=='wolf'&&!isDead(G,n)&&out.indexOf(n)<0)out.push(n);});
+  });
+  if(G.conv&&out.indexOf(G.conv.seat)<0)out.push(G.conv.seat);
+  return out.sort(function(a,b){return a-b;});
+}
+function stepGconv(G,d){
+  var a=night(G,d).act.gconv||{t:[]},notes=[],warn=[],cand=convCandidates(G,d),miss=wolfMissing(G);
+  var dis=miss?[]:seatsList(G).filter(function(n){return cand.indexOf(n)<0;});
+  if(miss)warn.push('狼人尚未全部登記，暫時無法判斷可轉化的相鄰座位。請先在狼人步驟登記。');
+  else notes.push('可轉化的座位（與任一狼人相鄰的好人，12 與 1 相鄰，含石像鬼自己旁邊）：'+(cand.length?cand.join('、')+' 號':'（沒有）')+'。');
+  notes.push('轉化者不入狼隊、不能自爆；被驗是狼；預言家本夜的查驗結果不受影響。');
+  var picked=G.conv?[G.conv.seat]:[];
+  return roleBanner(G,'gargoyle2',d)+scriptBox(['覺醒石像鬼請睜眼。','請選擇一位與狼人相鄰的好人轉化成狼人。','覺醒石像鬼請閉眼。'])+noteBox(notes)+noteBox(warn,true)+
+    picker(G,{a:'gconvPick',d:{},sel:picked,dis:dis})+'<p class="muted">'+(G.conv?'已轉化：'+G.conv.seat+' 號（'+esc(G.seats[G.conv.seat]?R(G.seats[G.conv.seat]).name:'未登記')+'）':'尚未轉化')+'</p>';
+}
+function stepConvLearn(G,d){
+  var c=G.conv;
+  if(d===1){
+    return stepHead('轉化者','wolf',c?seatInfo(G,[c.seat],d):'')+scriptBox(['（首夜最後）轉化者請睜眼。','你已被轉化為狼人：不入狼隊、不能自爆；其他狼人全部出局後，你才失去原技能並帶刀入狼隊。','轉化者請閉眼。'])+
+      (c?'':noteBox(['尚未轉化任何人。'],true))+noteBox(['接下來輪到「覺醒攝夢人」得知夢遊者結果，然後天亮。']);
+  }
+  if(!c)return stepHead('轉化者','wolf','')+noteBox(['尚未轉化任何人，跳過此步驟。'],true);
+  var merged=lostSkill(G,c.seat);
+  return stepHead('轉化者','wolf',seatInfo(G,[c.seat],d))+scriptBox(['轉化者請睜眼。',merged?'其他狼人已全部出局：你從今晚起失去原技能，改為跟狼隊一起帶刀殺人。':'其他狼人還在：你維持原技能，暫不參與刀人。','轉化者請閉眼。'])+
+    noteBox([merged?'已併入狼隊夜間殺人。':'尚未併入狼隊，繼續使用原技能。']);
+}
+function stepGarg(G,d){
+  var a=night(G,d).act.gargoyle||{t:[]},notes=[],core=coreWolves(G,d).length,res='';noteDead(G,'gargoyle',d,notes);
+  notes.push(core?'其他狼人還在：石像鬼與狼隊互不相認，也不參與刀人。':'其他狼人已全數出局：石像鬼今晚在「狼人」步驟一起睜眼刀人（這一步仍照常驗人）。');
+  if(picked0(a).length)res='<div class="verdict good">'+a.t[0]+' 號：'+esc(identityShown(G,a.t[0]))+'</div>';
+  var lines=['石像鬼請睜眼。','今晚你要查驗誰？'];if(res)lines.push({t:'（上帝告知該玩家的具體身分）',soft:true});lines.push('石像鬼請閉眼。');
+  return roleBanner(G,'gargoyle',d)+scriptBox(lines)+noteBox(notes)+res+pickBlock(G,'gargoyle',a,{none:'不查驗'});
+}
+
+/* --- 天亮 --- */
+function viewDawn(G){
+  var d=G.day,nt=night(G,d),committed=!!nt.committed,sh=G.sh||newSh();
+  var boomHere=sh.boomDay===d&&sh.boomSeat!=null,goNight=boomHere&&!!sh.goNight;
+  var list=committed?G.deaths.filter(function(x){return x.day===d&&x.phase==='N';}):(nt.draft||[]);
+  var txt=list.length?'昨晚出局的玩家是：'+list.map(function(x){return x.seat+'號';}).join('、')+'。':'昨晚是平安夜。';
+  var body='<div class="script">'+(boomHere?'<p class="say">'+sh.boomSeat+' 號狼人自爆出局，請發表遺言。</p><p class="say soft">遺言結束後，公布昨晚結果。</p>':'<p class="say">天亮請睜眼。</p>')+'<p class="say">'+esc(txt)+'</p><p class="say soft">首夜出局者是否有遺言，依你們的規則。</p></div>';
+  if(boomHere&&G.badgeLost)body+=noteBox(['警徽已遺失，本局沒有警長。']);
+  if(!committed){
+    var inDraft=function(n){return (nt.draft||[]).some(function(x){return x.seat===n;});};
+    var cause=function(n){var x=(nt.draft||[]).filter(function(y){return y.seat===n;})[0];return x?x.cause:undefined;};
+    body+='<h4>出局名單（可增減）</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'draftToggle',sel:inDraft(n),dis:deadAtStart(G,n,d),sub:inDraft(n)?cause(n):undefined});}).join('')+'</div>';
+    if(nt.explain&&nt.explain.length)body+='<details class="rd"><summary>系統結算說明</summary><ul>'+nt.explain.map(function(l){return '<li>'+esc(l)+'</li>';}).join('')+'</ul></details>';
+    body+='<div class="btnrow nav"><button class="btn" data-a="recalc">重新結算</button><button class="btn primary big" data-a="commit">公布死訊</button></div>';
+  }else{
+    body+=trigHTML(G);
+    body+='<div class="btnrow nav"><button class="btn" data-a="reopen">修改死訊</button>'+(goNight?'<button class="btn primary big" data-a="nextNight">天黑請閉眼 → 第 '+(d+1)+' 夜</button>':'<button class="btn primary big" data-a="toDay"'+((rules(G).huntGame&&pendingTriggers(G).length)?' disabled':'')+'>進入白天 →</button>')+'</div>';
+  }
+  return '<div class="card">'+body+'</div>';
+}
+
+/* --- 警長競選 --- */
+function canBoomSeat(G,n){return !isDead(G,n)&&campOf(G,n)==='wolf'&&R(G.seats[n]).canBoom!==false&&!(G.conv&&G.conv.seat===n);}
+function boomBlock(G){
+  var s=G.sh,rl=rules(G).boom;
+  var wolves=seatsList(G).filter(function(n){return canBoomSeat(G,n);});
+  if(UI.sBoom){
+    return '<div class="card trig"><h3>選擇自爆的狼人</h3><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sBoomPick',dis:wolves.indexOf(n)<0});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="sBoom">取消</button></div></div>';
+  }
+  return '<div class="btnrow" style="margin-top:14px"><button class="btn danger" data-a="sBoom">狼人自爆</button><span class="muted">'+(rl==='single'?'單爆吞警徽':'雙爆吞警徽')+'・本次競選已自爆 '+(s.booms||0)+' 次・宣布投票後自爆失效</span></div>';
+}
+function viewSheriff(G){
+  var s=G.sh,body='';
+  var cands=G.cand.filter(function(n){return !isDead(G,n);});
+  var wd=s.withdrawn||[];
+  var live=cands.filter(function(n){return wd.indexOf(n)<0;});
+  if(s.step==='cand'){
+    body+='<div class="script"><p class="say">現在開始競選警長，有意競選警長的玩家請舉手。</p></div>'+
+      '<h4>上警的玩家</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'cand',sel:cands.indexOf(n)>=0,dis:isDead(G,n)});}).join('')+'</div>'+
+      '<p class="muted">已上警 '+cands.length+' 人。確認名單後，請他們站起來。</p>'+boomBlock(G)+
+      '<div class="btnrow nav"><button class="btn" data-a="sNone">無人上警・不設警長</button><button class="btn primary big" data-a="sSpeech"'+(cands.length?'':' disabled')+'>確認名單 → 抽發言順序</button></div>';
+  }else if(s.step==='speech'){
+    var o=s.order,seq=o?seqFrom(G,cands,o.start,o.dir):[];
+    body+='<div class="script"><p class="say">請上警的玩家依序發表政見，'+(o?o.start+' 號開始，'+(o.dir>0?'順向（號碼遞增）':'逆向（號碼遞減）')+'。':'')+'</p></div>'+
+      '<div class="btnrow"><button class="btn primary" data-a="sRoll">🎲 重抽</button></div>'+(o?seqTxt(seq):'')+boomBlock(G)+
+      '<div class="btnrow nav"><span class="muted">狼人可在此時自爆</span><button class="btn primary big" data-a="sWithdraw">發言結束 → 退水</button></div>';
+  }else if(s.step==='withdraw'){
+    body+='<div class="script"><p class="say">要退水的玩家請坐下。</p>'+(s.resumed?'<p class="say soft">前一天競選被自爆中斷：不再發表政見，直接退水。</p>':'')+'</div>'+
+      '<h4>點選退水的玩家</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sWd',sel:wd.indexOf(n)>=0&&cands.indexOf(n)>=0,dis:cands.indexOf(n)<0,sub:wd.indexOf(n)>=0?'退水':''});}).join('')+'</div>'+
+      '<p class="muted">仍在競選：'+(live.length?live.join('、')+' 號':'（無）')+'</p>'+boomBlock(G)+
+      '<div class="btnrow nav"><span class="muted">主持人宣布「開始投票」之後，自爆失效</span>'+(live.length?'<button class="btn primary big" data-a="sVote">開始投票 →</button>':'<button class="btn primary big" data-a="sNoWinner">全員退水・無人當選</button>')+'</div>';
+  }else{
+    var done=G.sheriff!=null||s.status==='lost';
+    var voters=aliveSeats(G).filter(function(m){return cands.indexOf(m)<0;});
+    body+='<div class="script"><p class="say">現在開始投票，自爆失效。</p><p class="say soft">上警的玩家（含已退水）不能投票。</p></div>'+
+      '<h4>當選警長</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sElect',sel:G.sheriff===n,dis:live.indexOf(n)<0});}).join('')+'</div>'+
+      '<div class="note">所有上警的玩家（含已退水）都不能投票。可投票：'+esc(voters.join('、')||'（無）')+' 號。</div>'+voteRecHTML(G,'S',voters,live,'僅列出可投票的玩家。')+
+      '<div class="btnrow nav"><button class="btn" data-a="sNoWinner">平票／無人當選</button><button class="btn primary big" data-a="finishSheriff"'+(done?'':' disabled')+'>完成警長競選 →</button></div>';
+  }
+  return '<div class="card">'+body+'</div>';
+}
+
+/* --- 白天 --- */
+function huntWolfDown(G,d){return G.deaths.some(function(x){var r=roleOf(G,x.seat);return x.day===d&&x.phase==='D'&&r&&r.camp==='wolf';});}
+function knightCard(G){
+  var ks=seatsOfRole(G,'knight');if(!ks.length)return '';
+  var k=G.knight,d=G.day;
+  if(k){
+    return '<div class="card"><h2>騎士</h2><div class="script"><p class="say">騎士 '+k.seat+' 號已於第 '+k.day+' 天翻牌，驗 '+k.target+' 號：'+(k.result==='wolf'?'是狼人，該玩家出局並直接進入黑夜。':'是好人，騎士自己淘汰。')+'</p></div>'+(k.day===d?'<div class="btnrow"><button class="btn" data-a="knightUndo">撤銷這次翻牌</button></div>':'')+'</div>';
+  }
+  var live=ks.filter(function(n){return !isDead(G,n);});if(!live.length)return '';
+  if(!UI.knightOpen)return '<div class="card"><h2>騎士</h2><p class="muted">任何人發言時都可以翻牌；警長競選期間不行。整局 1 次。</p><div class="btnrow"><button class="btn" data-a="knightOpen">騎士翻牌</button></div></div>';
+  return '<div class="card trig"><h3>騎士 '+live[0]+' 號翻牌：驗誰？</h3>'+picker(G,{a:'knightPick',d:{},sel:[],dis:live})+'<div class="btnrow"><button class="btn" data-a="knightOpen">取消</button></div><p class="muted">驗到狼人：狼出局、進入黑夜；驗到好人（神或民）：騎士淘汰，白天繼續。</p></div>';
+}
+function viewDay(G){
+  var d=G.day,dd=G.days[d]||{},alive=aliveSeats(G),so=dayOrder(G,d),sa=sheriffAlive(G);
+  var speak='<div class="card"><h2>發言</h2>';
+  if(sa){
+    speak+='<div class="script"><p class="say">警長 '+G.sheriff+' 號，請選擇發言方向；警長最後發言。</p></div>'+
+      '<div class="btnrow"><button class="btn big'+(so&&so.o.dir===1?' on':'')+'" data-a="sDir" data-dir="1">順向・號碼遞增</button><button class="btn big'+(so&&so.o.dir===-1?' on':'')+'" data-a="sDir" data-dir="-1">逆向・號碼遞減</button></div>';
+    if(so)speak+='<p class="muted" style="margin-top:10px">從警長的'+(so.o.dir>0?'下一號':'上一號')+'開始，警長最後發言。</p>'+seqTxt(so.seq);
+  }else{
+    speak+='<div class="script"><p class="say">請抽發言順序，'+(so?so.o.start+' 號開始發言。':'X 號開始發言。')+'</p>'+(G.badgeLost?'<p class="say soft">警徽已遺失，沒有警長。</p>':'')+'</div>'+
+      '<div class="btnrow"><button class="btn primary" data-a="roll">🎲 '+(so?'重抽':'抽發言起點與方向')+'</button></div>';
+    if(so)speak+='<p class="muted" style="margin-top:10px">'+(so.o.dir>0?'號碼遞增':'號碼遞減')+'</p>'+seqTxt(so.seq);
+  }
+  speak+='<h4>計時器</h4>'+timerHTML()+'</div>';
+  var vote='<div class="card"><h2>放逐投票</h2>';
+  if(dd.out!=null||dd.kind==='none'){
+    var msg=dd.kind==='none'?'平票或無人出局。':(dd.kind==='knight'?dd.out+' 號被騎士驗中，出局並直接進入黑夜。':dd.kind==='boom'?dd.out+' 號狼人自爆，直接進入黑夜。':(dd.kind==='idiot'?dd.out+' 號傻瓜翻牌免死（失去投票權）。':dd.out+' 號被放逐出局。'));
+    vote+='<div class="script"><p class="say">'+esc(msg)+'</p></div>'+trigHTML(G)+'<div class="btnrow">'+(rules(G).huntGame?'':'<button class="btn" data-a="voteReset">重新選擇</button>')+((rules(G).huntGame&&!huntWolfDown(G,d)&&!pendingTriggers(G).length)?'<button class="btn primary" data-a="huntAgain">本日還沒放逐出狼人 → 再放逐一人</button>':'')+'</div>';
+  }else{
+    vote+='<div class="script"><p class="say">發言結束，現在開始投票。</p></div>';
+    if(UI.boom){
+      vote+='<p class="muted">選擇自爆的狼人：</p><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'voteSeat',dis:!canBoomSeat(G,n)});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="boom">取消自爆</button></div>';
+    }else{
+      vote+='<p class="muted">選擇被放逐的玩家：</p><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'voteSeat',dis:isDead(G,n)});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="voteNone">平票／無人出局</button><button class="btn danger" data-a="boom">狼人自爆</button></div>';
+    }
+  }
+  var pre=seatsList(G).filter(function(m){return !isDead(G,m)||m===dd.out;});
+  vote+=voteRecHTML(G,'D'+d,pre.filter(function(m){return !(G.idiot[m]>0&&G.idiot[m]<d);}),pre,'翻牌後的傻瓜失去投票權。');
+  vote+='</div>';
+  var pending=(dd.out==null&&dd.kind!=='none')?trigHTML(G):'';
+  var next='<div class="btnrow nav"><span class="muted">'+(dd.out!=null||dd.kind==='none'?'':'尚未記錄放逐結果')+((rules(G).huntGame&&!huntWolfDown(G,d))?'　獵人局：要先有狼人出局才能天黑':'')+'</span><button class="btn primary big" data-a="nextNight"'+((rules(G).huntGame&&!huntWolfDown(G,d))?' disabled':'')+'>天黑請閉眼 → 第 '+(d+1)+' 夜</button></div>';
+  return speak+knightCard(G)+vote+(pending?'<div class="card">'+pending+'</div>':'')+next;
+}
+function trigHTML(G){
+  var p=pendingTriggers(G);if(!p.length)return '';
+  return p.map(function(t){
+    var r=ROLES[G.seats[t.seat]];
+    if(t.type==='shoot'&&G.lucky&&G.lucky.seat===t.seat&&G.lucky.gift==='gun'&&G.seats[t.seat]!=='hunter'&&!(r&&r.onDeath))r={name:'幸運兒（獵槍）'};
+    if(t.type==='shoot'){
+      if(!t.can)return '<div class="card trig"><h3>'+t.seat+' 號 '+esc(r.name)+'因「'+esc(t.cause)+'」出局，槍被悶掉。</h3><p class="muted">不要宣布技能。</p><div class="btnrow" style="margin-top:10px"><button class="btn" data-a="noShoot" data-from="'+t.seat+'">知道了</button></div></div>';
+      return '<div class="card trig"><h3>宣布：'+t.seat+' 號是'+esc(r.name)+'，可以開槍。</h3>'+picker(G,{a:'shoot',d:{from:t.seat},sel:[]})+'<div class="btnrow"><button class="btn" data-a="noShoot" data-from="'+t.seat+'">不開槍</button></div></div>';
+    }
+    return '<div class="card trig"><h3>警長 '+t.seat+' 號出局・移交警徽</h3>'+picker(G,{a:'badge',d:{},sel:[]})+'<div class="btnrow"><button class="btn" data-a="badgeTear">撕掉警徽（遺失）</button></div></div>';
+  }).join('');
+}
+function viewOver(G){
+  var w={good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[G.winner]||'本局結束';
+  return '<div class="card center"><h2>'+w+'</h2><p class="muted" style="margin:8px 0 16px">紀錄表已完整保留，可匯出 PDF、下載 CSV，或存入歷史。</p><div class="btnrow" style="justify-content:center"><button class="btn primary" data-a="tab" data-t="sheet">查看紀錄表</button><button class="btn" data-a="pdf">匯出 PDF</button><button class="btn" data-a="csv">下載 CSV</button><button class="btn" data-a="exportCur">匯出文字</button><button class="btn" data-a="reopenGame">更正・回到遊戲</button><button class="btn" data-a="newGame">開新局</button></div></div>';
+}
+
+/* --- 計時器 --- */
+var T={total:120,left:120,run:false,h:null};
+function fmt(s){return ('0'+Math.floor(s/60)).slice(-2)+':'+('0'+(s%60)).slice(-2);}
+function stopT(){if(T.h){clearInterval(T.h);T.h=null;}T.run=false;}
+function beep(){
+  try{
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    var C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+    var c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=0.15;o.start();o.stop(c.currentTime+0.5);
+  }catch(e){}
+}
+function tick(){
+  T.left=Math.max(0,T.left-1);
+  var el=$('#tdisp');if(el){el.textContent=fmt(T.left);el.classList.toggle('end',T.left===0);}
+  if(T.left===0){stopT();beep();render();}
+}
+function timerHTML(){
+  return '<div class="timer"><div class="tdisp'+(T.left===0?' end':'')+'" id="tdisp">'+fmt(T.left)+'</div><div class="chips">'+[60,90,120,180].map(function(s){return '<button class="chip'+(T.total===s?' cur':'')+'" data-a="tset" data-s="'+s+'">'+s+' 秒</button>';}).join('')+'</div><div class="btnrow"><button class="btn primary" data-a="tgo">'+(T.run?'暫停':'開始')+'</button><button class="btn" data-a="treset">重設</button></div>'+(extraSeats(APP.cur).length?'<p class="muted">已加時：'+extraSeats(APP.cur).join('、')+' 號（＋）</p>':'')+'<div class="btnrow"><button class="btn" data-a="extra">＋ 加時 1 分鐘（每位玩家限 1 次）</button></div>'+'</div>';
+}
+
+/* ================= 紀錄表 ================= */
+function wolfRowSeat(G,seats){
+  var team=seats.filter(function(n){return campOf(G,n)==='wolf'&&isTeamRole(G.seats[n]);});
+  return team.filter(function(n){return ROLES[G.seats[n]].order==null;})[0]||team.filter(function(n){return G.seats[n]!=='fear';})[0]||team[0];
+}
+function actKeyFor(G,n,wolfSeat){
+  if(n===wolfSeat)return 'wolves';
+  var r=roleOf(G,n);if(!r||r.kind==='hunter')return null;
+  if(r.sheetKey!==undefined)return r.sheetKey;
+  return r.order!=null?r.id:null;
+}
+function specialCell(G,d,key){
+  var nt=G.nights[d],a=nt&&nt.act[key];
+  if(key==='gravekeeper'){var ex=prevExile(G,d);return ex!=null?ex+(campOf(G,ex)==='wolf'?' 壞':' 好'):undefined;}
+  if(key==='cupid'){return (d===1&&G.lovers&&G.lovers.length===2)?G.lovers.join('♡'):undefined;}
+  if(key==='blackmarket'){
+    if(d===1&&G.lucky&&G.lucky.seat!=null)return '幸'+G.lucky.seat+({seer:'驗',poison:'毒',gun:'槍'}[G.lucky.gift]||'')+(luckyFail(G)?'敗':'');
+    var lk=nt&&nt.act.lucky;if(lk&&lk.t&&lk.t.length)return '幸'+(lk.mode==='poison'?'毒':'驗')+lk.t[0];
+    return undefined;
+  }
+  if(key==='mechwolf'&&d===1&&G.mech){var r=ROLES[G.seats[G.mech.from]];return G.mech.from+(r?r.short:'');}
+  return undefined;
+}
+function cellText(G,d,key){
+  var nt=G.nights[d],a=nt&&nt.act[key];
+  var actors=key==='wolves'?wolfGroup(G):(STEP[key]?STEP[key].roles.reduce(function(acc,id){return acc.concat(seatsOfRole(G,id));},[]):seatsOfRole(G,key));
+  var dead=d>=1&&actors.length>0&&actors.every(function(n){return deadAtStart(G,n,d);});
+  if(dead&&!a)return '/';
+  var sp=specialCell(G,d,key);if(sp!==undefined)return sp;
+  if(!a)return '';
+  var t=a.t||[];
+  switch(key){
+    case 'wolves':return a.none?'空刀':(t.length?'殺'+t[0]:'');
+    case 'witch':return (a.save!=null?'救'+a.save:'')+(a.poison!=null?'毒'+a.poison:'');
+    case 'seer':return t.length?t[0]+' '+(seerVerdict(G,swapper(G,d)(t[0]),d)==='bad'?'bad':'good'):'';
+    case 'brothers':return a.none?'X':(t.length?'復仇'+t[0]:'');
+    case 'wolfbeauty':return a.none?'不睡':(t.length?'睡'+t[0]:'');
+    case 'mechwolf':return t.length?({poison:'毒',shield:'盾',knife:'刀',verify:'驗'}[a.mode]||'')+t[0]:(a.none?'X':'');
+    case 'medium':{if(!t.length)return a.none?'X':'';var ir=G.seats[t[0]]==='mechwolf'&&G.mech&&ROLES[G.seats[G.mech.from]]?ROLES[G.seats[G.mech.from]]:roleOf(G,t[0]);return t[0]+(ir?ir.short:'');}
+    case 'dreamer2':{if(!t.length)return '';var ac=(a.acted!==undefined&&a.acted!==null)?a.acted:didAct(G,d,t[0]);return '夢'+t[0]+(a.kill?'殺':'')+(ac?'・有':'・無');}
+    case 'gconv':return t.length?'轉'+t[0]:(a.none?'X':'');
+    case 'gargoyle':{if(!t.length)return a.none?'X':'';var ir2=roleOf(G,t[0]);return t[0]+(ir2?ir2.short:'');}
+    case 'guard':return a.none?'X':(t.length?'守'+t[0]:'');
+    case 'demonhunter':return a.none?'X':(t.length?'獵'+t[0]:'');
+    case 'magician':return a.none?'X':(t.length===2?t[0]+'/'+t[1]:'');
+    case 'zombie':return a.none?'X':t.join('/');
+    case 'dreamer':return a.none?'X':(t.length?'攝'+t[0]:'');
+    case 'fear':return a.none?'不恐':(t.length?'恐'+t[0]:'');
+  }
+  return '';
+}
+function deathsText(G,d,phase){
+  var list=G.deaths.filter(function(x){return x.day===d&&x.phase===phase;});
+  var tag={'連帶':'(連)','殉情':'(殉)','夢殺':'(夢)','黑市':'(黑)','騎士驗中':'(騎)','騎士自盡':'(騎自)'};
+  var txt=list.map(function(x){return x.cause==='開槍'?'→'+x.seat:(x.cause==='自爆'?x.seat+'爆':x.seat+(tag[x.cause]||''));}).join('・');
+  if(phase==='D'){var dd=G.days[d];if(dd&&dd.kind==='idiot')txt=(txt?txt+'・':'')+dd.out+'傻(免死)';}
+  return txt;
+}
+function sheetHTML(G,editable){
+  var seats=sortedSeats(G);if(!seats.length)return '<div class="card center muted">尚無座位資料</div>';
+  var last=Math.max.apply(null,[5,G.day||0].concat(Object.keys(G.nights).map(Number)));
+  var days=[];for(var i=1;i<=last;i++)days.push(i);
+  var wolfSeat=wolfRowSeat(G,seats);
+  var attr=function(a,extra){return editable?' data-a="'+a+'" '+extra:'';};
+  var head='<tr><th colspan="'+(days.length+2)+'" class="title">上帝表格　'+fmtDate(G.created)+'</th></tr><tr><th>身分牌</th><th>玩家</th>'+days.map(function(d){return '<th>第'+CN[d]+'天</th>';}).join('')+'</tr>';
+  var rows=seats.map(function(n){
+    var r=roleOf(G,n),key=actKeyFor(G,n,wolfSeat),dead=isDead(G,n);
+    var cells=days.map(function(d){
+      if(!key)return '<td></td>';
+      var txt=cellText(G,d,key);
+      return '<td class="cellbtn'+(txt==='/'?' off':'')+'"'+attr('cell','data-d="'+d+'" data-key="'+key+'"')+'>'+esc(txt)+'</td>';
+    }).join('');
+    return '<tr class="camp-'+r.camp+(dead?' isdead':'')+'"><th class="rolecell">'+esc((G.thief&&G.thief.seat===n?'盜賊→':'')+r.name)+(G.lucky&&G.lucky.seat===n&&!luckyFail(G)?'<small>幸運兒</small>':'')+(G.conv&&G.conv.seat===n?'<small>轉化者</small>':'')+(G.lovers&&G.lovers.indexOf(n)>=0?'<small>♡情侶</small>':'')+'</th><td class="seatcell"'+attr('seatModal','data-seat="'+n+'"')+'>'+(hasExtra(G,n)?'<i class="plus">＋</i>':'')+(G.cand.indexOf(n)>=0?'<i class="up">上</i>':'')+'<b>'+n+'</b>'+(G.sheriff===n?'<i class="badge">警</i>':'')+(dead?'<i class="x">✕</i>':'')+(G.names[n]?'<small>'+esc(G.names[n])+'</small>':'')+'</td>'+cells+'</tr>';
+  }).join('');
+  var nightRow='<tr><td colspan="2" class="lbl">夜晚出局</td>'+days.map(function(d){
+    var nt=G.nights[d],txt=deathsText(G,d,'N');
+    if(!txt&&nt&&nt.committed)txt='平安夜';
+    return '<td class="edit"'+attr('deaths','data-d="'+d+'" data-p="N"')+'>'+esc(txt)+'</td>';
+  }).join('')+'</tr>';
+  var dayRow='<tr><td colspan="2" class="lbl">白天淘汰</td>'+days.map(function(d){return '<td class="edit"'+attr('deaths','data-d="'+d+'" data-p="D"')+'>'+esc(deathsText(G,d,'D'))+'</td>';}).join('')+'</tr>';
+  var pt=potions(G);
+  var foot='<tr><td colspan="'+(days.length+2)+'" class="foot">女巫已使用　解藥 '+(pt.save?'☑':'☐')+'　毒藥 '+(pt.poison?'☑':'☐')+'　｜　板子：'+esc(boardName(G))+'（'+G.players+'人）'+'　｜　上警：'+(G.cand.length?G.cand.join('、'):'—')+'　警長：'+(G.sheriff!=null?G.sheriff+'號':(G.badgeLost?'警徽遺失':'—'))+(G.lovers?'　｜　情侶：'+G.lovers.join('♡')+'（'+pairLabel(G)+'）':'')+(G.conv?'　｜　轉化者：'+G.conv.seat+'號':'')+(G.knight?'　｜　騎士翻牌：第'+CN[G.knight.day]+'天驗'+G.knight.target+'號（'+(G.knight.result==='wolf'?'狼':'好人')+'）':'')+(G.thief&&G.thief.chosen?'　｜　盜賊新身分：'+ROLES[G.thief.chosen].name+'，埋：'+ROLES[G.thief.buried].name:'')+'　加時：'+(extraSeats(G).length?extraSeats(G).join('、')+'號＋':'未使用')+(G.winner?'　｜　結果：'+({good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[G.winner]||''):'')+'</td></tr>';
+  return '<div class="sheetwrap"><table class="sheet"><thead>'+head+'</thead><tbody>'+rows+nightRow+dayRow+foot+'</tbody></table></div>';
+}
+function viewSheet(){
+  var G=APP.cur;
+  if(G.phase==='setup'||!sortedSeats(G).length)return '<div class="card center"><h2>還沒有紀錄</h2><p class="muted" style="margin:8px 0 16px">首夜登記身分後，這裡會自動整理成你的上帝表格；點格子可直接修改。</p><button class="btn primary" data-a="tab" data-t="setup">前往開局</button></div>';
+  return '<div class="btnrow noprint" style="margin-bottom:12px"><button class="btn" data-a="pdf">匯出 PDF</button><button class="btn" data-a="csv">下載 CSV</button><button class="btn" data-a="exportCur">匯出文字</button><span class="muted">點座位、行動格、出局格即可修改。PDF：在列印畫面選擇儲存或分享。</span></div>'+sheetHTML(G,true);
+}
+
+/* ================= 角色庫 ================= */
+function viewRoles(){
+  var ids=Object.keys(ROLES).sort(function(a,b){return byCamp(ROLES[a],ROLES[b]);});
+  return '<div class="card"><h2>角色庫</h2><p class="muted" style="margin-top:6px">技能與台詞是依你的手記與常見規則整理的草稿。不同板子細節不同，請在這裡校正，主持時會直接套用。</p></div><div class="grid2">'+
+    CAMP_ORDER.map(function(c){
+      return '<div class="card"><h3 class="grp"><i class="dot c-'+c+'"></i>'+CAMPS[c]+'</h3>'+ids.filter(function(id){return ROLES[id].camp===c;}).map(function(id){
+        var r=R(id),edited=!!APP.roleEdits[id];
+        return '<div class="prow"><div class="pname"><b>'+esc(r.name)+(edited?' <span class="muted">（已修改）</span>':'')+'</b><span class="muted" style="white-space:normal">'+esc(r.desc)+'</span></div><button class="btn" data-a="roleEdit" data-r="'+id+'">編輯</button></div>';
+      }).join('')+'</div>';
+    }).join('')+'</div>';
+}
+
+/* ================= 歷史與匯出 ================= */
+function fmtDate(iso){var d=new Date(iso);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function viewHist(){
+  if(UI.hist!=null){
+    var g=APP.history.filter(function(x){return x.id===UI.hist;})[0];
+    if(g)return '<div class="btnrow noprint" style="margin-bottom:12px"><button class="btn" data-a="histBack">← 返回歷史</button><button class="btn" data-a="pdf">匯出 PDF</button><button class="btn" data-a="csvH" data-id="'+g.id+'">下載 CSV</button><button class="btn" data-a="exportH" data-id="'+g.id+'">匯出文字</button></div>'+sheetHTML(g,false);
+  }
+  if(!APP.history.length)return '<div class="card center"><h2>還沒有歷史紀錄</h2><p class="muted" style="margin-top:8px">按「開新局」時，上一局會自動存到這裡。</p></div>';
+  return '<div class="card"><h2>歷史紀錄</h2>'+APP.history.map(function(g){
+    var w={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[g.winner]||(g.phase==='over'?'已結束':'未完成');
+    return '<div class="prow"><div class="pname"><b>'+fmtDate(g.created)+'　'+esc(boardName(g))+'</b><span class="muted">'+g.players+'人・'+esc(w)+'・共 '+Math.max(g.day,1)+' 天</span></div><div class="btnrow"><button class="btn" data-a="histOpen" data-id="'+g.id+'">檢視</button><button class="btn danger" data-a="histDel" data-id="'+g.id+'">刪除</button></div></div>';
+  }).join('')+'</div>';
+}
+function voteLines(G){
+  var L=[],vs=G.votes||{};
+  Object.keys(vs).forEach(function(k){
+    var g=voteGroups(G,k),parts=Object.keys(g).map(Number).sort(function(a,b){return a-b;}).map(function(t){return (t===0?'棄票':t+'號')+' ← '+g[t].join('、');});
+    if(parts.length)L.push('  '+(k==='S'?'警長投票':'第'+CN[+k.slice(1)]+'天放逐投票')+'：'+parts.join('；'));
+  });
+  return L;
+}
+function exportText(G){
+  var L=['【狼人殺・上帝手記】'+fmtDate(G.created),'板子：'+boardName(G)+'（'+G.players+'人）','','座位：'];
+  seatsList(G).forEach(function(n){var r=roleOf(G,n);L.push('  '+n+'號 '+(r?r.name:'未登記')+(G.names[n]?'（'+G.names[n]+'）':'')+(G.cand.indexOf(n)>=0?'　上警':'')+(hasExtra(G,n)?'　＋加時':'')+(G.sheriff===n?'　警長':''));});
+  var sh=G.sh||{};
+  L.push('','警長競選：上警 '+(G.cand.length?G.cand.join('、')+' 號':'無')+'；'+(G.sheriff!=null?'警長 '+G.sheriff+' 號':(G.badgeLost?'警徽遺失':'未選出'))+(sh.booms?'；自爆 '+sh.booms+' 次':''));
+  L.push('加時 1 分鐘（每人限 1 次）：'+((G.extras||[]).length?(G.extras||[]).map(function(x){return x.seat+' 號（第'+CN[x.day]+'天）';}).join('、'):'未使用'));
+  var steps=stepKeys(G).map(function(k){return {key:k,title:stepTitle(k)};});var last=Math.max.apply(null,[1,G.day||0].concat(Object.keys(G.nights).map(Number)));
+  for(var d=1;d<=last;d++){
+    L.push('','第'+CN[d]+'天');
+    var parts=steps.map(function(s){var t=cellText(G,d,s.key);return (t&&t!=='/')?s.title+' '+t:'';}).filter(Boolean);
+    if(parts.length)L.push('  夜晚行動：'+parts.join('；'));
+    var nt=G.nights[d],nTxt=deathsText(G,d,'N');if(!nTxt&&nt&&nt.committed)nTxt='平安夜';
+    if(nTxt)L.push('  夜晚出局：'+nTxt);
+    var dTxt=deathsText(G,d,'D');if(dTxt)L.push('  白天淘汰：'+dTxt);
+  }
+  var tl=voteLines(G);if(tl.length){L.push('','投票明細：');tl.forEach(function(x){L.push(x);});}
+  L.push('');var pt=potions(G);L.push('女巫：解藥'+(pt.save?'已用':'未用')+'，毒藥'+(pt.poison?'已用':'未用'));
+  if(G.winner)L.push('結果：'+({good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[G.winner]||''));
+  return L.join('\n');
+}
+function csvCell(v){v=v==null?'':String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function csvOf(G){
+  var seats=seatsList(G);
+  var last=Math.max.apply(null,[1,G.day||0].concat(Object.keys(G.nights).map(Number)));
+  var days=[];for(var i=1;i<=last;i++)days.push(i);
+  var ws=wolfRowSeat(G,seats);
+  var win={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[G.winner]||'';
+  var vs=G.votes||{},hasVotes=Object.keys(vs).length>0,cntOf=function(k,n){var g=voteGroups(G,k);return g[n]?g[n].length:'';},vt=function(k,n){var x=vs[k]&&vs[k][n];return x===undefined?'':(x===0?'棄票':x);};
+  var head=['局ID','日期','板子','人數','結果','座位','暱稱','角色','陣營','上警','警長','加時','出局天','出局階段','出局原因'];
+  days.forEach(function(d){head.push('第'+d+'夜行動');});
+  if(hasVotes){head.push('警長投票投給','警長得票');days.forEach(function(d){head.push('第'+d+'天放逐投給','第'+d+'天得票');});}
+  var rows=[head];
+  seats.forEach(function(n){
+    var r=roleOf(G,n),dth=G.deaths.filter(function(x){return x.seat===n;})[0],key=actKeyFor(G,n,ws);
+    var row=[G.id,fmtDate(G.created),boardName(G),G.players,win,n,G.names[n]||'',r?r.name:'',r?CAMPS[r.camp]:'',G.cand.indexOf(n)>=0?'是':'',G.sheriff===n?'是':'',hasExtra(G,n)?'是':'',dth?dth.day:'',dth?(dth.phase==='N'?'夜晚':'白天'):'',dth?dth.cause:''];
+    days.forEach(function(d){row.push(key?cellText(G,d,key):'');});
+    if(hasVotes){row.push(vt('S',n),cntOf('S',n));days.forEach(function(d){row.push(vt('D'+d,n),cntOf('D'+d,n));});}
+    rows.push(row);
+  });
+  return rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
+}
+function stamp(G){var d=new Date(G.created),p=function(x){return ('0'+x).slice(-2);};return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes());}
+function saveFile(name,text,mime){
+  var blob=new Blob(['\ufeff'+text],{type:mime+';charset=utf-8'});
+  var ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  try{
+    if(ios&&window.File&&navigator.canShare&&navigator.share){
+      var f=new File([blob],name,{type:mime});
+      if(navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).catch(function(){});return;}
+    }
+  }catch(e){}
+  try{
+    var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1500);
+  }catch(e){openModal({type:'raw',text:text});}
+}
+
+/* ================= 彈窗 ================= */
+function modalHTML(){
+  var M=UI.modal,G=APP.cur;if(!M)return '';
+  var inner='';
+  switch(M.type){
+    case 'seat':{
+      var n=M.seat,r=roleOf(G,n),inPlay=G.phase!=='setup';
+      inner='<h2>'+n+' 號'+(r?'・'+esc(r.name):'')+'</h2><label for="f-name">暱稱</label><input type="text" id="f-name" value="'+esc(G.names[n]||'')+'" maxlength="12">';
+      if(inPlay){
+        inner+='<h4>狀態</h4><div class="btnrow"><button class="chip lg'+(G.cand.indexOf(n)>=0?' cur':'')+'" data-a="mcand">上警</button><button class="chip lg'+(hasExtra(G,n)?' cur':'')+'" data-a="mextra">＋ 已加時</button><button class="chip lg'+(G.sheriff===n?' cur':'')+'" data-a="msheriff">警長</button><button class="chip lg'+(isDead(G,n)?' cur':'')+'" data-a="mdead">'+(isDead(G,n)?'出局（點擊復活）':'標示出局')+'</button></div>';
+      }
+      if(inPlay){inner+='<h4>更正身分</h4><div class="chips">'+Object.keys(G.pool).filter(function(id){return G.pool[id]>0&&ROLES[id];}).sort(function(a,b){return byCamp(ROLES[a],ROLES[b]);}).map(function(id){return '<button class="chip'+(G.seats[n]===id?' cur':'')+'" data-a="mrole" data-r="'+id+'">'+esc(ROLES[id].name)+'</button>';}).join('')+'</div>';}
+      inner+='<div class="btnrow"><button class="btn primary" data-a="seatSave">儲存</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    }
+    case 'cell':{
+      var key=M.key,d=M.d,nt=night(G,d),a=nt.act[key]||{t:[]},label=stepTitle(key);
+      inner='<h2>第'+CN[d]+'天・'+esc(label)+'</h2>';
+      if(key==='witch'){
+        inner+='<h4>解藥（救幾號）</h4>'+picker(G,{a:'mw',d:{k:'save'},sel:a.save!=null?[a.save]:[],allowDead:true})+'<h4>毒藥（毒幾號）</h4>'+picker(G,{a:'mw',d:{k:'poison'},sel:a.poison!=null?[a.poison]:[],allowDead:true});
+      }else{
+        inner+=picker(G,{a:'mpick',d:{},sel:a.t||[],allowDead:true});
+        var rn=key==='wolves'?'空刀':((ROLES[key]&&ROLES[key].none)||'不使用');
+        inner+='<div class="btnrow"><button class="btn'+(a.none?' on':'')+'" data-a="mnone">'+esc(rn)+'</button></div>';
+        if(key==='seer'&&a.t&&a.t.length){var tg=swapper(G,d)(a.t[0]),bd=seerVerdict(G,tg,d)==='bad';inner+='<div class="verdict '+(bd?'bad':'good')+'">'+tg+' 號：'+(bd?'壞人':'好人')+'</div>';}
+      }
+      inner+='<div class="btnrow"><button class="btn danger" data-a="mclear">清除這格</button><button class="btn primary" data-a="closeModal">完成</button></div>';break;
+    }
+    case 'deaths':{
+      var dl=G.deaths.filter(function(x){return x.day===M.d&&x.phase===M.p;}).map(function(x){return x.seat;});
+      inner='<h2>第'+CN[M.d]+'天・'+(M.p==='N'?'夜晚出局':'白天淘汰')+'</h2><p class="muted">點座位加入或移除。</p><div class="seats big">'+seatsList(G).map(function(n){
+        var elsewhere=isDead(G,n)&&dl.indexOf(n)<0;
+        return seatBtn(G,n,{a:'dtoggle',sel:dl.indexOf(n)>=0,dis:elsewhere,noDead:true});
+      }).join('')+'</div>'+(M.p==='N'?'<div class="btnrow"><button class="btn'+(night(G,M.d).committed&&!dl.length?' on':'')+'" data-a="dpeace">標示為平安夜</button></div>':'')+'<div class="btnrow"><button class="btn primary" data-a="closeModal">完成</button></div>';break;
+    }
+    case 'role':{
+      var rr=R(M.id),base=ROLES[M.id];
+      inner='<h2>'+esc(base.name)+'</h2><label for="f-desc">技能說明</label><textarea id="f-desc">'+esc(rr.desc)+'</textarea><label for="f-tips">提示（每行一則）</label><textarea id="f-tips">'+esc((rr.tips||[]).join('\n'))+'</textarea>';
+      if(base.script)inner+='<label for="f-script">台詞（每行一句；第一行＝睜眼、最後一行＝閉眼）</label><textarea id="f-script">'+esc((rr.script||[]).join('\n'))+'</textarea>';
+      if(base.camp==='wolf')inner+='<label><input type="checkbox" id="f-boom"'+(rr.canBoom!==false?' checked':'')+'> 可自爆（警長競選時可選）</label>';
+      inner+='<div class="btnrow"><button class="btn primary" data-a="roleSave">儲存</button><button class="btn" data-a="roleReset">還原預設</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    }
+    case 'export':{
+      var g=M.id!=null?APP.history.filter(function(x){return x.id===M.id;})[0]:G;
+      inner='<h2>匯出文字</h2><p class="muted">全選後複製，可貼到備忘錄或 LINE。</p><textarea id="f-export" readonly style="min-height:300px">'+esc(exportText(g||G))+'</textarea><div class="btnrow"><button class="btn primary" data-a="copyExport">複製</button><button class="btn" data-a="closeModal">關閉</button></div>';break;
+    }
+    case 'raw':
+      inner='<h2>檔案下載失敗</h2><p class="muted">請全選後複製，貼到備忘錄或試算表。</p><textarea id="f-export" readonly style="min-height:300px">'+esc(M.text)+'</textarea><div class="btnrow"><button class="btn primary" data-a="copyExport">複製</button><button class="btn" data-a="closeModal">關閉</button></div>';break;
+    case 'sit':{
+      var sn=M.seat,sp=G.seatPerson||{},scur=sp[sn],smap=seatedMap(G);
+      var avail=(G.playing||[]).filter(function(id){return smap[id]===undefined||smap[id]===sn;}).map(personOf).filter(Boolean);
+      inner='<h2>'+sn+' 號座位</h2>'+(scur&&personOf(scur)?'<p>目前：<b>'+esc(personOf(scur).name)+'</b></p>':'')+
+        (avail.length?'<h4>今天下場、還沒入座的玩家</h4><div class="chips">'+avail.map(function(p){return '<button class="chip lg'+(p.id===scur?' cur':'')+'" data-a="sitPick" data-id="'+p.id+'">'+esc(p.name)+'</button>';}).join('')+'</div>':'<p class="muted">沒有可選的玩家。請先在「今天誰下場」選人，或在下方新增。</p>')+
+        '<label for="f-sitname">新增玩家並入座</label><input type="text" id="f-sitname" maxlength="12" placeholder="名字">'+
+        '<div class="btnrow"><button class="btn" data-a="sitNew">新增並入座</button>'+(scur?'<button class="btn danger" data-a="sitClear">取消入座</button>':'')+'<button class="btn" data-a="closeModal">關閉</button></div>';break;
+    }
+    case 'person':{
+      var pp=personOf(M.id);if(!pp){inner='<h2>找不到這位玩家</h2><div class="btnrow"><button class="btn" data-a="closeModal">關閉</button></div>';break;}
+      inner='<h2>編輯玩家</h2><label for="f-pname">名字</label><input type="text" id="f-pname" maxlength="12" value="'+esc(pp.name)+'"><div class="btnrow"><button class="btn primary" data-a="personSave">儲存</button><button class="btn danger" data-a="personDel">從名單刪除</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    }
+    case 'extra':
+      inner='<h2>加時 1 分鐘</h2><p class="muted">每位玩家整局可加時 1 次（發言階段任選）。選擇被加時的玩家：計時器加 60 秒，紀錄表會在該座位標上「＋」。已用過的玩家不能再選。</p>'+picker(G,{a:'extraPick',d:{},sel:extraSeats(G),dis:extraSeats(G)})+'<div class="btnrow"><button class="btn" data-a="closeModal">取消</button></div>';break;
+    case 'confirm':
+      inner='<h2>'+esc(M.title)+'</h2><p>'+esc(M.msg)+'</p><div class="btnrow"><button class="btn primary" data-a="'+M.go+'">確定</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    case 'idiot':
+      inner='<h2>'+M.seat+' 號是傻瓜</h2><p>被放逐時可翻牌免死一次（之後失去投票權）。</p><div class="btnrow"><button class="btn primary" data-a="idiotFlip">翻牌免死</button><button class="btn danger" data-a="idiotDie">照常出局</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    case 'win':
+      inner='<h2>結束本局</h2><p class="muted">選擇勝方，紀錄表會保留。</p><div class="btnrow"><button class="btn primary" data-a="win2" data-w="good">好人勝</button><button class="btn primary" data-a="win2" data-w="wolf">狼人勝</button><button class="btn primary" data-a="win2" data-w="third">第三方勝</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+    case 'saveboard':
+      inner='<h2>另存為我的板子</h2><label for="f-bname">板子名稱</label><input type="text" id="f-bname" maxlength="20" placeholder="例如：預女獵守 13人"><div class="btnrow"><button class="btn primary" data-a="saveBoardDo">儲存</button><button class="btn" data-a="closeModal">取消</button></div>';break;
+  }
+  return '<div class="overlay" data-a="closeModal"><div class="modal" role="dialog" aria-modal="true">'+inner+'</div></div>';
+}
+
+/* ================= 渲染 ================= */
+function render(){
+  persist();
+  var root=document.documentElement;
+  if(APP.theme)root.setAttribute('data-theme',APP.theme);else root.removeAttribute('data-theme');
+  var views={setup:viewSetup,play:function(){return viewPlay(APP.cur);},sheet:viewSheet,roles:viewRoles,hist:viewHist};
+  $('#app').innerHTML=topbar()+'<main class="wrap">'+(views[APP.ui.tab]||viewSetup)()+'</main>';
+  $('#modal').innerHTML=UI.modal?modalHTML():'';
+}
+
+/* ================= 動作 ================= */
+var ACT={};
+function openModal(m){UI.modal=m;render();}
+ACT.tab=function(ds){APP.ui.tab=ds.t;if(ds.t!=='hist')UI.hist=null;render();};
+ACT.undo=undo;
+ACT.theme=function(){var dark=APP.theme?APP.theme==='dark':(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);APP.theme=dark?'light':'dark';render();};
+ACT.closeModal=function(){UI.modal=null;render();};
+ACT.set=function(ds){APP.settings[ds.k]=ds.k==='recVotes'?ds.v==='1':ds.v;render();};
+
+/* 開局 */
+ACT.board=function(ds){
+  mutate(function(G){
+    if(G.phase!=='setup')return;
+    var boards=[{id:'blank',name:'空白／自訂',pool:{}}].concat(BOARDS,APP.customBoards);
+    var b=boards.filter(function(x){return String(x.id)===ds.id;})[0];if(!b)return;
+    G.boardName=b.name;G.pool=JSON.parse(JSON.stringify(b.pool));G.seats={};G.extraCards=b.extraCards||0;G.players=sum(G.pool)-G.extraCards;
+    G.order=b.order?b.order.slice():defaultOrder(G.pool);
+    G.rules=JSON.parse(JSON.stringify(b.rules||DEFAULT_RULES));
+    UI.addOpen=false;
+  });
+};
+ACT.poolAdj=function(ds){mutate(function(G){
+  var id=ds.r,v=(G.pool[id]||0)+(+ds.dl);if(v<=0)delete G.pool[id];else G.pool[id]=v;
+  G.boardName='';G.players=sum(G.pool)-(G.extraCards||0);syncOrder(G);
+});};
+ACT.poolAdd=function(ds){mutate(function(G){G.pool[ds.r]=1;G.boardName='';G.players=sum(G.pool)-(G.extraCards||0);syncOrder(G);});};
+ACT.addToggle=function(){UI.addOpen=!UI.addOpen;render();};
+ACT.ordMove=function(ds){mutate(function(G){
+  var a=stepKeys(G).slice(),i=a.indexOf(ds.k),j=i+(+ds.dl);if(i<0||j<0||j>=a.length)return;
+  var t=a[i];a[i]=a[j];a[j]=t;G.order=a;G.boardName='';
+});};
+ACT.rule=function(ds){mutate(function(G){G.rules=G.rules||JSON.parse(JSON.stringify(DEFAULT_RULES));G.rules[ds.k]=ds.v;});};
+ACT.ruleNoShoot=function(ds){mutate(function(G){
+  G.rules=G.rules||JSON.parse(JSON.stringify(DEFAULT_RULES));
+  var a=(G.rules.hunterNoShoot||[]).slice(),i=a.indexOf(ds.c);if(i>=0)a.splice(i,1);else a.push(ds.c);G.rules.hunterNoShoot=a;
+});};
+ACT.start=function(){
+  if(!canStart(APP.cur))return;
+  mutate(function(G){syncOrder(G);G.seats={};G.lovers=null;G.thief=null;G.conv=null;G.mech=null;G.lucky=null;G.knight=null;G.extras=[];G.phase='play';G.day=1;G.stage='night';G.step=0;G.sh=newSh();});
+  APP.ui.tab='play';render();
+};
+ACT.saveBoard=function(){openModal({type:'saveboard'});};
+ACT.saveBoardDo=function(){
+  var name=($('#f-bname').value||'').trim();if(!name)return;
+  var G=APP.cur;
+  APP.customBoards.push({id:'c'+Date.now(),name:name,note:'我的板子',pool:JSON.parse(JSON.stringify(G.pool)),extraCards:G.extraCards||0,order:stepKeys(G).slice(),rules:JSON.parse(JSON.stringify(rules(G)))});
+  G.boardName=name;UI.modal=null;render();
+};
+ACT.delBoard=function(ds){APP.customBoards=APP.customBoards.filter(function(b){return b.id!==ds.id;});render();};
+
+/* 玩家名單與入座 */
+function addPerson(name){
+  var ex=APP.roster.filter(function(p){return p.name===name;})[0];if(ex)return ex;
+  var p={id:'p'+Date.now().toString(36)+Math.floor(Math.random()*1000),name:name};APP.roster.push(p);return p;
+}
+function unseatPerson(G,id){Object.keys(G.seatPerson||{}).forEach(function(n){if(G.seatPerson[n]===id){delete G.seatPerson[n];delete G.names[n];}});}
+function seatPersonAt(G,n,p){unseatPerson(G,p.id);G.seatPerson=G.seatPerson||{};G.seatPerson[n]=p.id;G.names[n]=p.name;if((G.playing||[]).indexOf(p.id)<0)G.playing=(G.playing||[]).concat([p.id]);}
+ACT.rosterAdd=function(){
+  var el=$('#f-newname'),v=((el&&el.value)||'').trim();if(!v)return;
+  var p=addPerson(v);
+  mutate(function(G){G.playing=G.playing||[];if(G.playing.indexOf(p.id)<0)G.playing.push(p.id);});
+};
+ACT.rosterEdit=function(){UI.rosterEdit=!UI.rosterEdit;render();};
+ACT.playToggle=function(ds){mutate(function(G){
+  G.playing=G.playing||[];var i=G.playing.indexOf(ds.id);
+  if(i>=0){G.playing.splice(i,1);unseatPerson(G,ds.id);}else G.playing.push(ds.id);
+});};
+ACT.personEdit=function(ds){openModal({type:'person',id:ds.id});};
+ACT.personSave=function(){
+  var p=personOf(UI.modal.id),v=(($('#f-pname')||{}).value||'').trim();if(!p||!v)return;
+  p.name=v;UI.modal=null;
+  mutate(function(G){Object.keys(G.seatPerson||{}).forEach(function(n){if(G.seatPerson[n]===p.id)G.names[n]=v;});});
+};
+ACT.personDel=function(){var p=personOf(UI.modal.id);if(!p)return;UI.delId=p.id;openModal({type:'confirm',title:'從名單刪除？',msg:p.name+' 會從名單移除，歷史紀錄裡的名字不受影響。',go:'personDelDo'});};
+ACT.personDelDo=function(){
+  var id=UI.delId;APP.roster=APP.roster.filter(function(p){return p.id!==id;});UI.modal=null;
+  mutate(function(G){G.playing=(G.playing||[]).filter(function(x){return x!==id;});unseatPerson(G,id);});
+};
+ACT.sitTap=function(ds){openModal({type:'sit',seat:+ds.seat});};
+ACT.sitPick=function(ds){var n=UI.modal.seat,p=personOf(ds.id);if(!p)return;UI.modal=null;mutate(function(G){seatPersonAt(G,n,p);});};
+ACT.sitNew=function(){
+  var n=UI.modal.seat,v=(($('#f-sitname')||{}).value||'').trim();if(!v)return;
+  var p=addPerson(v);UI.modal=null;mutate(function(G){seatPersonAt(G,n,p);});
+};
+ACT.sitClear=function(){var n=UI.modal.seat;UI.modal=null;mutate(function(G){if(G.seatPerson)delete G.seatPerson[n];delete G.names[n];});};
+ACT.clearSeats=function(){mutate(function(G){G.seatPerson={};G.names={};});};
+ACT.reuseSeating=function(){
+  var L=APP.lastSeating;if(!L)return;
+  mutate(function(G){
+    G.playing=(L.playing||[]).filter(function(id){return !!personOf(id);});G.seatPerson={};G.names={};
+    Object.keys(L.seatPerson||{}).forEach(function(n){var p=personOf(L.seatPerson[n]);if(p&&+n<=G.players){G.seatPerson[n]=p.id;G.names[n]=p.name;}});
+  });
+};
+
+/* 首夜登記身分 */
+ACT.regRole=function(ds){UI.regRole=ds.r;render();};
+ACT.regSeat=function(ds){mutate(function(G){
+  var n=+ds.seat,steps=nightSteps(G,G.day),st=steps[Math.min(G.step,steps.length-1)],ids=regIds(G,st),role=UI.regRole,cur=G.seats[n];
+  if(ids.indexOf(role)<0)return;
+  if(cur===role){delete G.seats[n];return;}
+  if(cur&&ids.indexOf(cur)<0)return;
+  if(remaining(G,role)>0)G.seats[n]=role;
+});};
+
+/* 警長競選 */
+ACT.cand=function(ds){mutate(function(G){var n=+ds.seat,i=G.cand.indexOf(n);if(i>=0){G.cand.splice(i,1);if(G.sheriff===n)G.sheriff=null;}else G.cand.push(n);});};
+function rollCandOrder(G){
+  var c=G.cand.filter(function(n){return !isDead(G,n);});if(!c.length)return;
+  G.sh.order={start:c[Math.floor(Math.random()*c.length)],dir:Math.random()<0.5?1:-1};
+}
+ACT.sSpeech=function(){mutate(function(G){G.sh.step='speech';G.sh.withdrawn=[];rollCandOrder(G);});};
+ACT.sRoll=function(){mutate(function(G){rollCandOrder(G);});};
+ACT.sWithdraw=function(){mutate(function(G){G.sh.step='withdraw';});};
+ACT.sWd=function(ds){mutate(function(G){
+  var n=+ds.seat,w=(G.sh.withdrawn||[]).slice(),i=w.indexOf(n);if(i>=0)w.splice(i,1);else w.push(n);G.sh.withdrawn=w;
+});};
+ACT.sVote=function(){mutate(function(G){G.sh.step='vote';UI.sBoom=false;});};
+ACT.sElect=function(ds){mutate(function(G){var n=+ds.seat;if(G.sheriff===n){G.sheriff=null;G.sh.status='active';}else{G.sheriff=n;G.badgeLost=false;G.sh.status='elected';}});};
+ACT.sNoWinner=function(){mutate(function(G){
+  G.sheriff=null;G.badgeLost=true;G.sh.status='lost';
+  if(G.sh.step==='withdraw'){G.sheriffDone=true;G.stage=night(G,G.day).committed?'day':'dawn';}else G.sh.step='vote';
+});};
+ACT.sNone=function(){mutate(function(G){G.sheriff=null;G.badgeLost=true;G.sh.status='lost';G.sheriffDone=true;G.stage=night(G,G.day).committed?'day':'dawn';});};
+ACT.sBoom=function(){UI.sBoom=!UI.sBoom;render();};
+ACT.sBoomPick=function(ds){
+  var n=+ds.seat;UI.sBoom=false;
+  mutate(function(G){
+    var s=G.sh,d=G.day,rl=rules(G);
+    G.deaths.push({seat:n,day:d,phase:'D',cause:'自爆'});
+    s.booms=(s.booms||0)+1;s.boomSeats.push(n);s.boomSeat=n;s.boomDay=d;
+    G.cand=G.cand.filter(function(x){return x!==n;});
+    var lost=rl.boom==='single'||s.booms>=2;
+    if(lost){G.sheriff=null;G.badgeLost=true;G.sheriffDone=true;s.status='lost';}
+    else s.status='interrupted';
+    var toDay=lost&&s.resumed;
+    s.goNight=!toDay;
+    if(!toDay&&night(G,d).committed){G.day=d+1;G.stage='night';G.step=0;s.goNight=false;}
+    else G.stage='dawn';
+  });
+};
+ACT.finishSheriff=function(){mutate(function(G){
+  G.sheriffDone=true;G.sh.status=G.sheriff!=null?'elected':'lost';
+  G.stage=night(G,G.day).committed?'day':'dawn';
+});};
+ACT.vrecToggle=function(ds){UI.vrecOpen[ds.key]=!UI.vrecOpen[ds.key];render();};
+ACT.vtTarget=function(ds){UI.voteTarget={key:ds.key,seat:+ds.seat};render();};
+ACT.vtVoter=function(ds){
+  var vt=UI.voteTarget;if(!vt||vt.key!==ds.key)return;
+  mutate(function(G){G.votes=G.votes||{};var v=G.votes[ds.key]=G.votes[ds.key]||{},m=+ds.seat;if(v[m]===vt.seat)delete v[m];else v[m]=vt.seat;});
+};
+ACT.vtClear=function(ds){mutate(function(G){if(G.votes)delete G.votes[ds.key];});};
+ACT.extra=function(){openModal({type:'extra'});};
+ACT.extraPick=function(ds){var n=+ds.seat;if(hasExtra(APP.cur,n))return;UI.modal=null;mutate(function(G){G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});T.left+=60;render();};
+ACT.mextra=function(){var n=UI.modal.seat;mutate(function(G){if(hasExtra(G,n))G.extras=G.extras.filter(function(x){return x.seat!==n;});else G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});};
+
+/* 夜晚 */
+ACT.step=function(ds){mutate(function(G){G.step=+ds.i;});};
+ACT.prev=function(){mutate(function(G){G.step=Math.max(0,G.step-1);});};
+ACT.next=function(){mutate(function(G){G.step=Math.min(nightSteps(G,G.day).length-1,G.step+1);});};
+ACT.pick=function(ds){mutate(function(G){
+  var d=G.day,key=ds.key,seat=+ds.seat,r=ROLES[key==='wolves'?'wolf':key],max=(r&&r.targets)||1;
+  var nt=night(G,d,true),cur=nt.act[key]||{t:[]},t=(cur.t||[]).slice(),i=t.indexOf(seat);
+  if(i>=0)t.splice(i,1);else{t.push(seat);if(t.length>max)t.shift();}
+  nt.act[key]={t:t,none:false};syncSpecial(G,key,d);
+});};
+function syncSpecial(G,key,d){
+  var a=night(G,d,true).act[key];if(!a)return;
+  if(key==='cupid')G.lovers=(a.t&&a.t.length===2)?a.t.slice():null;
+  if(key==='mechwolf')a.mode=mechType(G);
+  if(key==='lucky')a.mode=(G.lucky&&G.lucky.gift==='poison')?'poison':'verify';
+}
+ACT.none=function(ds){mutate(function(G){night(G,G.day,true).act[ds.key]={t:[],none:true};syncSpecial(G,ds.key,G.day);});};
+ACT.witch=function(ds){mutate(function(G){
+  var d=G.day,nt=night(G,d,true),w=nt.act.witch||{};
+  if(ds.m==='none')nt.act.witch={save:null,poison:null,none:true};
+  else if(ds.m==='save')nt.act.witch={save:(ds.seat!=null?+ds.seat:witchVictim(G,d)),poison:null};
+  else nt.act.witch={save:null,poison:w.poison!=null?w.poison:null,pmode:true};
+});};
+ACT.witchPoison=function(ds){mutate(function(G){
+  var nt=night(G,G.day,true),w=nt.act.witch||{},n=+ds.seat;
+  nt.act.witch={save:null,poison:w.poison===n?null:n,pmode:true};
+});};
+ACT.gesture=function(ds){mutate(function(G){night(G,G.day,true).act.hunter={g:ds.g};});};
+ACT.finishNight=function(){mutate(function(G){finishNight(G);});};
+ACT.thOpt=function(ds){mutate(function(G){
+  var th=G.thief=G.thief||{seat:null,opts:[],chosen:null,buried:null};if(th.chosen)return;
+  th.opts.push(ds.r);if(th.opts.length>2)th.opts.shift();
+});};
+ACT.thClear=function(){mutate(function(G){if(G.thief&&!G.thief.chosen)G.thief.opts=[];});};
+ACT.thPick=function(ds){mutate(function(G){
+  var th=G.thief;if(!th||th.opts.length!==2||th.chosen)return;
+  var seat=seatsOfRole(G,'thief')[0];if(seat==null)return;
+  var i=+ds.i;th.seat=seat;th.chosen=th.opts[i];th.buried=th.opts[1-i];th.pickI=i;G.seats[seat]=th.chosen;
+  night(G,1,true).act.thief={t:[seat],none:false,role:th.chosen};
+});};
+ACT.thUndo=function(){mutate(function(G){var th=G.thief;if(!th||!th.chosen)return;G.seats[th.seat]='thief';th.chosen=null;th.buried=null;delete night(G,1,true).act.thief;});};
+ACT.mechLearn=function(ds){mutate(function(G){var n=+ds.seat;G.mech={from:n};night(G,1,true).act.mechwolf={t:[],learn:n};});};
+ACT.dz2Acted=function(ds){mutate(function(G){var a=night(G,G.day,true).act.dreamer2;if(!a)return;if(ds.v==='')delete a.acted;else a.acted=ds.v==='1';});};
+ACT.dz2Kill=function(){mutate(function(G){var a=night(G,G.day,true).act.dreamer2;if(!a)return;a.kill=!a.kill;});};
+ACT.bmLucky=function(ds){mutate(function(G){var n=+ds.seat,L=G.lucky||{seat:null,gift:null};L.seat=(L.seat===n)?null:n;G.lucky=L;night(G,1,true).act.blackmarket={t:L.seat!=null?[L.seat]:[],gift:L.gift};});};
+ACT.bmGift=function(ds){mutate(function(G){var L=G.lucky||{seat:null,gift:null};L.gift=(L.gift===ds.g)?null:ds.g;G.lucky=L;var a=night(G,1,true).act.blackmarket||{t:[]};a.gift=L.gift;night(G,1,true).act.blackmarket=a;});};
+ACT.gconvPick=function(ds){mutate(function(G){
+  var n=+ds.seat,d=G.day;
+  if(G.conv&&G.conv.seat===n){G.conv=null;delete night(G,d,true).act.gconv;}
+  else{G.conv={seat:n,day:d};night(G,d,true).act.gconv={t:[n],none:false};}
+});};
+
+/* 天亮 */
+ACT.draftToggle=function(ds){mutate(function(G){
+  var nt=night(G,G.day,true),n=+ds.seat;nt.draft=nt.draft||[];
+  var i=nt.draft.findIndex(function(x){return x.seat===n;});
+  if(i>=0)nt.draft.splice(i,1);else nt.draft.push({seat:n,cause:'手動'});
+});};
+ACT.recalc=function(){mutate(function(G){var nt=night(G,G.day,true),res=resolveNight(G,G.day);nt.draft=res.deaths;nt.explain=res.lines;});};
+ACT.commit=function(){mutate(function(G){commitDeaths(G,G.day);});};
+ACT.reopen=function(){mutate(function(G){
+  var d=G.day;removeDeathsWhere(G,function(x){return x.day===d&&x.phase==='N';});night(G,d,true).committed=false;
+});};
+ACT.toDay=function(){mutate(function(G){G.stage='day';});};
+
+/* 白天 */
+ACT.roll=function(){mutate(function(G){
+  var alive=aliveSeats(G);if(!alive.length)return;
+  var d=G.day;G.days[d]=G.days[d]||{};
+  G.days[d].order={mode:'draw',start:alive[Math.floor(Math.random()*alive.length)],dir:Math.random()<0.5?1:-1};
+});};
+ACT.sDir=function(ds){mutate(function(G){var d=G.day;G.days[d]=G.days[d]||{};G.days[d].order={mode:'sheriff',dir:+ds.dir};});};
+function clearDayRecord(G,d){
+  removeDeathsWhere(G,function(x){return x.day===d&&x.phase==='D';});
+  Object.keys(G.idiot).forEach(function(k){if(G.idiot[k]===d)delete G.idiot[k];});
+  if(G.days[d]){delete G.days[d].out;delete G.days[d].kind;}
+}
+function recordOut(G,seat,kind){
+  var d=G.day;if(!rules(G).huntGame)clearDayRecord(G,d);G.days[d]=G.days[d]||{};G.days[d].out=seat;G.days[d].kind=kind;
+  addDeath(G,{seat:seat,day:d,phase:'D',cause:kind==='boom'?'自爆':'放逐'});
+}
+ACT.huntAgain=function(){mutate(function(G){var dd=G.days[G.day];if(dd){delete dd.out;delete dd.kind;}});};
+ACT.knightOpen=function(){UI.knightOpen=!UI.knightOpen;render();};
+ACT.knightPick=function(ds){
+  var n=+ds.seat;UI.knightOpen=false;
+  mutate(function(G){
+    var d=G.day,ks=seatsOfRole(G,'knight').filter(function(x){return !isDead(G,x);}),k=ks[0];if(k==null||G.knight)return;
+    var res=campOf(G,n)==='wolf'?'wolf':'good';
+    G.knight={seat:k,target:n,day:d,result:res};G.days[d]=G.days[d]||{};
+    if(res==='wolf'){G.days[d].out=n;G.days[d].kind='knight';addDeath(G,{seat:n,day:d,phase:'D',cause:'騎士驗中'});}
+    else{G.days[d].knightDie=k;addDeath(G,{seat:k,day:d,phase:'D',cause:'騎士自盡'});}
+  });
+};
+ACT.knightUndo=function(){mutate(function(G){
+  var d=G.day;if(!G.knight)return;
+  removeDeathsWhere(G,function(x){return x.day===d&&x.phase==='D'&&(x.cause==='騎士驗中'||x.cause==='騎士自盡');});
+  if(G.days[d]){if(G.days[d].kind==='knight'){delete G.days[d].out;delete G.days[d].kind;}delete G.days[d].knightDie;}
+  G.knight=null;
+});};
+ACT.voteSeat=function(ds){
+  var n=+ds.seat,G=APP.cur;
+  if(UI.boom){mutate(function(g){recordOut(g,n,'boom');});UI.boom=false;render();return;}
+  if(G.seats[n]==='idiot'&&!G.idiot[n]){UI.voteSel=n;openModal({type:'idiot',seat:n});return;}
+  mutate(function(g){recordOut(g,n,'vote');});
+};
+ACT.idiotFlip=function(){var n=UI.modal.seat;UI.modal=null;mutate(function(G){var d=G.day;clearDayRecord(G,d);G.days[d]=G.days[d]||{};G.days[d].out=n;G.days[d].kind='idiot';G.idiot[n]=d;});};
+ACT.idiotDie=function(){var n=UI.modal.seat;UI.modal=null;mutate(function(G){recordOut(G,n,'vote');G.idiot[n]=-1;});};
+ACT.voteNone=function(){mutate(function(G){var d=G.day;clearDayRecord(G,d);G.days[d]=G.days[d]||{};G.days[d].kind='none';});};
+ACT.boom=function(){UI.boom=!UI.boom;render();};
+ACT.voteReset=function(){mutate(function(G){clearDayRecord(G,G.day);});};
+ACT.shoot=function(ds){mutate(function(G){
+  var from=+ds.from,to=+ds.seat,dth=G.deaths.filter(function(x){return x.seat===from;})[0];if(!dth)return;
+  G.trig[from]={target:to};addDeath(G,{seat:to,day:dth.day,phase:dth.phase,cause:'開槍',by:from});
+});};
+ACT.noShoot=function(ds){mutate(function(G){G.trig[+ds.from]={none:true};});};
+ACT.badge=function(ds){mutate(function(G){G.sheriff=+ds.seat;G.badgeLost=false;});};
+ACT.badgeTear=function(){mutate(function(G){G.sheriff=null;G.badgeLost=true;});};
+ACT.nextNight=function(){mutate(function(G){G.day+=1;G.stage='night';G.step=0;if(G.sh)G.sh.goNight=false;});UI.boom=false;render();};
+ACT.tset=function(ds){T.total=+ds.s;T.left=T.total;stopT();render();};
+ACT.tgo=function(){if(T.run){stopT();}else{if(T.left===0)T.left=T.total;T.run=true;T.h=setInterval(tick,1000);}render();};
+ACT.treset=function(){stopT();T.left=T.total;render();};
+
+/* 座位、結束、新局 */
+ACT.seatModal=function(ds){openModal({type:'seat',seat:+ds.seat});};
+ACT.seatSave=function(){var n=UI.modal.seat,v=($('#f-name').value||'').trim();mutate(function(G){if(v)G.names[n]=v;else delete G.names[n];});UI.modal=null;render();};
+ACT.mcand=function(){var n=UI.modal.seat;mutate(function(G){var i=G.cand.indexOf(n);if(i>=0){G.cand.splice(i,1);if(G.sheriff===n)G.sheriff=null;}else G.cand.push(n);});};
+ACT.msheriff=function(){var n=UI.modal.seat;mutate(function(G){if(G.sheriff===n)G.sheriff=null;else{G.sheriff=n;if(G.cand.indexOf(n)<0)G.cand.push(n);}});};
+ACT.mdead=function(){var n=UI.modal.seat;mutate(function(G){
+  if(isDead(G,n)){removeDeathsWhere(G,function(x){return x.seat===n;});}
+  else{var day=(G.stage==='night'||G.stage==='n0')?Math.max(0,G.day-1):G.day;G.deaths.push({seat:n,day:day,phase:'D',cause:'手動'});}
+});};
+ACT.endGame=function(){openModal({type:'win'});};
+ACT.win=function(ds){mutate(function(G){G.phase='over';G.winner=ds.w;});};
+ACT.win2=function(ds){UI.modal=null;mutate(function(G){G.phase='over';G.winner=ds.w;});};
+ACT.reopenGame=function(){mutate(function(G){G.phase='play';G.winner=null;});};
+ACT.newGame=function(){openModal({type:'confirm',title:'開新局？',msg:'目前這局會存進「歷史」，新局沿用同一板子與人數，首夜再重新登記身分。',go:'newGameDo'});};
+ACT.newGameDo=function(){
+  var old=APP.cur;
+  if(old.phase!=='setup'&&Object.keys(old.seatPerson||{}).length)APP.lastSeating={playing:(old.playing||[]).slice(),seatPerson:JSON.parse(JSON.stringify(old.seatPerson||{}))};
+  if(old.phase!=='setup'){APP.history.unshift(JSON.parse(JSON.stringify(old)));APP.history=APP.history.slice(0,40);}
+  var g=newGame();g.pool=JSON.parse(JSON.stringify(old.pool));g.players=old.players;g.extraCards=old.extraCards||0;g.boardName=old.boardName;g.order=(old.order||defaultOrder(old.pool)).slice();g.rules=JSON.parse(JSON.stringify(old.rules||DEFAULT_RULES));
+  APP.cur=g;UNDO=[];UI.modal=null;UI.regRole=null;UI.sBoom=false;stopT();T.left=T.total;APP.ui.tab='setup';render();
+};
+
+/* 紀錄表編輯 */
+ACT.cell=function(ds){openModal({type:'cell',d:+ds.d,key:ds.key});};
+ACT.mpick=function(ds){mutate(function(G){
+  var M=UI.modal,key=M.key,r=ROLES[key==='wolves'?'wolf':key],max=(r&&r.targets)||1,nt=night(G,M.d,true),cur=nt.act[key]||{t:[]},t=(cur.t||[]).slice(),n=+ds.seat,i=t.indexOf(n);
+  if(i>=0)t.splice(i,1);else{t.push(n);if(t.length>max)t.shift();}
+  nt.act[key]={t:t,none:false};syncSpecial(G,key,M.d);
+});};
+ACT.mnone=function(){mutate(function(G){night(G,UI.modal.d,true).act[UI.modal.key]={t:[],none:true};});};
+ACT.mclear=function(){mutate(function(G){delete night(G,UI.modal.d,true).act[UI.modal.key];});};
+ACT.mw=function(ds){mutate(function(G){
+  var nt=night(G,UI.modal.d,true),w=nt.act.witch||{save:null,poison:null},n=+ds.seat;
+  w[ds.k]=(w[ds.k]===n)?null:n;nt.act.witch=w;
+});};
+ACT.deaths=function(ds){openModal({type:'deaths',d:+ds.d,p:ds.p});};
+ACT.dtoggle=function(ds){mutate(function(G){
+  var M=UI.modal,n=+ds.seat;
+  var idx=G.deaths.findIndex(function(x){return x.seat===n&&x.day===M.d&&x.phase===M.p;});
+  if(idx>=0){removeDeathsWhere(G,function(x){return x.seat===n;});}
+  else if(!isDead(G,n)){G.deaths.push({seat:n,day:M.d,phase:M.p,cause:'手動'});}
+  if(M.p==='N')night(G,M.d,true).committed=true;
+});};
+ACT.dpeace=function(){mutate(function(G){night(G,UI.modal.d,true).committed=true;});};
+ACT.print=function(){try{window.print();}catch(e){}};
+ACT.pdf=function(){
+  var inHist=APP.ui.tab==='hist'&&UI.hist!=null;
+  if(APP.ui.tab!=='sheet'&&!inHist){APP.ui.tab='sheet';UI.hist=null;render();}
+  setTimeout(function(){try{window.print();}catch(e){}},120);
+};
+ACT.csv=function(){var G=APP.cur;saveFile('werewolf_'+stamp(G)+'.csv',csvOf(G),'text/csv');};
+ACT.csvH=function(ds){var g=APP.history.filter(function(x){return x.id===+ds.id;})[0];if(g)saveFile('werewolf_'+stamp(g)+'.csv',csvOf(g),'text/csv');};
+ACT.mrole=function(ds){mutate(function(G){G.seats[UI.modal.seat]=ds.r;});};
+
+/* 角色庫 */
+ACT.roleEdit=function(ds){openModal({type:'role',id:ds.r});};
+ACT.roleSave=function(){
+  var id=UI.modal.id,lines=function(sel){var el=$(sel);return el?el.value.split('\n').map(function(s){return s.trim();}).filter(Boolean):[];};
+  var e={desc:($('#f-desc').value||'').trim()||ROLES[id].desc,tips:lines('#f-tips')};
+  var sc=lines('#f-script');if(ROLES[id].script&&sc.length>=2)e.script=sc;
+  var bm=$('#f-boom');if(bm)e.canBoom=!!bm.checked;
+  APP.roleEdits[id]=e;UI.modal=null;render();
+};
+ACT.roleReset=function(){delete APP.roleEdits[UI.modal.id];UI.modal=null;render();};
+
+/* 匯出、歷史 */
+ACT.exportCur=function(){openModal({type:'export',id:null});};
+ACT.exportH=function(ds){openModal({type:'export',id:+ds.id});};
+ACT.copyExport=function(){
+  var ta=$('#f-export');if(!ta)return;ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+  var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  if(!ok&&navigator.clipboard){try{navigator.clipboard.writeText(ta.value);}catch(e){}}
+};
+ACT.histOpen=function(ds){UI.hist=+ds.id;render();};
+ACT.histBack=function(){UI.hist=null;render();};
+ACT.histDel=function(ds){APP.history=APP.history.filter(function(g){return g.id!==+ds.id;});render();};
+
+/* ================= 事件 ================= */
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-a]');if(!el)return;
+  var a=el.dataset.a;
+  if(el.classList.contains('overlay')&&e.target!==el)return;
+  if(el.disabled)return;
+  if(ACT[a]){e.preventDefault();ACT[a](el.dataset,el);}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||!e.target||!e.target.id)return;
+  if(e.target.id==='f-newname'){e.preventDefault();ACT.rosterAdd();}
+  else if(e.target.id==='f-sitname'){e.preventDefault();ACT.sitNew();}
+});
+window.addEventListener('pagehide',persist);
+render();
+})();
+</script>
+</body>
+</html>
