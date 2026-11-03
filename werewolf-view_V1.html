@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>狼人殺・場上資訊</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1f2328;--mut:#6b7280;--line:#e3dfd6;--acc:#7a2e2e;--accbg:#f4e6e6;--ok:#2f6f4f;--okbg:#e4f1ea;--out:#9aa0a6;--gold:#b7791f;--goldbg:#fbf0d9}
+@media (prefers-color-scheme:dark){:root{--bg:#15171a;--card:#1f2226;--ink:#eceae4;--mut:#9aa0a6;--line:#30343a;--acc:#e08a8a;--accbg:#3a2424;--ok:#7bc79b;--okbg:#1f3328;--out:#6b7078;--gold:#e5b455;--goldbg:#3a2f18}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
+main{max-width:720px;margin:0 auto}
+header{padding:20px 0 8px}
+h1{margin:0;font-size:1.35rem}
+.sub{color:var(--mut);font-size:.9rem;margin-top:2px}
+.stage{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:99px;background:var(--accbg);color:var(--acc);font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:14px 0}
+h2{margin:0 0 10px;font-size:1.05rem}
+.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.seat{border:1.5px solid var(--line);border-radius:14px;padding:8px 6px;text-align:center;background:var(--card);position:relative;min-height:62px}
+.seat b{display:block;font-size:1.15rem}
+.seat span{display:block;font-size:.8rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat.out{background:transparent;color:var(--out);border-style:dashed}
+.seat.out b{text-decoration:line-through}
+.seat.me{border-color:var(--acc);box-shadow:0 0 0 2px var(--accbg)}
+.tag{display:inline-block;font-size:.72rem;font-style:normal;padding:0 6px;border-radius:99px;margin-top:2px}
+.tag.sh{background:var(--goldbg);color:var(--gold)}
+.tag.cd{background:var(--okbg);color:var(--ok)}
+.tag.ot{background:var(--line);color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{padding:3px 10px;border-radius:99px;background:var(--line);font-size:.9rem}
+.pill.sh{background:var(--goldbg);color:var(--gold);font-weight:700}
+.vote{padding:10px 0;border-top:1px solid var(--line)}
+.vote:first-of-type{border-top:0}
+.vote .who{font-weight:700}
+.vote .by{color:var(--mut);font-size:.92rem}
+.vote .n{float:right;font-weight:800;color:var(--acc)}
+details summary{cursor:pointer;font-weight:700;padding:6px 0}
+.muted{color:var(--mut);font-size:.9rem}
+.empty{color:var(--mut);padding:6px 0}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:12px}
+button[disabled]{opacity:.5}
+.status{position:fixed;right:12px;top:calc(8px + env(safe-area-inset-top));font-size:.78rem;padding:2px 10px;border-radius:99px;background:var(--okbg);color:var(--ok)}
+.status.off{background:var(--goldbg);color:var(--gold)}
+.win{text-align:center;font-weight:800;font-size:1.3rem;padding:14px;border-radius:16px;background:var(--accbg);color:var(--acc);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="status" id="st">連線中…</div>
+<main id="app"><header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">等待上帝開局…</div></header></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getFirestore,doc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+var app=initializeApp({
+  apiKey:"AIzaSyDVWEnINOZf2bGuC7SxHm4_JOqJGq6AixQ",
+  authDomain:"werewolf-game-soymilk.firebaseapp.com",
+  projectId:"werewolf-game-soymilk",
+  storageBucket:"werewolf-game-soymilk.firebasestorage.app",
+  messagingSenderId:"267788587461",
+  appId:"1:267788587461:web:6932c7ea6ee1c0b9813bac"
+});
+var db=getFirestore(app);
+var P=null,ME=null,ERR=null,LASTGAME=null;
+var $=function(s){return document.querySelector(s);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+try{ME=+localStorage.getItem('wwview.me')||null;}catch(e){}
+function stageText(p){
+  if(p.phase==='over')return '本局結束';
+  if(p.phase==='setup'||!p.day)return '尚未開局';
+  if(p.stage==='night')return '第 '+p.day+' 夜';
+  if(p.stage==='sheriff')return '警長競選';
+  if(p.stage==='dawn')return '天亮了';
+  return '第 '+p.day+' 天・白天';
+}
+function nm(p,n){var x=p.names&&p.names[n];return x?esc(x):'';}
+function isOut(p,n){return (p.out||[]).some(function(x){return x.seat===n;});}
+function seatsHTML(p){
+  var h='';
+  for(var n=1;n<=p.players;n++){
+    var out=isOut(p,n),tags='';
+    if(p.sheriff===n)tags+='<i class="tag sh">警長</i> ';
+    if((p.cand||[]).indexOf(n)>=0&&!out)tags+='<i class="tag cd">'+((p.withdrawn||[]).indexOf(n)>=0?'退水':'上警')+'</i> ';
+    if(out)tags+='<i class="tag ot">出局</i>';
+    h+='<div class="seat'+(out?' out':'')+(ME===n?' me':'')+'" data-seat="'+n+'"><b>'+n+'</b><span>'+nm(p,n)+'</span>'+tags+'</div>';
+  }
+  return h;
+}
+function voteBlock(p,key){
+  var v=p.votes[key]||{},g={};
+  Object.keys(v).forEach(function(m){(g[v[m]]=g[v[m]]||[]).push(+m);});
+  var isD=key.charAt(0)==='D',tl=Object.keys(g).map(Number).filter(function(t){return t!==0;});
+  var w=function(m){return (isD&&p.sheriff===m)?1.5:1;};
+  var cnt=function(t){return g[t].reduce(function(s,m){return s+w(m);},0);};
+  tl.sort(function(a,b){return cnt(b)-cnt(a)||a-b;});
+  var h='';
+  tl.forEach(function(t){
+    h+='<div class="vote"><span class="n">'+cnt(t)+' 票</span><div class="who">'+t+' 號'+(nm(p,t)?' '+nm(p,t):'')+'</div><div class="by">'+g[t].map(function(m){return m+(w(m)>1?'(警1.5)':'');}).join('、')+'</div></div>';
+  });
+  if(g[0])h+='<div class="vote"><span class="n">'+g[0].length+' 人</span><div class="who">棄票</div><div class="by">'+g[0].join('、')+'</div></div>';
+  return h||'<div class="empty">尚未記錄票型</div>';
+}
+function voteTitle(k){return k==='S'?'警長投票':'第 '+k.slice(1)+' 天放逐投票';}
+function render(){
+  var app=$('#app');
+  if(!P){app.innerHTML='<header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">'+(ERR?esc(ERR):'等待上帝開局…')+'</div></header>';return;}
+  var p=P,h='<header><h1>🐺 '+(esc(p.boardName)||'狼人殺')+'</h1><div class="sub">'+p.players+' 人局・只顯示白天公開資訊</div><span class="stage">'+stageText(p)+'</span></header>';
+  if(p.phase==='over'&&p.winner)h+='<div class="win">'+({good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[p.winner]||'本局結束')+'</div>';
+  h+='<section class="card"><h2>座位'+(ME?'（你是 '+ME+' 號）':'')+'</h2><div class="seats">'+seatsHTML(p)+'</div>'+
+     '<p class="muted" style="margin:10px 0 0">'+(ME?'再點一下自己的座位可取消標記。':'點選你的座位，之後可快速辨識（只存在這支手機上）。')+'</p></section>';
+  if(p.sheriff!=null||p.badgeLost||(p.cand||[]).length){
+    h+='<section class="card"><h2>警長</h2><div class="row">';
+    h+=p.sheriff!=null?'<span class="pill sh">警長 '+p.sheriff+' 號</span>':(p.badgeLost?'<span class="pill">警徽遺失</span>':'<span class="pill">尚未選出</span>');
+    h+='</div>';
+    if((p.cand||[]).length)h+='<p class="muted" style="margin:10px 0 0">上警：'+p.cand.map(function(n){return n+((p.withdrawn||[]).indexOf(n)>=0?'(退水)':'');}).join('、')+' 號</p>';
+    h+='</section>';
+  }
+  var keys=Object.keys(p.votes||{}).filter(function(k){return Object.keys(p.votes[k]).length;});
+  keys.sort(function(a,b){var na=a==='S'?0.5:+a.slice(1),nb=b==='S'?0.5:+b.slice(1);return nb-na;});
+  h+='<section class="card"><h2>投票票型</h2>';
+  if(!keys.length)h+='<div class="empty">目前還沒有票型紀錄</div>';
+  keys.forEach(function(k,i){
+    h+=(i===0?'<div><div class="who" style="font-weight:800;margin:4px 0">'+voteTitle(k)+'</div>'+voteBlock(p,k)+'</div>':'<details><summary>'+voteTitle(k)+'</summary>'+voteBlock(p,k)+'</details>');
+  });
+  h+='</section>';
+  var outs=(p.out||[]).slice().sort(function(a,b){return a.day-b.day||(a.phase==='N'?-1:1);});
+  h+='<section class="card"><h2>出局名單</h2>'+(outs.length?'<div class="row">'+outs.map(function(x){return '<span class="pill">'+x.seat+' 號・第'+x.day+(x.phase==='N'?'夜':'天')+'</span>';}).join('')+'</div>':'<div class="empty">還沒有人出局</div>')+'</section>';
+  h+='<section class="card"><h2>連線投票</h2><button disabled>連線投票（待開發）</button><p class="muted" style="margin:8px 0 0">目前由上帝記錄票型，這裡只顯示結果。</p></section>';
+  app.innerHTML=h;
+}
+document.addEventListener('click',function(e){
+  var s=e.target.closest&&e.target.closest('.seat');if(!s)return;
+  var n=+s.getAttribute('data-seat');ME=(ME===n)?null:n;
+  try{if(ME)localStorage.setItem('wwview.me',ME);else localStorage.removeItem('wwview.me');}catch(x){}
+  render();
+});
+function setStatus(ok,txt){var e=$('#st');e.textContent=txt;e.className='status'+(ok?'':' off');}
+onSnapshot(doc(db,'public','current'),function(snap){
+  ERR=null;P=snap.exists()?snap.data():null;
+  if(P&&LASTGAME!==P.gameId){LASTGAME=P.gameId;}
+  setStatus(!snap.metadata.fromCache,snap.metadata.fromCache?'離線・顯示舊資料':'即時連線');
+  render();
+},function(err){ERR='讀取失敗：'+(err&&err.code?err.code:err);P=null;setStatus(false,'連線失敗');render();});
+window.addEventListener('offline',function(){setStatus(false,'離線');});
+</script>
+</body>
+</html>
