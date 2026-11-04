@@ -86,6 +86,7 @@ h4{font:700 .95rem/1.4 var(--sans);color:var(--muted);margin:14px 0 8px}
 .dot.c-wolf{background:var(--wolf)}.dot.c-god{background:var(--god)}.dot.c-good{background:var(--good)}.dot.c-third{background:var(--third)}
 .note{margin:10px 0;padding:10px 14px;border-radius:12px;background:var(--surface2);border-left:5px solid var(--accent);font-size:.95rem}
 .note.warn{border-left-color:var(--danger)}
+.hint .btn{background:var(--on-accent);color:var(--accent);border-color:transparent}
 .hint{margin:0 0 16px;padding:14px 18px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 
 /* 座位 */
@@ -503,6 +504,18 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify(APP));}catch(e){}
 var FB_APPLYING=false,FB_ERR=null,FB_WIRED=false;
 var FB_T={game:null,roster:null,config:null,pub:null},FB_LASTPUB='';
 /* 玩家端公開資料：只含座位、名字、已公告的出局、警長與票型；絕不含任何角色身分或夜間操作 */
+function pendingPublic(G){
+  var o={},keys=[];
+  if(G.phase==='play'){
+    if(G.stage==='sheriff'&&!G.sheriffDone&&G.sh&&G.sh.step==='vote')keys=pkOf(G,'S')?['S2']:['S'];
+    else if(G.stage==='day'){var dd=G.days[G.day]||{};if(dd.out==null&&dd.kind!=='none')keys=pkOf(G,'D'+G.day)?['D'+G.day+'p']:['D'+G.day];}
+  }
+  keys.forEach(function(k){
+    var v=(G.votes&&G.votes[k])||{};if(!Object.keys(v).length)return;
+    var u=eligibleVoters(G,k).filter(function(m){return v[m]===undefined;});if(u.length)o[k]=u;
+  });
+  return o;
+}
 function pkPublic(G){var o={};Object.keys(G.pk||{}).forEach(function(k){var p=G.pk[k];o[k]={seats:p.seats.slice(),seq:seqFrom(G,p.seats,p.start,p.dir)};});return o;}
 function buildPublic(G){
   var out=[];
@@ -513,7 +526,7 @@ function buildPublic(G){
   return {v:1,gameId:G.id,boardName:G.boardName||'',players:G.players||0,phase:G.phase||'setup',day:G.day||0,stage:G.stage||'setup',
     names:JSON.parse(JSON.stringify(G.names||{})),out:out,cand:(G.cand||[]).slice(),withdrawn:(sh.withdrawn||[]).slice(),
     sheriff:G.sheriff==null?null:G.sheriff,badgeLost:!!G.badgeLost,sheriffStep:sh.step||'',sheriffStatus:sh.status||'',
-    votes:JSON.parse(JSON.stringify(G.votes||{})),pk:pkPublic(G),winner:G.phase==='over'?(G.winner||''):''};
+    votes:JSON.parse(JSON.stringify(G.votes||{})),pk:pkPublic(G),pending:pendingPublic(G),winner:G.phase==='over'?(G.winner||''):''};
 }
 function fbSyncAll(){
   if(!window.FB||!FB.user||FB_APPLYING)return;
@@ -944,6 +957,19 @@ function voteLabel(k,G){
   return (b==='S'?'警長投票':'第'+CN[+b.slice(1)]+'天放逐投票')+(pk?'・PK 輪':((G&&pkOf(G,b))?'・第一輪':''));
 }
 function pkSeq(G,pk){return seqFrom(G,pk.seats,pk.start,pk.dir);}
+function eligibleVoters(G,key){
+  var b=baseKeyOf(key),pk=isPkKey(key),alive=aliveSeats(G);
+  if(b==='S'){
+    var cands=(G.cand||[]).filter(function(n){return !isDead(G,n);}),wd=(G.sh&&G.sh.withdrawn)||[];
+    if(!pk)return alive.filter(function(m){return cands.indexOf(m)<0;});
+    var t=pkOf(G,'S');if(!t)return [];
+    return alive.filter(function(m){return cands.indexOf(m)<0||(wd.indexOf(m)<0&&t.seats.indexOf(m)<0);});
+  }
+  var d=+b.slice(1),dd=G.days[d]||{};
+  var v1=seatsList(G).filter(function(m){return !isDead(G,m)||m===dd.out;}).filter(function(m){return !(G.idiot[m]>0&&G.idiot[m]<d);});
+  if(!pk)return v1;
+  var tp=pkOf(G,b);return tp?v1.filter(function(m){return tp.seats.indexOf(m)<0;}):[];
+}
 function voteResultHTML(G,key,targets,voters){
   var v=votesOf(G,key);if(!Object.keys(v).length)return '';
   var r=voteTally(G,key,targets),isS=baseKeyOf(key)==='S',pkRound=isPkKey(key),unrec=voters.filter(function(m){return v[m]===undefined;});
@@ -953,7 +979,7 @@ function voteResultHTML(G,key,targets,voters){
   else if(r.win.length===1)h+=r.win[0]+' 號最高，'+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtApply" data-key="'+key+'" data-seat="'+r.win[0]+'">'+(isS?'採用：'+r.win[0]+' 號當選警長':'採用：'+r.win[0]+' 號放逐出局')+'</button></div>';
   else if(!pkRound)h+='平票：'+r.win.join('、')+' 號各 '+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtPk" data-key="'+key+'">進入 PK（'+r.win.join('、')+' 號發言）</button><button class="btn" data-a="vtTie" data-key="'+key+'">不 PK，直接'+none+'</button></div>';
   else h+='PK 輪仍然平票：'+r.win.join('、')+' 號各 '+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtTie" data-key="'+key+'">'+none+'</button></div>';
-  if(unrec.length)h+='<p class="muted" style="margin:6px 0 0">還有 '+unrec.length+' 人未記錄（'+unrec.join('、')+'），結果可能會變。</p>';
+  if(unrec.length)h+='<p class="warn" style="margin:8px 0 0">⚠ 還有 '+unrec.length+' 人沒記錄（'+unrec.join('、')+' 號），結果可能會變；玩家頁會顯示「尚未記錄」。</p><div class="btnrow" style="margin-top:6px"><button class="btn" data-a="vtFillAbstain" data-key="'+key+'">把這 '+unrec.length+' 人全部標為棄票</button></div>';
   return h+'</div>';
 }
 function pkBlock(G,key,pk){
@@ -964,7 +990,7 @@ function pkBlock(G,key,pk){
 }
 function voteRecHTML(G,key,voters,targets,note,quiet){
   var open=!!UI.vrecOpen[key],v=votesOf(G,key),cnt=Object.keys(v).length;
-  var head='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="vrecToggle" data-key="'+key+'">'+(open?'收起：':'記錄誰投了誰（選填）：')+voteLabel(key,G)+(!open&&cnt?'・已記 '+cnt+' 人':'')+'</button></div>';
+  var head='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="vrecToggle" data-key="'+key+'">'+(open?'收起：':'記錄誰投了誰（選填）：')+voteLabel(key,G)+(!open&&cnt?'・已記 '+cnt+'/'+voters.length+' 人'+(cnt<voters.length?' ⚠':''):'')+'</button></div>';
   if(!open)return head;
   var tl=targets.concat([0]);
   var cur=(UI.voteTarget&&UI.voteTarget.key===key&&tl.indexOf(UI.voteTarget.seat)>=0)?UI.voteTarget.seat:null;
@@ -1260,14 +1286,16 @@ function stepWitch(G,d){
   var seats=seatsOfRole(G,'witch'),allDead=seats.length>0&&seats.every(function(n){return deadAtStart(G,n,d);});
   var witchFeared0=function(){return seats.some(function(n){return isFeared(G,d,n);});};
   var lines=[base[0]];
-  lines.push(witchFeared0()?'（夢魘恐懼，今晚看不到刀口）':(vics.length?'今晚 '+vics.join('、')+' 號被殺（比出號碼）。'+(used.save?'':'你要使用解藥嗎？'):'今晚沒有人被殺。'));
-  if(!witchFeared0()&&!used.poison)lines.push('你要使用毒藥嗎？要毒誰？');
+  if(witchFeared0()||used.save)lines.push('今晚他被殺死了，你要救他嗎？');
+  else lines.push(vics.length?'今晚 '+vics.join('、')+' 號被殺死了（比出號碼）。你要救他嗎？':'今晚沒有人被殺。');
+  lines.push('你要使用毒藥嗎？你要毒誰呢？');
   lines.push(base[base.length-1]);
   var mode=w.save!=null?'save':((w.poison!=null||w.pmode)?'poison':(w.none?'none':''));
   var notes=[];
   var witchFeared=seats.some(function(n){return isFeared(G,d,n);});
   var wt=t1(G,d,'wolves');if(wt!=null&&victim!==wt)notes.push('魔術師交換：狼人選 '+wt+' 號，實際被刀的是 '+victim+' 號。');
-  if(used.save)notes.push('解藥已在先前使用。');if(used.poison)notes.push('毒藥已在先前使用。');
+  if(used.save&&!witchFeared)notes.push('解藥已在先前使用：口白照常全部唸（是否用過藥由場上玩家自己判斷），但不比出被殺的號碼。（僅供上帝參考，今晚刀口：'+(vics.join('、')||'無')+'）');
+  if(used.poison)notes.push('毒藥已在先前使用。');
   if(allDead)notes.push('女巫已出局：仍照常唸台詞並停頓，避免洩漏出局資訊。');
   if(witchFeared)notes.push('夢魘恐懼：女巫今晚看不到刀口，也不能用解藥、毒藥，照常唸台詞並停頓。');
   if(vics.length&&seats.indexOf(victim)>=0&&vics.indexOf(seats[0])>=0)notes.push('女巫今晚也在被殺名單中，但不能自救。');
@@ -1423,7 +1451,7 @@ function stepDream2End(G,d){
     notes.push('自動判斷：'+(auto?'有行動':'沒行動')+'（依今晚已記錄的行動；狼人空刀、獵人夜槍開不出來都算沒行動）。');
     if(d>=2){
       var self=seatsOfRole(G,'dreamer2').indexOf(tg)>=0;
-      body+='<h4>是否讓夢遊者出局？</h4><div class="btnrow"><button class="btn danger'+(a.kill?' on':'')+'" data-a="dz2Kill"'+(self?' disabled':'')+'>'+(a.kill?'已決定：夢殺 '+tg+' 號（點擊取消）':'夢殺 '+tg+' 號')+'</button></div>';
+      body+='<h4>是否讓夢遊者出局？</h4><div class="btnrow"><button class="btn danger'+(a.kill===true?' on':'')+'" data-a="dz2Kill" data-v="1"'+(self?' disabled':'')+'>夢殺 '+tg+' 號'+(a.kill===true?'（已選）':'')+'</button><button class="btn'+(a.kill===false?' on':'')+'" data-a="dz2Kill" data-v="0">不夢殺（夢遊者免疫、不出局）'+(a.kill===false?'（已選）':'')+'</button></div><p class="muted">再點一次已選的按鈕可取消。'+(a.kill==null?'尚未決定。':'')+'</p>';
       if(self)notes.push('夢遊者是自己，不能夢殺。');else notes.push('夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。');
     }else notes.push('第二夜起才能讓夢遊者出局。');
   }
@@ -1644,7 +1672,7 @@ function trigHTML(G){
     if(t.type==='shoot'&&G.lucky&&G.lucky.seat===t.seat&&G.lucky.gift==='gun'&&G.seats[t.seat]!=='hunter'&&!(r&&r.onDeath))r={name:'幸運兒（獵槍）'};
     if(t.type==='shoot'){
       if(!t.can)return '<div class="card trig"><h3>'+t.seat+' 號 '+esc(r.name)+'因「'+esc(t.cause)+'」出局，槍被悶掉。</h3><p class="muted">不要宣布技能。</p><div class="btnrow" style="margin-top:10px"><button class="btn" data-a="noShoot" data-from="'+t.seat+'">知道了</button></div></div>';
-      return '<div class="card trig"><h3>宣布：'+t.seat+' 號是'+esc(r.name)+'，可以開槍。</h3>'+picker(G,{a:'shoot',d:{from:t.seat},sel:[]})+'<div class="btnrow"><button class="btn" data-a="noShoot" data-from="'+t.seat+'">不開槍</button></div></div>';
+      return '<div class="card trig"><h3>'+t.seat+' 號啟動角色技能，選擇你要帶走的玩家是？</h3><p class="muted">不要宣布角色身分。（上帝備註：'+esc(r.name)+'）</p>'+picker(G,{a:'shoot',d:{from:t.seat},sel:[]})+'<div class="btnrow"><button class="btn" data-a="noShoot" data-from="'+t.seat+'">不開槍</button></div></div>';
     }
     return '<div class="card trig"><h3>警長 '+t.seat+' 號出局・移交警徽</h3>'+picker(G,{a:'badge',d:{},sel:[]})+'<div class="btnrow"><button class="btn" data-a="badgeTear">撕掉警徽（遺失）</button></div></div>';
   }).join('');
@@ -1671,13 +1699,13 @@ function tick(){
   if(T.left===0){stopT();beep();render();}
 }
 function timerHTML(){
-  return '<div class="timer"><div class="tdisp'+(T.left===0?' end':'')+'" id="tdisp">'+fmt(T.left)+'</div><div class="chips">'+[60,90,120,180].map(function(s){return '<button class="chip'+(T.total===s?' cur':'')+'" data-a="tset" data-s="'+s+'">'+s+' 秒</button>';}).join('')+'</div><div class="btnrow"><button class="btn primary" data-a="tgo">'+(T.run?'暫停':'開始')+'</button><button class="btn" data-a="treset">重設</button></div>'+(extraSeats(APP.cur).length?'<p class="muted">已加時：'+extraSeats(APP.cur).join('、')+' 號（＋）</p>':'')+'<div class="btnrow"><button class="btn" data-a="extra">＋ 加時 1 分鐘（每位玩家限 1 次）</button></div>'+'</div>';
+  return '<div class="timer"><div class="tdisp'+(T.left===0?' end':'')+'" id="tdisp">'+fmt(T.left)+'</div><div class="chips">'+[60,90,120,150,180].map(function(s){return '<button class="chip'+(T.total===s?' cur':'')+'" data-a="tset" data-s="'+s+'">'+s+' 秒</button>';}).join('')+'</div><div class="btnrow"><button class="btn primary" data-a="tgo">'+(T.run?'暫停':'開始')+'</button><button class="btn" data-a="treset">重設</button></div>'+(extraSeats(APP.cur).length?'<p class="muted">已加時：'+extraSeats(APP.cur).join('、')+' 號（＋）</p>':'')+'<div class="btnrow"><button class="btn" data-a="extra">＋ 加時 1 分鐘（每位玩家限 1 次）</button></div>'+'</div>';
 }
 
 /* ================= 紀錄表 ================= */
 function wolfRowSeat(G,seats){
   var team=seats.filter(function(n){return campOf(G,n)==='wolf'&&isTeamRole(G.seats[n]);});
-  return team.filter(function(n){return ROLES[G.seats[n]].order==null;})[0]||team.filter(function(n){return G.seats[n]!=='fear';})[0]||team[0];
+  return team.filter(function(n){return G.seats[n]==='wolf';})[0]||team.filter(function(n){return ROLES[G.seats[n]].order==null;})[0]||team.filter(function(n){return G.seats[n]!=='fear';})[0]||team[0];
 }
 function actKeyFor(G,n,wolfSeat){
   if(n===wolfSeat)return 'wolves';
@@ -1708,7 +1736,7 @@ function cellText(G,d,key){
   switch(key){
     case 'wolves':return a.none?'空刀':(t.length?'殺'+t[0]:'');
     case 'witch':return (a.save!=null?'救'+a.save:'')+(a.poison!=null?'毒'+a.poison:'');
-    case 'seer':return t.length?t[0]+' '+(seerVerdict(G,swapper(G,d)(t[0]),d)==='bad'?'bad':'good'):'';
+    case 'seer':return t.length?t[0]+(seerVerdict(G,swapper(G,d)(t[0]),d)==='bad'?'壞':'好'):'';
     case 'brothers':return a.none?'X':(t.length?'復仇'+t[0]:'');
     case 'wolfbeauty':return a.none?'不睡':(t.length?'睡'+t[0]:'');
     case 'mechwolf':return t.length?({poison:'毒',shield:'盾',knife:'刀',verify:'驗'}[a.mode]||'')+t[0]:(a.none?'X':'');
@@ -1727,6 +1755,10 @@ function cellText(G,d,key){
   }
   return '';
 }
+function shotText(G,n,d){
+  var s=G.deaths.filter(function(x){return x.cause==='開槍'&&x.by===n&&x.day===d;}).map(function(x){return '槍'+x.seat;});
+  return s.join('・');
+}
 function deathsText(G,d,phase){
   var list=G.deaths.filter(function(x){return x.day===d&&x.phase===phase;});
   var tag={'連帶':'(連)','殉情':'(殉)','夢殺':'(夢)','黑市':'(黑)','騎士驗中':'(騎)','騎士自盡':'(騎自)'};
@@ -1744,9 +1776,10 @@ function sheetHTML(G,editable){
   var rows=seats.map(function(n){
     var r=roleOf(G,n),key=actKeyFor(G,n,wolfSeat),dead=isDead(G,n);
     var cells=days.map(function(d){
-      if(!key)return '<td></td>';
-      var txt=cellText(G,d,key);
-      return '<td class="cellbtn'+(txt==='/'?' off':'')+'"'+attr('cell','data-d="'+d+'" data-key="'+key+'"')+'>'+esc(txt)+'</td>';
+      var shot=shotText(G,n,d);
+      if(!key)return '<td>'+esc(shot)+'</td>';
+      var txt=cellText(G,d,key),show=shot?((txt&&txt!=='/')?txt+' '+shot:shot):txt;
+      return '<td class="cellbtn'+(txt==='/'&&!shot?' off':'')+'"'+attr('cell','data-d="'+d+'" data-key="'+key+'"')+'>'+esc(show)+'</td>';
     }).join('');
     return '<tr class="camp-'+r.camp+(dead?' isdead':'')+'"><th class="rolecell">'+esc((G.thief&&G.thief.seat===n?'盜賊→':'')+r.name)+(G.lucky&&G.lucky.seat===n&&!luckyFail(G)?'<small>幸運兒</small>':'')+(G.conv&&G.conv.seat===n?'<small>轉化者</small>':'')+(G.lovers&&G.lovers.indexOf(n)>=0?'<small>♡情侶</small>':'')+'</th><td class="seatcell"'+attr('seatModal','data-seat="'+n+'"')+'>'+(hasExtra(G,n)?'<i class="plus">＋</i>':'')+(G.cand.indexOf(n)>=0?'<i class="up">上</i>':'')+'<b>'+n+'</b>'+(G.sheriff===n?'<i class="badge">警</i>':'')+(dead?'<i class="x">✕</i>':'')+(G.names[n]?'<small>'+esc(G.names[n])+'</small>':'')+'</td>'+cells+'</tr>';
   }).join('');
@@ -1834,7 +1867,7 @@ function csvOf(G){
   seats.forEach(function(n){
     var r=roleOf(G,n),dth=G.deaths.filter(function(x){return x.seat===n;})[0],key=actKeyFor(G,n,ws);
     var row=[G.id,fmtDate(G.created),boardName(G),G.players,win,n,G.names[n]||'',r?r.name:'',r?CAMPS[r.camp]:'',G.cand.indexOf(n)>=0?'是':'',G.sheriff===n?'是':'',hasExtra(G,n)?'是':'',dth?dth.day:'',dth?(dth.phase==='N'?'夜晚':'白天'):'',dth?dth.cause:''];
-    days.forEach(function(d){row.push(key?cellText(G,d,key):'');});
+    days.forEach(function(d){var c=key?cellText(G,d,key):'',s=shotText(G,n,d);row.push(s?((c&&c!=='/')?c+' '+s:s):c);});
     if(hasVotes){row.push(vt('S',n),cntOf('S',n),vt('S2',n),cntOf('S2',n));days.forEach(function(d){row.push(vt('D'+d,n),cntOf('D'+d,n),vt('D'+d+'p',n),cntOf('D'+d+'p',n));});}
     rows.push(row);
   });
@@ -2117,6 +2150,10 @@ ACT.vtPk=function(ds){
   });
   UI.vrecOpen[pkKeyOf(ds.key)]=true;render();
 };
+ACT.vtFillAbstain=function(ds){mutate(function(G){
+  G.votes=G.votes||{};var v=G.votes[ds.key]=G.votes[ds.key]||{};
+  eligibleVoters(G,ds.key).forEach(function(m){if(v[m]===undefined)v[m]=0;});
+});};
 ACT.pkRoll=function(ds){mutate(function(G){var pk=pkOf(G,ds.key);if(pk)rollPk(pk);});};
 ACT.vtClear=function(ds){mutate(function(G){
   if(G.votes){delete G.votes[ds.key];if(!isPkKey(ds.key))delete G.votes[pkKeyOf(ds.key)];}
@@ -2169,7 +2206,7 @@ ACT.thPick=function(ds){mutate(function(G){
 ACT.thUndo=function(){mutate(function(G){var th=G.thief;if(!th||!th.chosen)return;G.seats[th.seat]='thief';th.chosen=null;th.buried=null;delete night(G,1,true).act.thief;});};
 ACT.mechLearn=function(ds){mutate(function(G){var n=+ds.seat;G.mech={from:n};night(G,1,true).act.mechwolf={t:[],learn:n};});};
 ACT.dz2Acted=function(ds){mutate(function(G){var a=night(G,G.day,true).act.dreamer2;if(!a)return;if(ds.v==='')delete a.acted;else a.acted=ds.v==='1';});};
-ACT.dz2Kill=function(){mutate(function(G){var a=night(G,G.day,true).act.dreamer2;if(!a)return;a.kill=!a.kill;});};
+ACT.dz2Kill=function(ds){mutate(function(G){var a=night(G,G.day,true).act.dreamer2;if(!a)return;var v=ds.v==='1';if(a.kill===v)delete a.kill;else a.kill=v;});};
 ACT.bmLucky=function(ds){mutate(function(G){var n=+ds.seat,L=G.lucky||{seat:null,gift:null};L.seat=(L.seat===n)?null:n;G.lucky=L;night(G,1,true).act.blackmarket={t:L.seat!=null?[L.seat]:[],gift:L.gift};});};
 ACT.bmGift=function(ds){mutate(function(G){var L=G.lucky||{seat:null,gift:null};L.gift=(L.gift===ds.g)?null:ds.g;G.lucky=L;var a=night(G,1,true).act.blackmarket||{t:[]};a.gift=L.gift;night(G,1,true).act.blackmarket=a;});};
 ACT.gconvPick=function(ds){mutate(function(G){

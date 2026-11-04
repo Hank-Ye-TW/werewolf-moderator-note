@@ -97,6 +97,8 @@ function voteBlock(p,key){
     h+='<div class="vote"><span class="n">'+cnt(t)+' 票</span><div class="who">'+t+' 號'+(nm(p,t)?' '+nm(p,t):'')+'</div><div class="by">'+g[t].map(function(m){return m+(w(m)>1?'(警1.5)':'');}).join('、')+'</div></div>';
   });
   if(g[0])h+='<div class="vote"><span class="n">'+g[0].length+' 人</span><div class="who">棄票</div><div class="by">'+g[0].join('、')+'</div></div>';
+  var pe=p.pending&&p.pending[key];
+  if(pe&&pe.length)h+='<div class="vote"><span class="n">?</span><div class="who">尚未記錄</div><div class="by">'+pe.join('、')+' 號（等待上帝輸入）</div></div>';
   return h||'<div class="empty">尚未記錄票型</div>';
 }
 function baseKey(k){return k==='S2'?'S':k.replace(/p$/,'');}
