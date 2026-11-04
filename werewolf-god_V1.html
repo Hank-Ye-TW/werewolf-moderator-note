@@ -503,6 +503,7 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify(APP));}catch(e){}
 var FB_APPLYING=false,FB_ERR=null,FB_WIRED=false;
 var FB_T={game:null,roster:null,config:null,pub:null},FB_LASTPUB='';
 /* 玩家端公開資料：只含座位、名字、已公告的出局、警長與票型；絕不含任何角色身分或夜間操作 */
+function pkPublic(G){var o={};Object.keys(G.pk||{}).forEach(function(k){var p=G.pk[k];o[k]={seats:p.seats.slice(),seq:seqFrom(G,p.seats,p.start,p.dir)};});return o;}
 function buildPublic(G){
   var out=[];
   G.deaths.forEach(function(x){
@@ -512,7 +513,7 @@ function buildPublic(G){
   return {v:1,gameId:G.id,boardName:G.boardName||'',players:G.players||0,phase:G.phase||'setup',day:G.day||0,stage:G.stage||'setup',
     names:JSON.parse(JSON.stringify(G.names||{})),out:out,cand:(G.cand||[]).slice(),withdrawn:(sh.withdrawn||[]).slice(),
     sheriff:G.sheriff==null?null:G.sheriff,badgeLost:!!G.badgeLost,sheriffStep:sh.step||'',sheriffStatus:sh.status||'',
-    votes:JSON.parse(JSON.stringify(G.votes||{})),winner:G.phase==='over'?(G.winner||''):''};
+    votes:JSON.parse(JSON.stringify(G.votes||{})),pk:pkPublic(G),winner:G.phase==='over'?(G.winner||''):''};
 }
 function fbSyncAll(){
   if(!window.FB||!FB.user||FB_APPLYING)return;
@@ -929,9 +930,41 @@ function voteGroups(G,key){
   Object.keys(g).forEach(function(t){g[t].sort(function(a,b){return a-b;});});
   return g;
 }
-function voteRecHTML(G,key,voters,targets,note){
+function voteTally(G,key,targets){
+  var g=voteGroups(G,key),best=0,win=[];
+  targets.forEach(function(t){var c=weightedCount(G,key,g[t]);if(c>best){best=c;win=[t];}else if(c>0&&c===best)win.push(t);});
+  return {best:best,win:win};
+}
+function isPkKey(k){return k==='S2'||/^D\d+p$/.test(k);}
+function pkKeyOf(k){return k==='S'?'S2':k+'p';}
+function baseKeyOf(k){return k==='S2'?'S':k.replace(/p$/,'');}
+function pkOf(G,k){return (G.pk&&G.pk[k])||null;}
+function voteLabel(k,G){
+  var pk=isPkKey(k),b=baseKeyOf(k);
+  return (b==='S'?'警長投票':'第'+CN[+b.slice(1)]+'天放逐投票')+(pk?'・PK 輪':((G&&pkOf(G,b))?'・第一輪':''));
+}
+function pkSeq(G,pk){return seqFrom(G,pk.seats,pk.start,pk.dir);}
+function voteResultHTML(G,key,targets,voters){
+  var v=votesOf(G,key);if(!Object.keys(v).length)return '';
+  var r=voteTally(G,key,targets),isS=baseKeyOf(key)==='S',pkRound=isPkKey(key),unrec=voters.filter(function(m){return v[m]===undefined;});
+  var none=isS?'警徽流失（無人當選）':'無人出局，進天黑';
+  var h='<div class="note" style="margin-bottom:10px"><b>票型結果（'+voteLabel(key,G)+'）</b>：';
+  if(!r.win.length)h+='沒有人得票（全部棄票）。<div class="btnrow" style="margin-top:8px"><button class="btn" data-a="vtTie" data-key="'+key+'">'+none+'</button></div>';
+  else if(r.win.length===1)h+=r.win[0]+' 號最高，'+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtApply" data-key="'+key+'" data-seat="'+r.win[0]+'">'+(isS?'採用：'+r.win[0]+' 號當選警長':'採用：'+r.win[0]+' 號放逐出局')+'</button></div>';
+  else if(!pkRound)h+='平票：'+r.win.join('、')+' 號各 '+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtPk" data-key="'+key+'">進入 PK（'+r.win.join('、')+' 號發言）</button><button class="btn" data-a="vtTie" data-key="'+key+'">不 PK，直接'+none+'</button></div>';
+  else h+='PK 輪仍然平票：'+r.win.join('、')+' 號各 '+r.best+' 票。<div class="btnrow" style="margin-top:8px"><button class="btn primary" data-a="vtTie" data-key="'+key+'">'+none+'</button></div>';
+  if(unrec.length)h+='<p class="muted" style="margin:6px 0 0">還有 '+unrec.length+' 人未記錄（'+unrec.join('、')+'），結果可能會變。</p>';
+  return h+'</div>';
+}
+function pkBlock(G,key,pk){
+  if(!pk)return '';
+  var seq=pkSeq(G,pk);
+  return '<div class="card trig"><h3>PK 發言：'+pk.seats.join('、')+' 號</h3><p class="muted">起點與方向由你通知（可用抽籤或轉盤），下方是系統抽的建議順序。PK 的玩家只發言、這一輪不能投票。</p>'+seqTxt(seq)+
+    '<div class="btnrow"><button class="btn primary" data-a="pkRoll" data-key="'+key+'">🎲 重抽</button></div><h4>計時器</h4>'+timerHTML()+'</div>';
+}
+function voteRecHTML(G,key,voters,targets,note,quiet){
   var open=!!UI.vrecOpen[key],v=votesOf(G,key),cnt=Object.keys(v).length;
-  var head='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="vrecToggle" data-key="'+key+'">'+(open?'收起投票明細':'記錄誰投了誰（選填）'+(cnt?'・已記 '+cnt+' 人':''))+'</button></div>';
+  var head='<div class="btnrow" style="margin-top:12px"><button class="btn" data-a="vrecToggle" data-key="'+key+'">'+(open?'收起：':'記錄誰投了誰（選填）：')+voteLabel(key,G)+(!open&&cnt?'・已記 '+cnt+' 人':'')+'</button></div>';
   if(!open)return head;
   var tl=targets.concat([0]);
   var cur=(UI.voteTarget&&UI.voteTarget.key===key&&tl.indexOf(UI.voteTarget.seat)>=0)?UI.voteTarget.seat:null;
@@ -943,7 +976,8 @@ function voteRecHTML(G,key,voters,targets,note){
   if(g[0])parts.push('棄票 '+g[0].length+' 人（'+g[0].join('、')+'）');
   var unrec=voters.filter(function(m){return v[m]===undefined;});
   if(cnt&&unrec.length)parts.push('未記錄 '+unrec.length+' 人（'+unrec.join('、')+'）');
-  return head+(key.charAt(0)==='D'&&G.sheriff!=null?'<p class="muted">警長 '+G.sheriff+' 號的投票算 1.5 票。</p>':'')+'<div class="card vrec"><h4>① 先點被投的人（「棄」＝不投票）</h4><div class="seats">'+tgrid+'</div><h4>② 再點投給他的人</h4>'+(note?'<p class="muted">'+esc(note)+'</p>':'')+
+  var res=quiet?'':voteResultHTML(G,key,targets,voters);
+  return head+(key.charAt(0)==='D'&&G.sheriff!=null?'<p class="muted">警長 '+G.sheriff+' 號的投票算 1.5 票。</p>':'')+'<div class="card vrec">'+res+'<h4>① 先點被投的人（「棄」＝不投票）</h4><div class="seats">'+tgrid+'</div><h4>② 再點投給他的人</h4>'+(note?'<p class="muted">'+esc(note)+'</p>':'')+
     '<div class="seats">'+vgrid+'</div>'+(cur==null?'<p class="muted" style="margin-top:8px">請先點上方被投的人。</p>':'')+
     '<p class="muted" style="margin-top:10px">'+(parts.length?esc(parts.join('；')):'尚未記錄。')+'</p><p class="muted">沒點到的人會顯示為「未記錄」，和「棄票」不同。</p><div class="btnrow"><button class="btn" data-a="vtClear" data-key="'+key+'">清除這一輪</button></div></div>';
 }
@@ -1534,7 +1568,7 @@ function viewSheriff(G){
   }else if(s.step==='speech'){
     var o=s.order,seq=o?seqFrom(G,cands,o.start,o.dir):[];
     body+='<div class="script"><p class="say">請上警的玩家依序發表政見，'+(o?o.start+' 號開始，'+(o.dir>0?'順向（號碼遞增）':'逆向（號碼遞減）')+'。':'')+'</p></div>'+
-      '<div class="btnrow"><button class="btn primary" data-a="sRoll">🎲 重抽</button></div>'+(o?seqTxt(seq):'')+boomBlock(G)+
+      '<div class="btnrow"><button class="btn primary" data-a="sRoll">🎲 重抽</button></div>'+(o?seqTxt(seq):'')+'<h4>計時器</h4>'+timerHTML()+boomBlock(G)+
       '<div class="btnrow nav"><span class="muted">狼人可在此時自爆</span><button class="btn primary big" data-a="sWithdraw">發言結束 → 退水</button></div>';
   }else if(s.step==='withdraw'){
     body+='<div class="script"><p class="say">要退水的玩家請坐下。</p>'+(s.resumed?'<p class="say soft">前一天競選被自爆中斷：不再發表政見，直接退水。</p>':'')+'</div>'+
@@ -1544,9 +1578,13 @@ function viewSheriff(G){
   }else{
     var done=G.sheriff!=null||s.status==='lost';
     var voters=aliveSeats(G).filter(function(m){return cands.indexOf(m)<0;});
-    body+='<div class="script"><p class="say">現在開始投票，自爆失效。</p><p class="say soft">上警的玩家（含已退水）不能投票。</p></div>'+
-      '<h4>當選警長</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sElect',sel:G.sheriff===n,dis:live.indexOf(n)<0});}).join('')+'</div>'+
-      '<div class="note">所有上警的玩家（含已退水）都不能投票。可投票：'+esc(voters.join('、')||'（無）')+' 號。</div>'+voteRecHTML(G,'S',voters,live,'僅列出可投票的玩家。')+
+    var pk=pkOf(G,'S'),tied=pk?pk.seats.filter(function(n){return !isDead(G,n);}):null;
+    var voters2=tied?aliveSeats(G).filter(function(m){return cands.indexOf(m)<0||(wd.indexOf(m)<0&&tied.indexOf(m)<0);}):null;
+    body+='<div class="script"><p class="say">現在開始投票，自爆失效。</p><p class="say soft">'+(tied?'PK 輪：沒退水且未平票的上警玩家、以及所有未上警的玩家可以投票；平票的玩家只能發言。':'上警的玩家（含已退水）不能投票。')+'</p></div>'+
+      (tied?pkBlock(G,'S',pk):'')+
+      '<h4>當選警長</h4><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'sElect',sel:G.sheriff===n,dis:(tied?tied:live).indexOf(n)<0});}).join('')+'</div>'+
+      '<div class="note">'+(tied?'PK 輪可投票：'+esc(voters2.join('、')||'（無）')+' 號。':'所有上警的玩家（含已退水）都不能投票。可投票：'+esc(voters.join('、')||'（無）')+' 號。')+'</div>'+
+      voteRecHTML(G,'S',voters,live,'僅列出可投票的玩家。',!!tied)+(tied?voteRecHTML(G,'S2',voters2,tied,'PK 輪：平票的玩家不能投票。'):'')+
       '<div class="btnrow nav"><button class="btn" data-a="sNoWinner">平票／無人當選</button><button class="btn primary big" data-a="finishSheriff"'+(done?'':' disabled')+'>完成警長競選 →</button></div>';
   }
   return '<div class="card">'+body+'</div>';
@@ -1582,15 +1620,18 @@ function viewDay(G){
     var msg=dd.kind==='none'?'平票或無人出局。':(dd.kind==='knight'?dd.out+' 號被騎士驗中，出局並直接進入黑夜。':dd.kind==='boom'?dd.out+' 號狼人自爆，直接進入黑夜。':(dd.kind==='idiot'?dd.out+' 號傻瓜翻牌免死（失去投票權）。':dd.out+' 號被放逐出局。'));
     vote+='<div class="script"><p class="say">'+esc(msg)+'</p></div>'+trigHTML(G)+'<div class="btnrow">'+(rules(G).huntGame?'':'<button class="btn" data-a="voteReset">重新選擇</button>')+((rules(G).huntGame&&!huntWolfDown(G,d)&&!pendingTriggers(G).length)?'<button class="btn primary" data-a="huntAgain">本日還沒放逐出狼人 → 再放逐一人</button>':'')+'</div>';
   }else{
-    vote+='<div class="script"><p class="say">發言結束，現在開始投票。</p></div>';
+    var dkey='D'+d,dpk=pkOf(G,dkey),dtied=dpk?dpk.seats.filter(function(n){return !isDead(G,n);}):null;
+    vote+='<div class="script"><p class="say">'+(dtied?'PK 發言結束，現在進行第二輪投票。'+dtied.join('、')+' 號不能投票。':'發言結束，現在開始投票。')+'</p></div>'+(dtied?pkBlock(G,dkey,dpk):'');
     if(UI.boom){
       vote+='<p class="muted">選擇自爆的狼人：</p><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'voteSeat',dis:!canBoomSeat(G,n)});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="boom">取消自爆</button></div>';
     }else{
-      vote+='<p class="muted">選擇被放逐的玩家：</p><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'voteSeat',dis:isDead(G,n)});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="voteNone">平票／無人出局</button><button class="btn danger" data-a="boom">狼人自爆</button></div>';
+      vote+='<p class="muted">選擇被放逐的玩家：</p><div class="seats big">'+seatsList(G).map(function(n){return seatBtn(G,n,{a:'voteSeat',dis:isDead(G,n)||(!!dtied&&dtied.indexOf(n)<0)});}).join('')+'</div><div class="btnrow"><button class="btn" data-a="voteNone">平票／無人出局</button><button class="btn danger" data-a="boom">狼人自爆</button></div>';
     }
   }
   var pre=seatsList(G).filter(function(m){return !isDead(G,m)||m===dd.out;});
-  vote+=voteRecHTML(G,'D'+d,pre.filter(function(m){return !(G.idiot[m]>0&&G.idiot[m]<d);}),pre,'翻牌後的傻瓜失去投票權。');
+  var pk0=pkOf(G,'D'+d),pt=pk0?pk0.seats:null,v1=pre.filter(function(m){return !(G.idiot[m]>0&&G.idiot[m]<d);});
+  vote+=voteRecHTML(G,'D'+d,v1,pre,'翻牌後的傻瓜失去投票權。',!!pt);
+  if(pt)vote+=voteRecHTML(G,'D'+d+'p',v1.filter(function(m){return pt.indexOf(m)<0;}),pt,'PK 輪：平票的玩家不能投票。');
   vote+='</div>';
   var pending=(dd.out==null&&dd.kind!=='none')?trigHTML(G):'';
   var next='<div class="btnrow nav"><span class="muted">'+(dd.out!=null||dd.kind==='none'?'':'尚未記錄放逐結果')+((rules(G).huntGame&&!huntWolfDown(G,d))?'　獵人局：要先有狼人出局才能天黑':'')+'</span><button class="btn primary big" data-a="nextNight"'+((rules(G).huntGame&&!huntWolfDown(G,d))?' disabled':'')+'>天黑請閉眼 → 第 '+(d+1)+' 夜</button></div>';
@@ -1754,7 +1795,7 @@ function voteLines(G){
   var L=[],vs=G.votes||{};
   Object.keys(vs).forEach(function(k){
     var g=voteGroups(G,k),parts=Object.keys(g).map(Number).sort(function(a,b){return a-b;}).map(function(t){return (t===0?'棄票':t+'號')+' ← '+g[t].join('、');});
-    if(parts.length)L.push('  '+(k==='S'?'警長投票':'第'+CN[+k.slice(1)]+'天放逐投票')+'：'+parts.join('；'));
+    if(parts.length)L.push('  '+voteLabel(k,G)+'：'+parts.join('；'));
   });
   return L;
 }
@@ -1788,13 +1829,13 @@ function csvOf(G){
   var vs=G.votes||{},hasVotes=Object.keys(vs).length>0,cntOf=function(k,n){var g=voteGroups(G,k);return g[n]?g[n].length:'';},vt=function(k,n){var x=vs[k]&&vs[k][n];return x===undefined?'':(x===0?'棄票':x);};
   var head=['局ID','日期','板子','人數','結果','座位','暱稱','角色','陣營','上警','警長','加時','出局天','出局階段','出局原因'];
   days.forEach(function(d){head.push('第'+d+'夜行動');});
-  if(hasVotes){head.push('警長投票投給','警長得票');days.forEach(function(d){head.push('第'+d+'天放逐投給','第'+d+'天得票');});}
+  if(hasVotes){head.push('警長投票投給','警長得票','警長PK投給','警長PK得票');days.forEach(function(d){head.push('第'+d+'天放逐投給','第'+d+'天得票','第'+d+'天PK投給','第'+d+'天PK得票');});}
   var rows=[head];
   seats.forEach(function(n){
     var r=roleOf(G,n),dth=G.deaths.filter(function(x){return x.seat===n;})[0],key=actKeyFor(G,n,ws);
     var row=[G.id,fmtDate(G.created),boardName(G),G.players,win,n,G.names[n]||'',r?r.name:'',r?CAMPS[r.camp]:'',G.cand.indexOf(n)>=0?'是':'',G.sheriff===n?'是':'',hasExtra(G,n)?'是':'',dth?dth.day:'',dth?(dth.phase==='N'?'夜晚':'白天'):'',dth?dth.cause:''];
     days.forEach(function(d){row.push(key?cellText(G,d,key):'');});
-    if(hasVotes){row.push(vt('S',n),cntOf('S',n));days.forEach(function(d){row.push(vt('D'+d,n),cntOf('D'+d,n));});}
+    if(hasVotes){row.push(vt('S',n),cntOf('S',n),vt('S2',n),cntOf('S2',n));days.forEach(function(d){row.push(vt('D'+d,n),cntOf('D'+d,n),vt('D'+d+'p',n),cntOf('D'+d+'p',n));});}
     rows.push(row);
   });
   return rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
@@ -2019,7 +2060,7 @@ function rollCandOrder(G){
   var c=G.cand.filter(function(n){return !isDead(G,n);});if(!c.length)return;
   G.sh.order={start:c[Math.floor(Math.random()*c.length)],dir:Math.random()<0.5?1:-1};
 }
-ACT.sSpeech=function(){mutate(function(G){G.sh.step='speech';G.sh.withdrawn=[];rollCandOrder(G);});};
+ACT.sSpeech=function(){mutate(function(G){G.sh.step='speech';G.sh.withdrawn=[];if(G.votes){delete G.votes.S;delete G.votes.S2;}if(G.pk)delete G.pk.S;rollCandOrder(G);});};
 ACT.sRoll=function(){mutate(function(G){rollCandOrder(G);});};
 ACT.sWithdraw=function(){mutate(function(G){G.sh.step='withdraw';});};
 ACT.sWd=function(ds){mutate(function(G){
@@ -2059,7 +2100,28 @@ ACT.vtVoter=function(ds){
   var vt=UI.voteTarget;if(!vt||vt.key!==ds.key)return;
   mutate(function(G){G.votes=G.votes||{};var v=G.votes[ds.key]=G.votes[ds.key]||{},m=+ds.seat;if(v[m]===vt.seat)delete v[m];else v[m]=vt.seat;});
 };
-ACT.vtClear=function(ds){mutate(function(G){if(G.votes)delete G.votes[ds.key];});};
+ACT.vtApply=function(ds){
+  var G=APP.cur,n=+ds.seat;
+  if(baseKeyOf(ds.key)==='S'){if(G.sheriff!==n)ACT.sElect({seat:n});return;}
+  var dd=G.days[G.day]||{};if(dd.out===n&&dd.kind)return;
+  ACT.voteSeat({seat:n});
+};
+ACT.vtTie=function(ds){if(baseKeyOf(ds.key)==='S')ACT.sNoWinner();else ACT.voteNone();};
+function rollPk(pk){pk.start=pk.seats[Math.floor(Math.random()*pk.seats.length)];pk.dir=Math.random()<0.5?1:-1;}
+ACT.vtPk=function(ds){
+  mutate(function(G){
+    var g=voteGroups(G,ds.key),ts=Object.keys(g).map(Number).filter(function(t){return t!==0;}),r=voteTally(G,ds.key,ts);
+    if(r.win.length<2)return;
+    G.pk=G.pk||{};var pk={seats:r.win.slice().sort(function(a,b){return a-b;}),start:0,dir:1};rollPk(pk);G.pk[ds.key]=pk;
+    if(G.votes)delete G.votes[pkKeyOf(ds.key)];
+  });
+  UI.vrecOpen[pkKeyOf(ds.key)]=true;render();
+};
+ACT.pkRoll=function(ds){mutate(function(G){var pk=pkOf(G,ds.key);if(pk)rollPk(pk);});};
+ACT.vtClear=function(ds){mutate(function(G){
+  if(G.votes){delete G.votes[ds.key];if(!isPkKey(ds.key))delete G.votes[pkKeyOf(ds.key)];}
+  if(!isPkKey(ds.key)&&G.pk)delete G.pk[ds.key];
+});};
 ACT.extra=function(){openModal({type:'extra'});};
 ACT.extraPick=function(ds){var n=+ds.seat;if(hasExtra(APP.cur,n))return;UI.modal=null;mutate(function(G){G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});T.left+=60;render();};
 ACT.mextra=function(){var n=UI.modal.seat;mutate(function(G){if(hasExtra(G,n))G.extras=G.extras.filter(function(x){return x.seat!==n;});else G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});};

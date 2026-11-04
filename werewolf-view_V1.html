@@ -99,7 +99,11 @@ function voteBlock(p,key){
   if(g[0])h+='<div class="vote"><span class="n">'+g[0].length+' 人</span><div class="who">棄票</div><div class="by">'+g[0].join('、')+'</div></div>';
   return h||'<div class="empty">尚未記錄票型</div>';
 }
-function voteTitle(k){return k==='S'?'警長投票':'第 '+k.slice(1)+' 天放逐投票';}
+function baseKey(k){return k==='S2'?'S':k.replace(/p$/,'');}
+function isPk(k){return k==='S2'||/^D\d+p$/.test(k);}
+function voteTitle(k){var b=baseKey(k);return (b==='S'?'警長投票':'第 '+b.slice(1)+' 天放逐投票')+(isPk(k)?'・PK 輪':((P&&P.pk&&P.pk[b])?'・第一輪':''));}
+function keyRank(k){var b=baseKey(k),n=b==='S'?0:+b.slice(1);return n*10+(isPk(k)?5:0);}
+function pkLine(p,k){var pk=isPk(k)&&p.pk&&p.pk[baseKey(k)];return pk?'<p class="muted" style="margin:2px 0 6px">PK 發言：'+pk.seq.join(' → ')+' 號（這一輪 '+pk.seats.join('、')+' 號不能投票）</p>':'';}
 function render(){
   var app=$('#app');
   if(!P){app.innerHTML='<header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">'+(ERR?esc(ERR):'等待上帝開局…')+'</div></header>';return;}
@@ -115,11 +119,11 @@ function render(){
     h+='</section>';
   }
   var keys=Object.keys(p.votes||{}).filter(function(k){return Object.keys(p.votes[k]).length;});
-  keys.sort(function(a,b){var na=a==='S'?0.5:+a.slice(1),nb=b==='S'?0.5:+b.slice(1);return nb-na;});
+  keys.sort(function(a,b){return keyRank(b)-keyRank(a);});
   h+='<section class="card"><h2>投票票型</h2>';
   if(!keys.length)h+='<div class="empty">目前還沒有票型紀錄</div>';
   keys.forEach(function(k,i){
-    h+=(i===0?'<div><div class="who" style="font-weight:800;margin:4px 0">'+voteTitle(k)+'</div>'+voteBlock(p,k)+'</div>':'<details><summary>'+voteTitle(k)+'</summary>'+voteBlock(p,k)+'</details>');
+    h+=(i===0?'<div><div class="who" style="font-weight:800;margin:4px 0">'+voteTitle(k)+'</div>'+pkLine(p,k)+voteBlock(p,k)+'</div>':'<details><summary>'+voteTitle(k)+'</summary>'+pkLine(p,k)+voteBlock(p,k)+'</details>');
   });
   h+='</section>';
   var outs=(p.out||[]).slice().sort(function(a,b){return a.day-b.day||(a.phase==='N'?-1:1);});
