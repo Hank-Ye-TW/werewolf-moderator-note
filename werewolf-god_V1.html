@@ -2201,8 +2201,17 @@ ACT.vtVoter=function(ds){
   var vt=UI.voteTarget;if(!vt||vt.key!==ds.key)return;
   mutate(function(G){G.votes=G.votes||{};var v=G.votes[ds.key]=G.votes[ds.key]||{},m=+ds.seat;if(v[m]===vt.seat)delete v[m];else v[m]=vt.seat;});
 };
+ACT.vtApplyGo=function(){var p=UI.pendingApply;UI.modal=null;UI.pendingApply=null;if(p)ACT.vtApply({key:p.key,seat:p.seat,force:true});else render();};
 ACT.vtApply=function(ds){
   var G=APP.cur,n=+ds.seat;
+  if(!ds.force){
+    var rec=(G.votes&&G.votes[ds.key])||{},un=eligibleVoters(G,ds.key).filter(function(m){return rec[m]===undefined;});
+    if(un.length){
+      UI.pendingApply={key:ds.key,seat:ds.seat};
+      openModal({type:'confirm',title:'還有 '+un.length+' 人沒記錄票型',msg:un.join('、')+' 號還沒記錄，結果可能會變。確定要採用「'+n+' 號'+(baseKeyOf(ds.key)==='S'?'當選警長':'放逐出局')+'」嗎？（取消可回去補記）',go:'vtApplyGo'});
+      return;
+    }
+  }
   if(baseKeyOf(ds.key)==='S'){if(G.sheriff!==n)ACT.sElect({seat:n});return;}
   var dd=G.days[G.day]||{};if(dd.out===n&&dd.kind)return;
   ACT.voteSeat({seat:n});
