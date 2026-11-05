@@ -10,6 +10,10 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
 main{max-width:720px;margin:0 auto}
+.tabs{display:flex;gap:8px;padding-top:14px}
+.tabs button{flex:1;font-weight:700}
+.tabs button.on{background:var(--accbg);color:var(--acc);border-color:var(--acc)}
+pre.rv{white-space:pre-wrap;word-break:break-word;font:.92rem/1.7 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;margin:0}
 header{padding:20px 0 8px}
 h1{margin:0;font-size:1.35rem}
 .sub{color:var(--mut);font-size:.9rem;margin-top:2px}
@@ -50,7 +54,7 @@ button[disabled]{opacity:.5}
 <main id="app"><header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">等待上帝開局…</div></header></main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getFirestore,doc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,doc,onSnapshot,collection,query,orderBy,limit,documentId} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 var app=initializeApp({
   apiKey:"AIzaSyDVWEnINOZf2bGuC7SxHm4_JOqJGq6AixQ",
   authDomain:"werewolf-game-soymilk.firebaseapp.com",
@@ -60,7 +64,7 @@ var app=initializeApp({
   appId:"1:267788587461:web:6932c7ea6ee1c0b9813bac"
 });
 var db=getFirestore(app);
-var P=null,ME=null,ERR=null,LASTGAME=null;
+var P=null,ME=null,ERR=null,LASTGAME=null,TAB='live',REV=[],REVERR=null,REVID=null;
 var $=function(s){return document.querySelector(s);};
 var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
 try{ME=+localStorage.getItem('wwview.me')||null;}catch(e){}
@@ -106,8 +110,7 @@ function isPk(k){return k==='S2'||/^D\d+p$/.test(k);}
 function voteTitle(k){var b=baseKey(k);return (b==='S'?'警長投票':'第 '+b.slice(1)+' 天放逐投票')+(isPk(k)?'・PK 輪':((P&&P.pk&&P.pk[b])?'・第一輪':''));}
 function keyRank(k){var b=baseKey(k),n=b==='S'?0:+b.slice(1);return n*10+(isPk(k)?5:0);}
 function pkLine(p,k){var pk=isPk(k)&&p.pk&&p.pk[baseKey(k)];return pk?'<p class="muted" style="margin:2px 0 6px">PK 發言：'+pk.seq.join(' → ')+' 號（這一輪 '+pk.seats.join('、')+' 號不能投票）</p>':'';}
-function render(){
-  var app=$('#app');
+function renderLive(app){
   if(!P){app.innerHTML='<header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">'+(ERR?esc(ERR):'等待上帝開局…')+'</div></header>';return;}
   var p=P,h='<header><h1>🐺 '+(esc(p.boardName)||'狼人殺')+'</h1><div class="sub">'+p.players+' 人局・只顯示白天公開資訊</div><span class="stage">'+stageText(p)+'</span></header>';
   if(p.phase==='over'&&p.winner)h+='<div class="win">'+({good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[p.winner]||'本局結束')+'</div>';
@@ -139,6 +142,49 @@ document.addEventListener('click',function(e){
   try{if(ME)localStorage.setItem('wwview.me',ME);else localStorage.removeItem('wwview.me');}catch(x){}
   render();
 });
+function fmtD(iso){var d=new Date(iso);if(isNaN(d))return '';return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+function dayBlocks(text){
+  var lines=String(text||'').split('\n'),blocks=[],cur={title:'',lines:[]};
+  lines.forEach(function(l){
+    if(/^第.+天$/.test(l)){blocks.push(cur);cur={title:l,lines:[]};}else cur.lines.push(l);
+  });
+  blocks.push(cur);return blocks;
+}
+function renderPast(app){
+  if(REVID!=null){
+    var g=REV.filter(function(x){return x.id===REVID;})[0];
+    if(g){
+      var w={good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[g.winner]||'本局結束';
+      var h='<header><h1>'+esc(g.boardName||'賽後回顧')+'</h1><div class="sub">'+fmtD(g.created)+'・'+g.players+' 人</div><span class="stage">'+esc(w)+'</span></header><div class="row" style="margin:8px 0"><button data-back="1">← 返回過往</button></div>';
+      dayBlocks(g.text).forEach(function(b,i){
+        var body=b.lines.join('\n').replace(/^\n+|\n+$/g,'');if(!body&&!b.title)return;
+        h+='<section class="card">'+(b.title?'<h2>'+esc(b.title)+'</h2>':'<h2>開局資訊</h2>')+'<pre class="rv">'+esc(body)+'</pre></section>';
+      });
+      app.innerHTML=h;return;
+    }
+    REVID=null;
+  }
+  var h='<header><h1>🐺 過往賽後回顧</h1><div class="sub">只顯示已結束且主持人公開的局</div></header>';
+  if(REVERR)h+='<section class="card"><div class="empty">'+esc(REVERR)+'</div></section>';
+  else if(!REV.length)h+='<section class="card"><div class="empty">目前還沒有公開的回顧</div></section>';
+  else h+='<section class="card">'+REV.map(function(g){
+    var w={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[g.winner]||'已結束';
+    return '<div class="vote" data-rev="'+g.id+'" style="cursor:pointer"><span class="n">'+esc(w)+'</span><div class="who">'+fmtD(g.created)+'　'+esc(g.boardName||'')+'</div><div class="by">'+g.players+' 人 ・ 點開看逐夜回顧</div></div>';
+  }).join('')+'</section>';
+  app.innerHTML=h;
+}
+function render(){
+  var app=$('#app');
+  app.innerHTML='<div class="tabs"><button data-tab="live" class="'+(TAB==='live'?'on':'')+'">本局</button><button data-tab="past" class="'+(TAB==='past'?'on':'')+'">過往</button></div><div id="pane"></div>';
+  if(TAB==='past')renderPast($('#pane'));else renderLive($('#pane'));
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest&&e.target.closest('[data-tab]');
+  if(t){TAB=t.getAttribute('data-tab');REVID=null;render();return;}
+  var v=e.target.closest&&e.target.closest('[data-rev]');
+  if(v){REVID=+v.getAttribute('data-rev');render();window.scrollTo(0,0);return;}
+  if(e.target.closest&&e.target.closest('[data-back]')){REVID=null;render();}
+});
 function setStatus(ok,txt){var e=$('#st');e.textContent=txt;e.className='status'+(ok?'':' off');}
 onSnapshot(doc(db,'public','current'),function(snap){
   ERR=null;P=snap.exists()?snap.data():null;
@@ -147,6 +193,10 @@ onSnapshot(doc(db,'public','current'),function(snap){
   render();
 },function(err){ERR='讀取失敗：'+(err&&err.code?err.code:err);P=null;setStatus(false,'連線失敗');render();});
 window.addEventListener('offline',function(){setStatus(false,'離線');});
+onSnapshot(query(collection(db,'reviews'),orderBy(documentId(),'desc'),limit(30)),function(snap){
+  REVERR=null;REV=[];snap.forEach(function(d){var x=d.data();if(x&&x.id!=null)REV.push(x);});
+  if(TAB==='past')render();
+},function(err){REVERR='讀取失敗：'+(err&&err.code?err.code:err);REV=[];if(TAB==='past')render();});
 </script>
 </body>
 </html>

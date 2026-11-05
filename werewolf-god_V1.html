@@ -228,7 +228,7 @@ table.sheet{border-collapse:collapse;width:100%;min-width:780px}
 /* ================= Firebase 連線層 ================= */
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,setDoc,onSnapshot,collection,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,doc,setDoc,deleteDoc,onSnapshot,collection,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 var firebaseConfig={
   apiKey:"AIzaSyDVWEnINOZf2bGuC7SxHm4_JOqJGq6AixQ",
@@ -247,7 +247,12 @@ var db=getFirestore(fbApp);
 
 var FB={
   authReady:false,user:null,online:navigator.onLine,lastError:null,
-  _authCb:[],_gameCb:[],_rosterCb:[],_configCb:[],
+  _authCb:[],_gameCb:[],_rosterCb:[],_configCb:[],_histCb:[],
+  onHistory:function(cb){this._histCb.push(cb);},
+  saveHistory:function(id,o){try{return setDoc(doc(db,'history',id),o);}catch(e){return Promise.reject(e);}},
+  deleteHistory:function(id){try{return deleteDoc(doc(db,'history',id));}catch(e){return Promise.reject(e);}},
+  saveReview:function(id,o){try{return setDoc(doc(db,'reviews',id),o);}catch(e){return Promise.reject(e);}},
+  deleteReview:function(id){try{return deleteDoc(doc(db,'reviews',id));}catch(e){return Promise.reject(e);}},
   onAuth:function(cb){this._authCb.push(cb);if(this.authReady)cb(this.user);},
   onGame:function(cb){this._gameCb.push(cb);},
   onRoster:function(cb){this._rosterCb.push(cb);},
@@ -273,6 +278,10 @@ onAuthStateChanged(auth,function(u){
     unsub.push(onSnapshot(doc(db,'games','current'),function(snap){
       if(snap.metadata&&snap.metadata.hasPendingWrites)return; /* 自己剛寫入、還沒回來的，跳過，避免覆蓋正在編輯的畫面 */
       FB._gameCb.forEach(function(cb){cb(snap.exists()?snap.data():null);});
+    }));
+    unsub.push(onSnapshot(collection(db,'history'),function(snap){
+      var arr=[];snap.forEach(function(d){arr.push({docId:d.id,data:d.data()});});
+      FB._histCb.forEach(function(cb){cb(arr,!!(snap.metadata&&snap.metadata.fromCache));});
     }));
     unsub.push(onSnapshot(doc(db,'roster','main'),function(snap){
       if(snap.metadata&&snap.metadata.hasPendingWrites)return;
@@ -456,14 +465,14 @@ var BOARDS=[
   {id:'b8',name:'狼兄弟・黑市商人局',note:'狼兄＋狼弟＋2小狼＋預言家＋女巫＋獵人＋黑市商人＋4民（12人）',pool:{wolfbrother:1,wolfyounger:1,wolf:2,seer:1,witch:1,hunter:1,blackmarket:1,villager:4},order:['brothers','wolves','blackmarket','lucky','witch','seer','hunter']},
   {id:'b9',name:'覺醒石像鬼・攝夢人局',note:'小狼＋黑狼王＋覺醒石像鬼＋預言家＋女巫＋獵人＋守墓人＋覺醒攝夢人＋4民（12人）',pool:{wolf:1,wolfking:1,gargoyle2:1,seer:1,witch:1,hunter:1,gravekeeper:1,dreamer2:1,villager:4},order:['dreamer2','wolves','gconv','witch','hunter','gravekeeper','seer','dreamer2end','convlearn']},
   {id:'b10',name:'石像鬼・守墓人局',note:'3小狼＋石像鬼＋預言家＋女巫＋守墓人＋獵人＋4民（12人）',pool:{wolf:3,gargoyle:1,seer:1,witch:1,gravekeeper:1,hunter:1,villager:4},order:['gravekeeper','wolves','gargoyle','witch','seer','hunter']},
-  {id:'b11',name:'獵人局（娛樂）',note:'8獵人＋4小狼。首夜狼人互認不殺人；每天放逐到狼人才天黑；獵人開槍連鎖到打中狼人為止。',pool:{hunter:8,wolf:4},order:['wolves'],rules:{huntGame:true,noSheriff:true,hostage:true,fill:'hunter',hunterNoShoot:[]}},
+  {id:'b11',name:'獵人局（娛樂）',note:'8獵人＋4小狼。首夜狼人互認不殺人；放逐後獵人開槍連鎖，到打中狼人或獵人悶槍才天黑。',pool:{hunter:8,wolf:4},order:['wolves'],rules:{huntGame:true,noSheriff:true,hostage:true,fill:'hunter',hunterNoShoot:[]}},
   {id:'b12',name:'夢魘・攝夢人局',note:'夢魘＋3小狼＋預言家＋女巫＋攝夢人＋獵人＋4民（12人）。夢魘每晚先單獨恐懼1人（該人當晚技能鎖定），再與狼隊一起刀人；首夜恐懼到小狼則當晚空刀。',pool:{nightmare:1,wolf:3,seer:1,witch:1,dreamer:1,hunter:1,villager:4},order:['nightmare','wolves','witch','seer','dreamer','hunter']},
   {id:'b13',name:'純白狼巫局',note:'狼巫＋3小狼＋純白之女＋女巫＋獵人＋守衛＋4民（12人）；13人版加 1 民即可。狼巫與純白之女每晚查驗，第 2 晚起查到對方陣營（狼巫查到純白之女／純白之女查到狼）即驗殺。',pool:{wolfwitch:1,wolf:3,purewhite:1,witch:1,hunter:1,guard:1,villager:4},order:['guard','wolves','witch','hunter','wolfwitch','purewhite','wolfwitch2']}
 ];
 BOARDS.forEach(function(b){if(!b.order)b.order=defaultOrder(b.pool);b.rules=Object.assign(JSON.parse(JSON.stringify(DEFAULT_RULES)),b.rules||{});});
 
 /* ================= 狀態 ================= */
-var KEY='werewolf-god-notes-v1';
+var KEY='werewolf-god-notes-v1',KEYH='werewolf-god-history-v1',KEYS='werewolf-god-histsync-v1',HIST_SCHEMA=2;
 function newSh(){return {step:'cand',status:'idle',order:null,booms:0,boomSeats:[],boomSeat:null,boomDay:null,goNight:false,withdrawn:[],resumed:false};}
 function newGame(){return {id:Date.now(),created:new Date().toISOString(),boardName:'',players:0,pool:{},seats:{},names:{},order:[],rules:JSON.parse(JSON.stringify(DEFAULT_RULES)),
   phase:'setup',day:0,stage:'setup',step:0,nights:{},days:{},deaths:[],cand:[],sheriff:null,sheriffDone:false,badgeLost:false,sh:newSh(),votes:{},extras:[],lovers:null,thief:null,conv:null,mech:null,lucky:null,knight:null,extraCards:0,playing:[],seatPerson:{},trig:{},idiot:{},winner:null};}
@@ -495,14 +504,16 @@ function fixGame(g){
   var def=newGame();['extras','lovers','thief','conv','mech','lucky','knight','extraCards'].forEach(function(k){if(g[k]===undefined)g[k]=def[k];});
 }
 var APP=loadApp();
+try{var hh=localStorage.getItem(KEYH);if(hh)APP.history=JSON.parse(hh);else saveHistLocal();}catch(e){}
 [APP.cur].concat(APP.history||[]).forEach(fixGame);
-var UI={modal:null,hist:null,voteSel:null,boom:false,regRole:null,addOpen:false,sBoom:false,vrecOpen:{},voteTarget:null,rosterEdit:false,delId:null};
+var UI={modal:null,hist:null,voteSel:null,boom:false,regRole:null,addOpen:false,sBoom:false,vrecOpen:{},voteTarget:null,rosterEdit:false,delId:null,histSort:'new'};
 var UNDO=[];
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(APP));}catch(e){}fbSyncAll();}
+function persist(){try{var o={};for(var k in APP)if(k!=='history')o[k]=APP[k];localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}fbSyncAll();}
+function saveHistLocal(){try{localStorage.setItem(KEYH,JSON.stringify((APP.history||[]).slice(0,150)));}catch(e){}}
 
 /* ================= Firebase 串接（上帝端） ================= */
 var FB_APPLYING=false,FB_ERR=null,FB_WIRED=false;
-var FB_T={game:null,roster:null,config:null,pub:null},FB_LASTPUB='';
+var FB_T={game:null,roster:null,config:null,pub:null},FB_LASTPUB='',FB_LAST={game:'',roster:'',config:''};
 /* 玩家端公開資料：只含座位、名字、已公告的出局、警長與票型；絕不含任何角色身分或夜間操作 */
 function pendingPublic(G){
   var o={},keys=[];
@@ -530,29 +541,80 @@ function buildPublic(G){
 }
 function fbSyncAll(){
   if(!window.FB||!FB.user||FB_APPLYING)return;
-  clearTimeout(FB_T.game);FB_T.game=setTimeout(function(){FB.saveGame(APP.cur);},400);
+  clearTimeout(FB_T.game);FB_T.game=setTimeout(function(){var s=JSON.stringify(APP.cur);if(s===FB_LAST.game)return;FB_LAST.game=s;Promise.resolve(FB.saveGame(APP.cur)).catch(function(){FB_LAST.game='';});},400);
   clearTimeout(FB_T.pub);FB_T.pub=setTimeout(function(){
-    var p=buildPublic(APP.cur),s=JSON.stringify(p);if(s===FB_LASTPUB)return;FB_LASTPUB=s;p.updated=Date.now();FB.savePublic(p);
+    var p=buildPublic(APP.cur),s=JSON.stringify(p);if(s===FB_LASTPUB)return;FB_LASTPUB=s;p.updated=Date.now();Promise.resolve(FB.savePublic(p)).catch(function(){FB_LASTPUB='';});
   },400);
-  clearTimeout(FB_T.roster);FB_T.roster=setTimeout(function(){FB.saveRoster(APP.roster);},400);
-  clearTimeout(FB_T.config);FB_T.config=setTimeout(function(){FB.saveConfig({customBoards:APP.customBoards,roleEdits:APP.roleEdits});},400);
+  clearTimeout(FB_T.roster);FB_T.roster=setTimeout(function(){var s=JSON.stringify(APP.roster);if(s===FB_LAST.roster)return;FB_LAST.roster=s;Promise.resolve(FB.saveRoster(APP.roster)).catch(function(){FB_LAST.roster='';});},400);
+  clearTimeout(FB_T.config);FB_T.config=setTimeout(function(){var c={customBoards:APP.customBoards,roleEdits:APP.roleEdits},s=JSON.stringify(c);if(s===FB_LAST.config)return;FB_LAST.config=s;Promise.resolve(FB.saveConfig(c)).catch(function(){FB_LAST.config='';});},400);
 }
 function applyRemoteGame(data){
   if(!data){fbSyncAll();return;}
-  FB_APPLYING=true;APP.cur=data;fixGame(APP.cur);UNDO=[];render();FB_APPLYING=false;
+  FB_APPLYING=true;APP.cur=data;fixGame(APP.cur);FB_LAST.game=JSON.stringify(APP.cur);UNDO=[];render();FB_APPLYING=false;
 }
 function applyRemoteRoster(list){
   if(!list){fbSyncAll();return;}
-  FB_APPLYING=true;APP.roster=list;render();FB_APPLYING=false;
+  FB_APPLYING=true;APP.roster=list;FB_LAST.roster=JSON.stringify(APP.roster);render();FB_APPLYING=false;
 }
 function applyRemoteConfig(cfg){
   if(!cfg){fbSyncAll();return;}
-  FB_APPLYING=true;APP.roleEdits=cfg.roleEdits||{};APP.customBoards=cfg.customBoards||[];render();FB_APPLYING=false;
+  FB_APPLYING=true;APP.roleEdits=cfg.roleEdits||{};APP.customBoards=cfg.customBoards||[];FB_LAST.config=JSON.stringify({customBoards:APP.customBoards,roleEdits:APP.roleEdits});render();FB_APPLYING=false;
+}
+var HIST_DOC={};
+function histIdx(id){for(var i=0;i<APP.history.length;i++)if(APP.history[i].id===id)return i;return -1;}
+function syncReview(e){
+  if(!window.FB||!FB.user)return;
+  var on=e.phase==='over'&&e.share!==false&&!!e.text;
+  var p=on?FB.saveReview(String(e.id),{id:e.id,created:e.created,boardName:e.boardName||'',players:e.players||0,winner:e.winner||'',text:e.text,schema:HIST_SCHEMA,updated:Date.now()}):FB.deleteReview(String(e.id));
+  Promise.resolve(p).catch(function(){});
+}
+function pushHistory(e){
+  if(!window.FB||!FB.user){e._pend=true;saveHistLocal();return;}
+  var docId=(HIST_DOC[e.id]&&HIST_DOC[e.id][0])||String(e.id);
+  HIST_DOC[e.id]=HIST_DOC[e.id]||[docId];
+  e._pend=true;saveHistLocal();
+  var c=JSON.parse(JSON.stringify(e));delete c._pend;
+  Promise.resolve(FB.saveHistory(docId,c)).then(function(){delete e._pend;saveHistLocal();}).catch(function(){});
+  syncReview(e);
+}
+function archiveGame(G){
+  if(!G||G.phase==='setup')return;
+  var e=JSON.parse(JSON.stringify(G)),i=histIdx(e.id);
+  e.schema=HIST_SCHEMA;
+  if(i>=0&&APP.history[i].share!==undefined)e.share=APP.history[i].share;else if(e.share===undefined)e.share=!e.isTest;
+  try{e.text=exportText(G);}catch(x){e.text='';}
+  e.savedAt=Date.now();
+  if(i>=0)APP.history[i]=e;else APP.history.unshift(e);
+  saveHistLocal();pushHistory(e);
+}
+function applyRemoteHistory(arr,fromCache){
+  var cloud={},i;
+  arr.forEach(function(x){
+    var d=x.data;if(!d||d.id==null)return;var id=+d.id;if(!isFinite(id))return;
+    HIST_DOC[id]=HIST_DOC[id]||[];if(HIST_DOC[id].indexOf(x.docId)<0)HIST_DOC[id].push(x.docId);
+    delete d.archivedAt;
+    if(!cloud[id]||(+d.savedAt||0)>(+cloud[id].savedAt||0))cloud[id]=d;
+  });
+  var ids=Object.keys(cloud);
+  if(fromCache&&!ids.length)return;
+  var first=false;try{first=localStorage.getItem(KEYS)==='1';}catch(e){}
+  var kept=[];
+  APP.history.forEach(function(e){
+    if(cloud[e.id]!==undefined)return;
+    if(fromCache){kept.push(e);return;}
+    if(!first||e._pend){kept.push(e);pushHistory(e);}
+  });
+  if(!fromCache){try{localStorage.setItem(KEYS,'1');}catch(e){}}
+  var list=ids.map(function(k){return cloud[k];}).concat(kept);
+  list.forEach(fixGame);
+  list.sort(function(a,b){return (new Date(b.created).getTime()||b.id||0)-(new Date(a.created).getTime()||a.id||0);});
+  APP.history=list;saveHistLocal();render();
 }
 function wireFB(){
   if(FB_WIRED||!window.FB)return;FB_WIRED=true;
   FB.onAuth(function(){FB_ERR=null;render();});
   FB.onGame(applyRemoteGame);
+  FB.onHistory(applyRemoteHistory);
   FB.onRoster(applyRemoteRoster);
   FB.onConfig(applyRemoteConfig);
   window.addEventListener('fb-net-change',render);
@@ -1064,7 +1126,7 @@ function rulesCard(G){
       return '<button class="chip lg'+((r.hunterNoShoot||[]).indexOf(c)>=0?' cur':'')+'" data-a="ruleNoShoot" data-c="'+c+'">'+c+'</button>';
     }).join('')+'</div><p class="muted" style="margin-top:8px">被選中的死因出局時，獵人的槍被悶掉，不宣布技能。（連帶、殉情、夢殺一律悶槍。）</p>';
   }
-  if(r.huntGame)h+='<div class="note">獵人局：無警長；首夜狼人互認不殺人；每天放逐到狼人才天黑；獵人開槍連鎖到打中狼人為止；狼人可自爆；狼人數量不少於其餘玩家即綁票獲勝。</div>';
+  if(r.huntGame)h+='<div class="note">獵人局：無警長；首夜狼人互認不殺人；每天放逐後，若放逐到獵人就連鎖開槍，直到打中狼人或獵人悶槍才天黑；每天只放逐一次，不再加放逐；狼人可自爆；狼人數量不少於剩餘獵人即綁票獲勝。</div>';
   return h+'</div>';
 }
 function canStart(G){return G.players>=6&&Object.keys(G.pool).some(function(id){return G.pool[id]>0&&ROLES[id]&&ROLES[id].camp==='wolf';});}
@@ -1089,7 +1151,7 @@ function seatCard(G){
 function viewSetup(){
   var G=APP.cur;
   if(G.phase!=='setup'){
-    return '<div class="card"><h2>這一局進行中</h2><p class="muted" style="margin:8px 0 14px">'+esc(boardName(G))+'・'+G.players+'人・'+stageLabel(G)+'</p><div class="btnrow"><button class="btn primary" data-a="tab" data-t="play">回到主持</button><button class="btn" data-a="newGame">結束並開新局</button></div></div>';
+    return '<div class="card"><h2>這一局進行中</h2><p class="muted" style="margin:8px 0 14px">'+esc(boardName(G))+'・'+G.players+'人・'+stageLabel(G)+'</p><div class="btnrow"><button class="btn primary" data-a="tab" data-t="play">回到主持</button><button class="btn" data-a="newGame">結束並開新局</button><button class="chip lg'+(G.isTest?' cur':'')+'" data-a="toggleTest">'+(G.isTest?'☑ 測試局':'☐ 標記為測試局')+'</button></div></div>';
   }
   var boards=[{id:'blank',name:'空白／自訂',note:'從零開始，自行加入角色與人數',pool:{}}].concat(BOARDS,APP.customBoards);
   var cur=boards.filter(function(b){return b.name===G.boardName;})[0];
@@ -1117,7 +1179,7 @@ function viewSetup(){
     return '<div class="prow"><div class="pname"><b>'+(i+1)+'　'+esc(title)+'</b><span class="muted">'+esc(sub)+'</span></div><div class="stepper"><button data-a="ordMove" data-k="'+k+'" data-dl="-1"'+(i===0?' disabled':'')+' aria-label="上移">↑</button><button data-a="ordMove" data-k="'+k+'" data-dl="1"'+(i===last?' disabled':'')+' aria-label="下移">↓</button></div></div>';
   }).join(''):'<p class="muted" style="margin-top:8px">加入角色後自動產生。</p>';
   return '<div class="grid2"><div>'+
-    '<div class="card"><h2>1　選擇板子</h2><div class="chips" style="margin-top:12px">'+chips+'</div><p class="muted" style="margin-top:10px">'+esc(cur?cur.note:'角色池已修改，成為自訂板子。')+'</p>'+(G.players?'<div class="btnrow" style="margin-top:10px"><button class="btn" data-a="saveBoard">另存為我的板子</button></div>':'')+'</div>'+
+    '<div class="card"><h2>1　選擇板子</h2><div class="chips" style="margin-top:12px">'+chips+'</div><div class="btnrow" style="margin-top:10px"><button class="chip lg'+(G.isTest?' cur':'')+'" data-a="toggleTest">'+(G.isTest?'☑ 測試局（不公開賽後回顧）':'☐ 標記為測試局（不公開賽後回顧）')+'</button></div><p class="muted" style="margin-top:10px">'+esc(cur?cur.note:'角色池已修改，成為自訂板子。')+'</p>'+(G.players?'<div class="btnrow" style="margin-top:10px"><button class="btn" data-a="saveBoard">另存為我的板子</button></div>':'')+'</div>'+
     '<div class="card"><h2>2　角色池　<span class="muted">共 '+sum(G.pool)+' 張牌'+(G.extraCards?'（發 '+G.players+' 人，剩 '+G.extraCards+' 張）':'')+'</span></h2>'+poolHTML+addHTML+'<p class="muted" style="margin-top:10px">實體面殺：玩家先自行抽牌入座。身分會在首夜依口號順序，由你當場點座位登記。</p></div>'+
     rosterCard(G)+seatCard(G)+
     '</div><div>'+
@@ -1646,7 +1708,7 @@ function viewDay(G){
   var vote='<div class="card"><h2>放逐投票</h2>';
   if(dd.out!=null||dd.kind==='none'){
     var msg=dd.kind==='none'?'平票或無人出局。':(dd.kind==='knight'?dd.out+' 號被騎士驗中，出局並直接進入黑夜。':dd.kind==='boom'?dd.out+' 號狼人自爆，直接進入黑夜。':(dd.kind==='idiot'?dd.out+' 號傻瓜翻牌免死（失去投票權）。':dd.out+' 號被放逐出局。'));
-    vote+='<div class="script"><p class="say">'+esc(msg)+'</p></div>'+trigHTML(G)+'<div class="btnrow">'+(rules(G).huntGame?'':'<button class="btn" data-a="voteReset">重新選擇</button>')+((rules(G).huntGame&&!huntWolfDown(G,d)&&!pendingTriggers(G).length)?'<button class="btn primary" data-a="huntAgain">本日還沒放逐出狼人 → 再放逐一人</button>':'')+'</div>';
+    vote+='<div class="script"><p class="say">'+esc(msg)+'</p></div>'+trigHTML(G)+'<div class="btnrow">'+(rules(G).huntGame?'':'<button class="btn" data-a="voteReset">重新選擇</button>')+'</div>';
   }else{
     var dkey='D'+d,dpk=pkOf(G,dkey),dtied=dpk?dpk.seats.filter(function(n){return !isDead(G,n);}):null;
     vote+='<div class="script"><p class="say">'+(dtied?'PK 發言結束，現在進行第二輪投票。'+dtied.join('、')+' 號不能投票。':'發言結束，現在開始投票。')+'</p></div>'+(dtied?pkBlock(G,dkey,dpk):'');
@@ -1662,7 +1724,8 @@ function viewDay(G){
   if(pt)vote+=voteRecHTML(G,'D'+d+'p',v1.filter(function(m){return pt.indexOf(m)<0;}),pt,'PK 輪：平票的玩家不能投票。');
   vote+='</div>';
   var pending=(dd.out==null&&dd.kind!=='none')?trigHTML(G):'';
-  var next='<div class="btnrow nav"><span class="muted">'+(dd.out!=null||dd.kind==='none'?'':'尚未記錄放逐結果')+((rules(G).huntGame&&!huntWolfDown(G,d))?'　獵人局：要先有狼人出局才能天黑':'')+'</span><button class="btn primary big" data-a="nextNight"'+((rules(G).huntGame&&!huntWolfDown(G,d))?' disabled':'')+'>天黑請閉眼 → 第 '+(d+1)+' 夜</button></div>';
+  var huntWait=rules(G).huntGame&&((dd.out==null&&dd.kind!=='none')||pendingTriggers(G).length>0);
+  var next='<div class="btnrow nav"><span class="muted">'+(dd.out!=null||dd.kind==='none'?'':'尚未記錄放逐結果')+(huntWait?'　獵人局：放逐結果與開槍連鎖結束後才能天黑':'')+'</span><button class="btn primary big" data-a="nextNight"'+(huntWait?' disabled':'')+'>天黑請閉眼 → 第 '+(d+1)+' 夜</button></div>';
   return speak+knightCard(G)+vote+(pending?'<div class="card">'+pending+'</div>':'')+next;
 }
 function trigHTML(G){
@@ -1813,15 +1876,20 @@ function viewRoles(){
 
 /* ================= 歷史與匯出 ================= */
 function fmtDate(iso){var d=new Date(iso);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function fmtDT(iso){var d=new Date(iso);if(isNaN(d))return '';return fmtDate(iso)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
 function viewHist(){
   if(UI.hist!=null){
     var g=APP.history.filter(function(x){return x.id===UI.hist;})[0];
     if(g)return '<div class="btnrow noprint" style="margin-bottom:12px"><button class="btn" data-a="histBack">← 返回歷史</button><button class="btn" data-a="pdf">匯出 PDF</button><button class="btn" data-a="csvH" data-id="'+g.id+'">下載 CSV</button><button class="btn" data-a="exportH" data-id="'+g.id+'">匯出文字</button></div>'+sheetHTML(g,false);
   }
-  if(!APP.history.length)return '<div class="card center"><h2>還沒有歷史紀錄</h2><p class="muted" style="margin-top:8px">按「開新局」時，上一局會自動存到這裡。</p></div>';
-  return '<div class="card"><h2>歷史紀錄</h2>'+APP.history.map(function(g){
+  if(!APP.history.length)return '<div class="card center"><h2>還沒有歷史紀錄</h2><p class="muted" style="margin-top:8px">宣布勝負時會自動存到這裡。</p></div>';
+  var asc=UI.histSort==='old';
+  var list=APP.history.slice().sort(function(a,b){var d=(new Date(a.created).getTime()||a.id||0)-(new Date(b.created).getTime()||b.id||0);return asc?d:-d;});
+  var tool='<div class="btnrow" style="margin:8px 0 12px"><button class="chip lg'+(!asc?' cur':'')+'" data-a="histSort" data-v="new">開局時間：新到舊</button><button class="chip lg'+(asc?' cur':'')+'" data-a="histSort" data-v="old">舊到新</button><button class="btn" data-a="histExportAll">匯出全部歷史（JSON）</button></div>';
+  return '<div class="card"><h2>歷史紀錄　<span class="muted">共 '+list.length+' 局</span></h2>'+tool+list.map(function(g){
     var w={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[g.winner]||(g.phase==='over'?'已結束':'未完成');
-    return '<div class="prow"><div class="pname"><b>'+fmtDate(g.created)+'　'+esc(boardName(g))+'</b><span class="muted">'+g.players+'人・'+esc(w)+'・共 '+Math.max(g.day,1)+' 天</span></div><div class="btnrow"><button class="btn" data-a="histOpen" data-id="'+g.id+'">檢視</button><button class="btn danger" data-a="histDel" data-id="'+g.id+'">刪除</button></div></div>';
+    var shared=g.share!==false&&g.phase==='over';
+    return '<div class="prow"><div class="pname"><b>'+fmtDT(g.created)+'　'+esc(boardName(g))+(g.isTest?'　【測試】':'')+'</b><span class="muted">'+g.players+'人・'+esc(w)+'・共 '+Math.max(g.day,1)+' 天・玩家頁：'+(g.phase!=='over'?'未結束不公開':(shared?'公開':'不公開'))+'</span></div><div class="btnrow"><button class="btn" data-a="histOpen" data-id="'+g.id+'">檢視</button>'+(g.phase==='over'?'<button class="btn" data-a="histShare" data-id="'+g.id+'">'+(shared?'撤下':'公開')+'</button>':'')+'<button class="btn danger" data-a="histDel" data-id="'+g.id+'">刪除</button></div></div>';
   }).join('')+'</div>';
 }
 function voteLines(G){
@@ -2295,14 +2363,14 @@ ACT.mdead=function(){var n=UI.modal.seat;mutate(function(G){
   else{var day=(G.stage==='night'||G.stage==='n0')?Math.max(0,G.day-1):G.day;G.deaths.push({seat:n,day:day,phase:'D',cause:'手動'});}
 });};
 ACT.endGame=function(){openModal({type:'win'});};
-ACT.win=function(ds){mutate(function(G){G.phase='over';G.winner=ds.w;});};
-ACT.win2=function(ds){UI.modal=null;mutate(function(G){G.phase='over';G.winner=ds.w;});};
+ACT.win=function(ds){mutate(function(G){G.phase='over';G.winner=ds.w;});archiveGame(APP.cur);};
+ACT.win2=function(ds){UI.modal=null;mutate(function(G){G.phase='over';G.winner=ds.w;});archiveGame(APP.cur);};
 ACT.reopenGame=function(){mutate(function(G){G.phase='play';G.winner=null;});};
 ACT.newGame=function(){openModal({type:'confirm',title:'開新局？',msg:'目前這局會存進「歷史」，新局沿用同一板子與人數，首夜再重新登記身分。',go:'newGameDo'});};
 ACT.newGameDo=function(){
   var old=APP.cur;
   if(old.phase!=='setup'&&Object.keys(old.seatPerson||{}).length)APP.lastSeating={playing:(old.playing||[]).slice(),seatPerson:JSON.parse(JSON.stringify(old.seatPerson||{}))};
-  if(old.phase!=='setup'){APP.history.unshift(JSON.parse(JSON.stringify(old)));APP.history=APP.history.slice(0,40);if(window.FB&&window.FB.user)window.FB.archiveGame(old);}
+  if(old.phase!=='setup')archiveGame(old);
   var g=newGame();g.pool=JSON.parse(JSON.stringify(old.pool));g.players=old.players;g.extraCards=old.extraCards||0;g.boardName=old.boardName;g.order=(old.order||defaultOrder(old.pool)).slice();g.rules=JSON.parse(JSON.stringify(old.rules||DEFAULT_RULES));
   APP.cur=g;UNDO=[];UI.modal=null;UI.regRole=null;UI.sBoom=false;stopT();T.left=T.total;APP.ui.tab='setup';render();
 };
@@ -2360,7 +2428,25 @@ ACT.copyExport=function(){
 };
 ACT.histOpen=function(ds){UI.hist=+ds.id;render();};
 ACT.histBack=function(){UI.hist=null;render();};
-ACT.histDel=function(ds){APP.history=APP.history.filter(function(g){return g.id!==+ds.id;});render();};
+ACT.histDel=function(ds){UI.delId=+ds.id;openModal({type:'confirm',title:'刪除這局紀錄？',msg:'會同時刪除這台裝置與雲端的紀錄，也會從玩家頁撤下，無法復原。',go:'histDelDo'});};
+ACT.histDelDo=function(){
+  var id=UI.delId;UI.modal=null;
+  APP.history=APP.history.filter(function(g){return g.id!==id;});saveHistLocal();
+  if(window.FB&&FB.user){
+    (HIST_DOC[id]||[String(id)]).forEach(function(dk){Promise.resolve(FB.deleteHistory(dk)).catch(function(){});});
+    Promise.resolve(FB.deleteReview(String(id))).catch(function(){});
+  }
+  delete HIST_DOC[id];render();
+};
+ACT.histShare=function(ds){
+  var i=histIdx(+ds.id);if(i<0)return;var e=APP.history[i];
+  e.share=(e.share===false);
+  if(!e.text){try{e.text=exportText(e);}catch(x){e.text='';}}
+  saveHistLocal();pushHistory(e);render();
+};
+ACT.histSort=function(ds){UI.histSort=ds.v;render();};
+ACT.histExportAll=function(){saveFile('werewolf_history_all.json',JSON.stringify(APP.history,null,1),'application/json');};
+ACT.toggleTest=function(){mutate(function(G){G.isTest=!G.isTest;});};
 
 /* ================= 事件 ================= */
 document.addEventListener('click',function(e){
