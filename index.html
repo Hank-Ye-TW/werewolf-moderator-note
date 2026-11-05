@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>上帝手記・狼人殺主持工具</title>
-<meta name="description" content="給實體局主持人用的狼人殺工具：夜晚流程講稿、警長競選、紀錄表自動整理，可匯出 PDF／CSV。純前端，資料只留在你的裝置上。">
+<meta name="description" content="給實體局主持人用的狼人殺工具：夜晚流程講稿、警長競選、紀錄表自動整理，可匯出 PDF／CSV。主持端需密語登入，紀錄同步到雲端；玩家頁只顯示公開資訊。">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -119,7 +119,8 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   <h1>天黑請閉眼，<br><em>剩下的交給手機</em>。</h1>
   <p class="lede">給實體局主持人的狼人殺工具：每一步該講什麼、該問誰，畫面直接告訴你；出局、警長、投票自動整理成一張紀錄表，局後直接匯出。</p>
   <div class="cta-row">
-    <a class="btn primary" href="./werewolf-god_20261101.html">開始主持</a>
+    <a class="btn primary" href="./werewolf-god_V1.html">開始主持</a>
+    <a class="btn ghost" href="./werewolf-view_V1.html">玩家頁（票型與回顧）</a>
     <a class="btn ghost" href="#detail">看看功能</a>
   </div>
   <div class="camps">
@@ -150,6 +151,10 @@ footer a{text-decoration:underline;text-underline-offset:3px}
         <p>誰守了誰、誰驗了誰、每晚出局名單，會即時整理成一張完整的上帝表格；局後可以直接匯出 PDF、CSV 或純文字。</p>
       </div>
       <div class="feat">
+        <h3>玩家用手機同步看票型與回顧</h3>
+        <p>場上玩家打開玩家頁，就能即時看到座位、警長、每輪票型與出局名單，不含任何身分與夜間資訊；打完的局由主持人決定是否公開，之後可以回頭看逐夜回顧。</p>
+      </div>
+      <div class="feat">
         <h3>板子隨你調</h3>
         <p>內建常見板子可以直接用，也能自己加減角色、調整睜眼順序，另存成自己的板子，下次直接套用。</p>
       </div>
@@ -158,8 +163,8 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 </main>
 
 <footer>
-  <p>純前端工具，所有紀錄只存在你自己的裝置上（瀏覽器 localStorage），不會上傳到任何伺服器。</p>
-  <p><a href="./werewolf-god_20261101.html">開始主持一局</a></p>
+  <p>主持端需通關密語登入，紀錄會同步到 Firebase 雲端資料庫，讓多個裝置看到同一份資料；玩家頁只讀取公開資訊，看不到角色與夜間內容。</p>
+  <p><a href="./werewolf-god_V1.html">開始主持一局</a>　｜　<a href="./werewolf-view_V1.html">玩家頁</a></p>
 </footer>
 
 </body>
