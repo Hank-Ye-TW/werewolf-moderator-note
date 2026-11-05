@@ -1295,7 +1295,7 @@ function viewNight(G){
   if(G.conv&&d>=2&&lostSkill(G,G.conv.seat)&&st.key!=='convlearn'&&st.key!=='wolves'&&STEP[st.key]&&STEP[st.key].roles.indexOf(G.seats[G.conv.seat])>=0)body=noteBox(['轉化者（'+G.conv.seat+' 號）已入狼隊，原神職技能已失效：這一步照常唸台詞並停頓，避免洩漏身分，但不能行動。'],true)+body;
   var reg=(d===1&&st.kind!=='start'&&(rules(G).regMode!=='hands'||st.kind==='handreg'))?regBox(G,st):'';
   var last=i===steps.length-1,miss=(d===1&&last)?regMissing(G):[];
-  var nav='<div class="btnrow nav"><button class="btn" data-a="prev"'+(i===0?' disabled':'')+'>← 上一步</button>'+(last?'<button class="btn primary big" data-a="finishNight"'+(miss.length?' disabled':'')+'>天亮・結算昨夜 →</button>':'<button class="btn primary big" data-a="next">下一步 →</button>')+'</div>';
+  var nav='<div class="btnrow nav"><button class="btn" data-a="prev"'+(i===0?' disabled':'')+'>← 上一步</button>'+(last?'<button class="btn primary big" data-a="finishNight"'+(miss.length?' disabled':'')+'>天亮・結算昨夜 →</button>':'<button class="btn primary big" data-a="next"'+((st.key==='gconv'&&d===1&&!G.conv)?' disabled':'')+'>下一步 →</button>')+'</div>';
   return '<div class="card"><div class="steps">'+chips+'</div></div><div class="card">'+reg+body+(miss.length?noteBox(['首夜身分尚未登記完：'+miss.join('、')+'。請回到該角色的步驟登記；沒被叫到的座位會自動成為平民。'],true):'')+nav+'</div>';
 }
 function stepStart(G,steps,d){
@@ -1571,6 +1571,7 @@ function stepGconv(G,d){
   if(miss)warn.push('狼人尚未全部登記，暫時無法判斷可轉化的相鄰座位。請先在狼人步驟登記。');
   else notes.push('可轉化的座位（與任一狼人相鄰的好人，12 與 1 相鄰，含石像鬼自己旁邊）：'+(cand.length?cand.join('、')+' 號':'（沒有）')+'。');
   notes.push('轉化者不入狼隊、不能自爆；被驗是狼；預言家本夜的查驗結果不受影響。');
+  if(d===1&&!G.conv)warn.push('首夜必須轉化：請先選一位玩家，才能進下一步。');
   var picked=G.conv?[G.conv.seat]:[];
   return roleBanner(G,'gargoyle2',d)+scriptBox(['覺醒石像鬼請睜眼。','請選擇一位與狼人相鄰的好人轉化成狼人。','覺醒石像鬼請閉眼。'])+noteBox(notes)+noteBox(warn,true)+
     picker(G,{a:'gconvPick',d:{},sel:picked,dis:dis})+'<p class="muted">'+(G.conv?'已轉化：'+G.conv.seat+' 號（'+esc(G.seats[G.conv.seat]?R(G.seats[G.conv.seat]).name:'未登記')+'）':'尚未轉化')+'</p>';
@@ -1583,7 +1584,10 @@ function stepConvLearn(G,d){
   }
   if(!c)return stepHead('轉化者','wolf','')+noteBox(['尚未轉化任何人，跳過此步驟。'],true);
   var merged=lostSkill(G,c.seat);
-  return stepHead('轉化者','wolf',seatInfo(G,[c.seat],d))+scriptBox(['轉化者請睜眼。',merged?'其他狼人已全部出局：你從今晚起失去原神職技能，改為跟狼隊一起帶刀殺人。':'其他狼人還在：你維持原技能，暫不參與刀人。','轉化者請閉眼。'])+
+  var firstMerge=merged&&d>=2&&coreWolves(G,d).length===0&&coreWolves(G,d-1).length>0;
+  var mates=wolfGroup(G).filter(function(n){return n!==c.seat;});
+  var mateLine=firstMerge?'（只告訴轉化者，用手勢或低聲）你的狼人隊友是 '+(mates.length?mates.join('、')+' 號（已全部出局）':'（無）')+'。':'';
+  return stepHead('轉化者','wolf',seatInfo(G,[c.seat],d))+scriptBox(['轉化者請睜眼。',merged?'其他狼人已全部出局：你從今晚起失去原神職技能，改為跟狼隊一起帶刀殺人。':'其他狼人還在：你維持原技能，暫不參與刀人。'].concat(mateLine?[mateLine]:[],['轉化者請閉眼。']))+
     noteBox([merged?'已併入狼隊夜間殺人。轉化者最先睜眼，是因為入隊當晚起原神職技能失效，所以排在所有神職之前。':'尚未併入狼隊，繼續使用原技能。']);
 }
 function checkResult(G,t){return '<div class="verdict good">'+t+' 號：'+esc(identityShown(G,t))+'</div>';}
