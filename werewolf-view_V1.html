@@ -13,6 +13,37 @@ main{max-width:720px;margin:0 auto}
 .tabs{display:flex;gap:8px;padding-top:14px}
 .tabs button{flex:1;font-weight:700}
 .tabs button.on{background:var(--accbg);color:var(--acc);border-color:var(--acc)}
+
+:root{--wolf:#c0453b;--wolfbg:#f9e4e1;--god:#2f6fb5;--godbg:#e1ecf8;--good:#2f7a52;--goodbg:#e2f1e8;--third:#7a55b8;--thirdbg:#ece4f8}
+@media (prefers-color-scheme:dark){:root{--wolf:#ee8277;--wolfbg:#3d2522;--god:#7fb0ea;--godbg:#202d3e;--good:#7bc79b;--goodbg:#1f3328;--third:#b99be8;--thirdbg:#2d2640}}
+.rchip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.84rem;font-weight:700;white-space:nowrap}
+.c-wolf{background:var(--wolfbg);color:var(--wolf)}.c-god{background:var(--godbg);color:var(--god)}.c-good{background:var(--goodbg);color:var(--good)}.c-third{background:var(--thirdbg);color:var(--third)}
+.c-conv{background:linear-gradient(90deg,var(--godbg) 0 50%,var(--wolfbg) 50% 100%);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.rtag{display:inline-block;font-size:.72rem;padding:0 7px;border-radius:99px;background:var(--line);color:var(--mut);margin:2px 4px 0 0;white-space:nowrap}
+.rtag.sh{background:var(--goldbg);color:var(--gold);font-weight:700}.rtag.out{background:var(--accbg);color:var(--acc)}.rtag.cv{background:var(--wolfbg);color:var(--wolf)}
+.rs{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.rs:first-of-type{border-top:0}
+.rno{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--line)}
+.rs.dead .rno{text-decoration:line-through;opacity:.6}.rs.dead .rnm{color:var(--mut)}
+.rnm{font-weight:600}.rr{text-align:right}
+.rrow{display:grid;grid-template-columns:116px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);align-items:start}
+.rrow:first-of-type{border-top:0}
+.ract b{font-weight:800}.ract small{color:var(--mut);margin-left:6px}
+.rres{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.rres.first{margin-top:0;padding-top:0;border-top:0}
+.rres .lbl{color:var(--mut);font-size:.88rem;min-width:56px}
+.rdot{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:50%;background:var(--accbg);color:var(--acc);font-weight:800}
+.ri{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.rdot.g{background:var(--line);color:var(--ink)}
+.rv3{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.rv3:first-of-type{border-top:0}
+.rv3 .by{color:var(--mut);font-size:.9rem}.rv3 .n{font-weight:800;color:var(--acc)}
+.rv3.top .n{background:var(--accbg);padding:1px 10px;border-radius:99px}
+.rsec{display:flex;align-items:center;gap:8px;margin:16px 0 6px;padding:6px 12px;border-radius:10px;font-weight:800;font-size:.92rem}
+.rsec.night{background:var(--godbg);color:var(--god)}.rsec.day{background:var(--goldbg);color:var(--gold)}
+.rsec:first-of-type{margin-top:4px}
+.shv{display:inline-block;padding:0 8px;border-radius:99px;background:var(--goldbg);color:var(--gold);font-weight:800;font-size:.86rem}
+.rh3{margin:12px 0 6px;font-size:.95rem;font-weight:800}
 pre.rv{white-space:pre-wrap;word-break:break-word;font:.92rem/1.7 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;margin:0}
 header{padding:20px 0 8px}
 h1{margin:0;font-size:1.35rem}
@@ -150,12 +181,72 @@ function dayBlocks(text){
   });
   blocks.push(cur);return blocks;
 }
+
+var CNR=['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五'];
+var CAUSE={'開槍':'被開槍帶走','自爆':'自爆','殉情':'殉情','連帶':'連帶出局','騎士驗中':'被騎士驗中','騎士自盡':'騎士自盡','夢殺':'被夢殺','黑市':'出局'};
+function rvDot(n,cls){return '<span class="rdot'+(cls?' '+cls:'')+'">'+n+'</span>';}
+function rvNm(R,n){var s=R.seats.filter(function(x){return x.n===n;})[0];return s&&s.name?'（'+esc(s.name)+'）':'';}
+function rvOutLine(R,lbl,list,phase){
+  if(!list||!list.length)return '';
+  var groups={},order=[];
+  list.forEach(function(x){var t=CAUSE[x.cause]||(phase==='N'?'被殺死':'淘汰');if(!groups[t]){groups[t]=[];order.push(t);}groups[t].push(x.seat);});
+  return order.map(function(t,i){return '<div class="rres"><span class="lbl">'+(i===0?lbl:'')+'</span>'+groups[t].map(function(n,j){return '<span class="ri">'+rvDot(n)+'<b>號'+rvNm(R,n)+(j<groups[t].length-1?'、':'')+'</b></span>';}).join('')+'<b>'+t+'</b></div>';}).join('');
+}
+function rvVoteHTML(R,v){
+  var h='<div class="rh3">'+esc(v.title)+'</div>';
+  if(v.pk)h+='<p class="muted" style="margin:0 0 6px">PK 發言：'+v.pk.seq.map(function(n){return rvDot(n);}).join(' → ')+'　（'+v.pk.seats.join('、')+' 號平票，不能投票）</p>';
+  v.rows.forEach(function(r,i){
+    h+='<div class="rv3'+(i===0?' top':'')+'">'+rvDot(r.t)+'<span class="by">'+r.by.map(function(m){return m===r.shv?'<span class="shv">'+m+' 警長 1.5</span>':m;}).join('、')+'</span><span class="n">'+r.cnt+' 票</span></div>';
+  });
+  if(v.abst&&v.abst.length)h+='<div class="rv3"><span class="rdot g">棄</span><span class="by">'+v.abst.join('、')+'</span><span class="n">'+v.abst.length+' 人</span></div>';
+  return h;
+}
+function rvPage(g,R){
+  var w={good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[g.winner]||'本局結束';
+  var wc={good:'good',wolf:'wolf',third:'third'}[g.winner]||'good';
+  var h='<header><h1>'+esc(g.boardName||'賽後回顧')+'</h1><div class="sub">'+fmtD(g.created)+'・'+g.players+' 人・共 '+R.days.length+' 天</div><div class="win" style="background:var(--'+wc+'bg);color:var(--'+wc+')">'+esc(w)+'</div></header><div class="row" style="margin:8px 0"><button data-back="1">← 返回過往</button></div>';
+  h+='<section class="card"><h2>座位與身分</h2>'+R.seats.map(function(x){
+    var tags='';
+    if(x.sheriff)tags+='<span class="rtag sh">警長</span>';
+    if(x.cand)tags+='<span class="rtag">上警</span>';
+    if(x.wd)tags+='<span class="rtag">退水</span>';
+    if(x.conv)tags+='<span class="rtag cv">第'+(CNR[x.cvDay]||x.cvDay)+'夜被轉化</span>';
+    if(x.out)tags+='<span class="rtag out">第'+(CNR[x.out.day]||x.out.day)+(x.out.phase==='N'?'夜':'天')+(CAUSE[x.out.cause]||(x.out.phase==='N'?'出局':'放逐'))+'</span>';
+    return '<div class="rs'+(x.out?' dead':'')+'"><span class="rno">'+x.n+'</span><div><div class="rnm">'+(esc(x.name)||'&nbsp;')+'</div>'+(tags?'<div>'+tags+'</div>':'')+'</div><div class="rr"><span class="rchip '+(x.conv?'c-conv':'c-'+x.cls)+'">'+esc(x.role)+(x.conv?' → 狼人':'')+'</span></div></div>';
+  }).join('')+'</section>';
+  var S=R.sh;
+  if(S){
+    h+='<section class="card"><h2>警長競選</h2>';
+    h+='<div class="rres first"><span class="lbl">上警</span>'+(S.cand.length?S.cand.map(function(n){return rvDot(n,'g');}).join(''):'無')+'</div>';
+    if(S.wd&&S.wd.length)h+='<div class="rres"><span class="lbl">退水</span>'+S.wd.map(function(n){return rvDot(n,'g');}).join('')+'</div>';
+    if(S.extras&&S.extras.length)h+='<div class="rres"><span class="lbl">加時</span>'+S.extras.map(function(n){return rvDot(n,'g');}).join('')+'</div>';
+    if(S.booms)h+='<div class="rres"><span class="lbl">自爆</span><b>'+S.booms+' 次</b></div>';
+    (S.votes||[]).forEach(function(v){h+=rvVoteHTML(R,v);});
+    h+='<div class="rres"><span class="lbl">結果</span>'+(S.sheriff!=null?'<span class="rchip" style="background:var(--goldbg);color:var(--gold)">'+S.sheriff+' 號'+rvNm(R,S.sheriff).replace(/[（）]/g,function(c){return c==='（'?' ':'';})+' 當選警長</span>':(S.badgeLost?'警徽遺失':'未選出'))+'</div></section>';
+  }
+  R.days.forEach(function(D){
+    h+='<section class="card"><h2>第'+(CNR[D.d]||D.d)+'天</h2><div class="rsec night">🌙 夜間行動</div>';
+    if(D.night.length)h+=D.night.map(function(x){return '<div class="rrow"><span class="rchip c-'+x.cls+'" style="justify-self:start">'+esc(String(x.role).replace(/（.*）/,''))+'</span><div class="ract"><b>'+esc(x.act)+'</b>'+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</div></div>';}).join('');
+    else h+='<div class="empty">沒有記錄夜間行動</div>';
+    if(D.nOut&&D.nOut.length)h+=rvOutLine(R,'夜晚',D.nOut,'N');
+    else if(D.peace)h+='<div class="rres"><span class="lbl">夜晚</span><b>平安夜</b></div>';
+    h+='<div class="rsec day">☀️ 白天</div>';
+    if(D.extras&&D.extras.length)h+='<div class="rres first"><span class="lbl">加時</span>'+D.extras.map(function(n){return rvDot(n,'g');}).join('')+'</div>';
+    (D.votes||[]).forEach(function(v){h+=rvVoteHTML(R,v);});
+    if(D.idiot!=null)h+='<div class="rres"><span class="lbl">白天</span>'+'<span class="ri">'+rvDot(D.idiot)+'<b>號'+rvNm(R,D.idiot)+'</b></span><b>翻牌・免死</b></div>';
+    h+=rvOutLine(R,'白天',D.dOut,'D');
+    if(!(D.extras&&D.extras.length)&&!(D.votes&&D.votes.length)&&D.idiot==null&&!(D.dOut&&D.dOut.length))h+='<div class="empty">沒有白天記錄</div>';
+    h+='</section>';
+  });
+  return h;
+}
 function renderPast(app){
   if(REVID!=null){
     var g=REV.filter(function(x){return x.id===REVID;})[0];
     if(g){
       var w={good:'好人陣營勝利',wolf:'狼人陣營勝利',third:'第三方勝利'}[g.winner]||'本局結束';
       var h='<header><h1>'+esc(g.boardName||'賽後回顧')+'</h1><div class="sub">'+fmtD(g.created)+'・'+g.players+' 人</div><span class="stage">'+esc(w)+'</span></header><div class="row" style="margin:8px 0"><button data-back="1">← 返回過往</button></div>';
+      if(g.rv&&g.rv.v===1){try{app.innerHTML=rvPage(g,g.rv);return;}catch(e){}}
       dayBlocks(g.text).forEach(function(b,i){
         var body=b.lines.join('\n').replace(/^\n+|\n+$/g,'');if(!body&&!b.title)return;
         h+='<section class="card">'+(b.title?'<h2>'+esc(b.title)+'</h2>':'<h2>開局資訊</h2>')+'<pre class="rv">'+esc(body)+'</pre></section>';

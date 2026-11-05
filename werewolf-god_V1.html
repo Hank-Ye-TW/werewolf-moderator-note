@@ -565,7 +565,8 @@ function histIdx(id){for(var i=0;i<APP.history.length;i++)if(APP.history[i].id==
 function syncReview(e){
   if(!window.FB||!FB.user)return;
   var on=e.phase==='over'&&e.share!==false&&!!e.text;
-  var p=on?FB.saveReview(String(e.id),{id:e.id,created:e.created,boardName:e.boardName||'',players:e.players||0,winner:e.winner||'',text:e.text,schema:HIST_SCHEMA,updated:Date.now()}):FB.deleteReview(String(e.id));
+  var rv=e.rv;if(on&&!rv){try{rv=reviewData(e);}catch(x){rv=null;}}
+  var p=on?FB.saveReview(String(e.id),{id:e.id,created:e.created,boardName:e.boardName||'',players:e.players||0,winner:e.winner||'',text:e.text,rv:rv||null,schema:HIST_SCHEMA,updated:Date.now()}):FB.deleteReview(String(e.id));
   Promise.resolve(p).catch(function(){});
 }
 function pushHistory(e){
@@ -583,6 +584,7 @@ function archiveGame(G){
   e.schema=HIST_SCHEMA;
   if(i>=0&&APP.history[i].share!==undefined)e.share=APP.history[i].share;else if(e.share===undefined)e.share=!e.isTest;
   try{e.text=exportText(G);}catch(x){e.text='';}
+  try{e.rv=reviewData(G);}catch(x){e.rv=null;}
   e.savedAt=Date.now();
   if(i>=0)APP.history[i]=e;else APP.history.unshift(e);
   saveHistLocal();pushHistory(e);
@@ -608,7 +610,17 @@ function applyRemoteHistory(arr,fromCache){
   var list=ids.map(function(k){return cloud[k];}).concat(kept);
   list.forEach(fixGame);
   list.sort(function(a,b){return (new Date(b.created).getTime()||b.id||0)-(new Date(a.created).getTime()||a.id||0);});
-  APP.history=list;saveHistLocal();render();
+  APP.history=list;saveHistLocal();
+  if(!fromCache&&window.FB&&FB.user){
+    list.forEach(function(e){
+      if(e.phase!=='over'||e.share===false||e.rv!==undefined)return;
+      try{e.rv=reviewData(e);}catch(x){e.rv=null;}
+      if(!e.text){try{e.text=exportText(e);}catch(x){e.text='';}}
+      e.savedAt=Date.now();pushHistory(e);
+    });
+    saveHistLocal();
+  }
+  render();
 }
 function wireFB(){
   if(FB_WIRED||!window.FB)return;FB_WIRED=true;
@@ -1900,6 +1912,78 @@ function voteLines(G){
   });
   return L;
 }
+
+/* ===== 賽後回顧（結構化，玩家頁用） ===== */
+function rvPretty(G,d,key){
+  var a=(G.nights[d]&&G.nights[d].act[key])||{},t=a.t||[],n=function(x){return x+' 號';};
+  var raw=cellText(G,d,key);if(!raw||raw==='/')return null;
+  switch(key){
+    case 'wolves':return a.none?{act:'空刀'}:(t.length?{act:'殺 '+n(t[0])}:null);
+    case 'witch':{var p=[];if(a.save!=null)p.push('救 '+n(a.save));if(a.poison!=null)p.push('毒 '+n(a.poison));return p.length?{act:p.join('、')}:null;}
+    case 'seer':return t.length?{act:'驗 '+n(t[0]),note:'結果：'+(raw.slice(-1)==='壞'?'壞人':'好人')}:null;
+    case 'guard':return t.length?{act:'守 '+n(t[0])}:null;
+    case 'gconv':return t.length?{act:'轉化 '+n(t[0])}:null;
+    case 'dreamer2':{if(!t.length)return null;var ac=(a.acted!==undefined&&a.acted!==null)?a.acted:didAct(G,d,t[0]);return {act:'夢 '+n(t[0])+(a.kill?'（夢殺）':''),note:ac?'夢遊者有行動':'夢遊者沒行動'};}
+    case 'dreamer':return t.length?{act:'攝夢 '+n(t[0])}:null;
+    case 'demonhunter':return t.length?{act:'獵 '+n(t[0])}:null;
+    case 'wolfbeauty':return t.length?{act:'魅惑 '+n(t[0])}:null;
+    case 'fear':return t.length?{act:'恐嚇 '+n(t[0])}:null;
+    case 'brothers':return t.length?{act:'復仇 '+n(t[0])}:null;
+    case 'gargoyle':case 'wolfwitch':case 'purewhite':case 'medium':{
+      if(!t.length)return null;var ir=roleOf(G,t[0]);
+      return {act:(key==='gargoyle'||key==='medium'?'查 ':'驗 ')+n(t[0]),note:(ir?'身分：'+ir.name:'')+(/殺$/.test(raw)?'（驗殺）':'')};}
+    case 'gravekeeper':{var ex=prevExile(G,d);return ex!=null?{act:'驗 '+n(ex),note:'結果：'+(campOf(G,ex)==='wolf'?'壞人':'好人')}:null;}
+    case 'magician':return t.length===2?{act:'交換 '+t[0]+'、'+t[1]+' 號'}:null;
+    case 'zombie':return t.length?{act:'僵 '+t.join('、')+' 號'}:null;
+    case 'mechwolf':return t.length?{act:({poison:'毒',shield:'盾',knife:'刀',verify:'驗'}[a.mode]||'')+' '+n(t[0])}:null;
+  }
+  if(a.none)return null;
+  return {act:raw};
+}
+function rvVotes(G,base){
+  var out=[],keys=[base];if(pkOf(G,base))keys.push(pkKeyOf(base));
+  keys.forEach(function(k){
+    var g=voteGroups(G,k),rows=[],abst=g[0]||[];
+    Object.keys(g).map(Number).filter(function(t){return t!==0;}).forEach(function(t){
+      var by=g[t];rows.push({t:t,by:by,cnt:weightedCount(G,k,by),shv:(k.charAt(0)==='D'&&by.indexOf(G.sheriff)>=0)?G.sheriff:null});
+    });
+    rows.sort(function(a,b){return b.cnt-a.cnt||a.t-b.t;});
+    if(!rows.length&&!abst.length)return;
+    var pk=isPkKey(k)?pkOf(G,base):null;
+    out.push({k:k,title:voteLabel(k,G),pk:pk?{seats:pk.seats.slice(),seq:pkSeq(G,pk)}:null,rows:rows,abst:abst});
+  });
+  return out;
+}
+function reviewData(G){
+  var seats=seatsList(G),sh=G.sh||{};
+  var last=Math.max.apply(null,[1,G.day||0].concat(Object.keys(G.nights).map(Number)));
+  var rv={v:1,winner:G.winner||'',seats:[],sh:null,days:[]};
+  seats.forEach(function(n){
+    var r=roleOf(G,n),dth=G.deaths.filter(function(x){return x.seat===n;})[0];
+    var cv=!!(G.conv&&G.conv.seat===n);
+    rv.seats.push({n:n,name:G.names[n]||'',role:r?r.name:'未登記',cls:r?r.camp:'good',conv:cv,cvDay:cv?G.conv.day:null,
+      cand:G.cand.indexOf(n)>=0,wd:(sh.withdrawn||[]).indexOf(n)>=0,sheriff:G.sheriff===n,
+      out:dth?{day:dth.day,phase:dth.phase,cause:dth.cause||''}:null});
+  });
+  if((G.cand||[]).length||G.sheriff!=null||G.badgeLost||(G.votes&&(G.votes.S||G.votes.S2))){
+    rv.sh={cand:G.cand.slice(),wd:(sh.withdrawn||[]).slice(),sheriff:G.sheriff==null?null:G.sheriff,badgeLost:!!G.badgeLost,booms:sh.booms||0,extras:(G.extras||[]).filter(function(x){return x.st==='S';}).map(function(x){return x.seat;}),votes:rvVotes(G,'S')};
+  }
+  var steps=stepKeys(G);
+  for(var d=1;d<=last;d++){
+    var nt=G.nights[d],night=[];
+    steps.forEach(function(k){
+      var p=rvPretty(G,d,k);if(!p)return;
+      var r=STEP[k]?ROLES[STEP[k].roles[0]]:ROLES[k];
+      night.push({role:stepTitle(k),cls:k==='wolves'?'wolf':(r?r.camp:'good'),act:p.act,note:p.note||''});
+    });
+    var nOut=G.deaths.filter(function(x){return x.day===d&&x.phase==='N';}).map(function(x){return {seat:x.seat,cause:x.cause||''};});
+    var dOut=G.deaths.filter(function(x){return x.day===d&&x.phase==='D';}).map(function(x){return {seat:x.seat,cause:x.cause||''};});
+    var dd=G.days[d]||{};
+    rv.days.push({d:d,night:night,peace:!!(nt&&nt.committed&&!nOut.length),nOut:nOut,extras:(G.extras||[]).filter(function(x){return x.day===d&&x.st!=='S';}).map(function(x){return x.seat;}),
+      votes:rvVotes(G,'D'+d),dOut:dOut,idiot:(dd.kind==='idiot'&&dd.out!=null)?dd.out:null});
+  }
+  return rv;
+}
 function exportText(G){
   var L=['【狼人殺・上帝手記】'+fmtDate(G.created),'板子：'+boardName(G)+'（'+G.players+'人）','','座位：'];
   seatsList(G).forEach(function(n){var r=roleOf(G,n);L.push('  '+n+'號 '+(r?r.name:'未登記')+(G.names[n]?'（'+G.names[n]+'）':'')+(G.cand.indexOf(n)>=0?'　上警':'')+(hasExtra(G,n)?'　＋加時':'')+(G.sheriff===n?'　警長':''));});
@@ -2237,7 +2321,7 @@ ACT.vtClear=function(ds){mutate(function(G){
   if(!isPkKey(ds.key)&&G.pk)delete G.pk[ds.key];
 });};
 ACT.extra=function(){openModal({type:'extra'});};
-ACT.extraPick=function(ds){var n=+ds.seat;if(hasExtra(APP.cur,n))return;UI.modal=null;mutate(function(G){G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});T.left+=60;render();};
+ACT.extraPick=function(ds){var n=+ds.seat;if(hasExtra(APP.cur,n))return;UI.modal=null;mutate(function(G){G.extras=(G.extras||[]).concat([{seat:n,day:G.day,st:G.stage==='sheriff'?'S':'D'}]);});T.left+=60;render();};
 ACT.mextra=function(){var n=UI.modal.seat;mutate(function(G){if(hasExtra(G,n))G.extras=G.extras.filter(function(x){return x.seat!==n;});else G.extras=(G.extras||[]).concat([{seat:n,day:G.day}]);});};
 
 /* 夜晚 */
