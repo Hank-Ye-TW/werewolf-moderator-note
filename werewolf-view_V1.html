@@ -54,7 +54,7 @@ button[disabled]{opacity:.5}
 <main id="app"><header><h1>🐺 狼人殺・場上資訊</h1><div class="sub">等待上帝開局…</div></header></main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getFirestore,doc,onSnapshot,collection,query,orderBy,limit,documentId} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,doc,onSnapshot,collection,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 var app=initializeApp({
   apiKey:"AIzaSyDVWEnINOZf2bGuC7SxHm4_JOqJGq6AixQ",
   authDomain:"werewolf-game-soymilk.firebaseapp.com",
@@ -193,7 +193,7 @@ onSnapshot(doc(db,'public','current'),function(snap){
   render();
 },function(err){ERR='讀取失敗：'+(err&&err.code?err.code:err);P=null;setStatus(false,'連線失敗');render();});
 window.addEventListener('offline',function(){setStatus(false,'離線');});
-onSnapshot(query(collection(db,'reviews'),orderBy(documentId(),'desc'),limit(30)),function(snap){
+onSnapshot(query(collection(db,'reviews'),orderBy('id','desc'),limit(30)),function(snap){
   REVERR=null;REV=[];snap.forEach(function(d){var x=d.data();if(x&&x.id!=null)REV.push(x);});
   if(TAB==='past')render();
 },function(err){REVERR='讀取失敗：'+(err&&err.code?err.code:err);REV=[];if(TAB==='past')render();});
