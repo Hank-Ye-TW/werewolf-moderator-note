@@ -408,12 +408,12 @@ var ROLES={
     script:['通靈師請睜眼。','今晚你要查驗誰？','通靈師請閉眼。']},
   gravekeeper:{name:'守墓人',short:'守墓',camp:'god',sort:11,order:7,kind:'grave',
     desc:'每晚得知前一個白天被放逐者的好壞（不是確切身分）。',
-    tips:['只有被投票放逐的人算；自爆、騎士、槍帶走的不算。','平票沒人出局時，不會得知任何資訊。'],
+    tips:['守墓人被攝夢時，永遠算有行動（本板規矩：第 1 晚、白天沒人被放逐也算）。','只有被投票放逐的人算；自爆、騎士、槍帶走的不算。','平票沒人出局時，不會得知任何資訊。'],
     script:['守墓人請睜眼。','守墓人請閉眼。']},
   dreamer2:{name:'覺醒攝夢人',short:'覺攝夢',camp:'god',sort:12,order:5,targets:1,verb:'夢',none:'不選',
     steps:[{k:'dreamer2',order:5,kind:'dream2',title:'覺醒攝夢人',short:'攝夢人'},{k:'dreamer2end',order:95,kind:'dream2end',title:'覺醒攝夢人（得知結果）',short:'夢遊結果'}],
-    desc:'每晚選 1 位夢遊者，免疫當晚所有夜間傷害；夜晚最後得知夢遊者今晚有沒有行動。第 2 晚起可同時決定是否讓夢遊者出局（夢殺）。',
-    tips:['不能連續兩晚選同一人；可以選自己。','夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。','攝夢人自己出局，與夢遊者無關。','「有行動」：預言家驗人、女巫用藥、狼人非空刀、守墓人當天有人被放逐等；空刀、獵人夜槍開不出來都算沒行動。']},
+    desc:'每晚選 1 位夢遊者，免疫當晚所有夜間傷害；夜晚最後得知夢遊者今晚有沒有行動。第 2 晚起可同時決定是否讓夢遊者出局（夢殺），夢遊者是自己時也可以夢殺自己。',
+    tips:['不能連續兩晚選同一人；可以選自己。第 1 晚只告知夢遊者有沒有行動，第 2 晚起得知的同時可決定是否夢殺（夢殺的是當晚選的夢遊者，包含自己）。','夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。','攝夢人自己出局，與夢遊者無關。','「有行動」：預言家驗人、女巫用藥、狼人非空刀等；守墓人永遠算有行動（含第 1 晚、白天沒人出局）；空刀、獵人夜槍開不出來都算沒行動。']},
   blackmarket:{name:'黑市商人',short:'黑市',camp:'god',sort:13,order:42.2,
     steps:[{k:'blackmarket',order:42.2,kind:'bm',title:'黑市商人',short:'黑市'},{k:'lucky',order:42.4,kind:'lucky',title:'幸運兒',short:'幸運兒'}],
     desc:'首夜選 1 位幸運兒，並決定給他預言家查驗、女巫毒藥、獵人獵槍其中一種。選到好人：交易成功；選到狼人陣營（含狼弟）：交易失敗，黑市商人第 1 晚出局。',
@@ -877,7 +877,7 @@ function resolveNight(G,d){
   if(dreamed!=null&&prevT===dreamed){dead[dreamed]='夢死';lines.push('連續兩晚攝夢 '+dreamed+'號 → 夢死。');}
   if(dr!=null&&dead[dr]&&dreamed!=null&&!dead[dreamed]){dead[dreamed]='夢死';lines.push('攝夢人出局，被攝夢的 '+dreamed+'號 一併出局。');}
   var d2=seatsOfRole(G,'dreamer2')[0];
-  if(dz2&&dz2.kill&&d>=2&&dreamed2!=null&&dreamed2!==d2&&(d2==null||alive(d2))){dead[dreamed2]='夢殺';lines.push('覺醒攝夢人夢殺 '+dreamed2+'號（悶槍、不能被解藥救）。');}
+  if(dz2&&dz2.kill&&d>=2&&dreamed2!=null&&(d2==null||alive(d2))){dead[dreamed2]='夢殺';lines.push('覺醒攝夢人夢殺 '+dreamed2+'號（悶槍、不能被解藥救）。');}
   if(d>=2){
     var pwS=seatsOfRole(G,'purewhite')[0],wwS=seatsOfRole(G,'wolfwitch')[0],pwT=t1(G,d,'purewhite'),wwT=t1(G,d,'wolfwitch');
     if(pwS!=null&&alive(pwS)&&pwT!=null&&alive(pwT)&&campOf(G,pwT)==='wolf'){dead[pwT]='驗殺';lines.push('純白之女驗殺 '+pwT+'號（任何技能都不能救）。');}
@@ -1525,8 +1525,8 @@ function stepDream2End(G,d){
     notes.push('自動判斷：'+(auto?'有行動':'沒行動')+'（依今晚已記錄的行動；狼人空刀、獵人夜槍開不出來都算沒行動）。');
     if(d>=2){
       var self=seatsOfRole(G,'dreamer2').indexOf(tg)>=0;
-      body+='<h4>是否讓夢遊者出局？</h4><div class="btnrow"><button class="btn danger'+(a.kill===true?' on':'')+'" data-a="dz2Kill" data-v="1"'+(self?' disabled':'')+'>夢殺 '+tg+' 號'+(a.kill===true?'（已選）':'')+'</button><button class="btn'+(a.kill===false?' on':'')+'" data-a="dz2Kill" data-v="0">不夢殺（夢遊者免疫、不出局）'+(a.kill===false?'（已選）':'')+'</button></div><p class="muted">再點一次已選的按鈕可取消。'+(a.kill==null?'尚未決定。':'')+'</p>';
-      if(self)notes.push('夢遊者是自己，不能夢殺。');else notes.push('夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。');
+      body+='<h4>是否讓夢遊者出局？</h4><div class="btnrow"><button class="btn danger'+(a.kill===true?' on':'')+'" data-a="dz2Kill" data-v="1">夢殺 '+tg+' 號'+(self?'（自己）':'')+(a.kill===true?'（已選）':'')+'</button><button class="btn'+(a.kill===false?' on':'')+'" data-a="dz2Kill" data-v="0">不夢殺（夢遊者免疫、不出局）'+(a.kill===false?'（已選）':'')+'</button></div><p class="muted">再點一次已選的按鈕可取消。'+(a.kill==null?'尚未決定。':'')+'</p>';
+      notes.push((self?'夢遊者是自己：可以選擇夢殺自己出局。':'')+'夢殺記為夜晚出局，死因「夢殺」：悶槍、解藥不能救。');
     }else notes.push('第二夜起才能讓夢遊者出局。');
   }
   lines.push('覺醒攝夢人請閉眼。');
