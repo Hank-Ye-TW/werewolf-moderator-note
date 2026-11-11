@@ -1959,7 +1959,7 @@ function viewHist(){
   return '<div class="card"><h2>歷史紀錄　<span class="muted">共 '+list.length+' 局</span></h2>'+tool+list.map(function(g){
     var w={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[g.winner]||(g.phase==='over'?'已結束':'未完成');
     var shared=g.share!==false&&g.phase==='over';
-    return '<div class="prow"><div class="pname"><b>'+(g.no!=null?'第 '+g.no+' 局　':'')+fmtDT(g.created)+'　'+esc(boardName(g))+(g.isTest?'　【測試】':'')+'</b><span class="muted">'+g.players+'人・'+esc(w)+'・共 '+Math.max(g.day,1)+' 天・玩家頁：'+(g.phase!=='over'?'未結束不公開':(shared?'公開':'不公開'))+'</span></div><div class="btnrow"><button class="btn" data-a="histOpen" data-id="'+g.id+'">檢視</button>'+(g.phase==='over'?'<button class="btn" data-a="histShare" data-id="'+g.id+'">'+(shared?'撤下':'公開')+'</button>':'')+'<button class="btn" data-a="histEdit" data-id="'+g.id+'">編輯</button><button class="btn danger" data-a="histDel" data-id="'+g.id+'">刪除</button></div></div>';
+    return '<div class="prow"><div class="pname"><b>'+fmtDT(g.created)+(g.no!=null?'　第 '+g.no+' 局':'')+'　'+esc(boardName(g))+(g.isTest?'　【測試】':'')+'</b><span class="muted">'+g.players+'人・'+esc(w)+'・共 '+Math.max(g.day,1)+' 天・玩家頁：'+(g.phase!=='over'?'未結束不公開':(shared?'公開':'不公開'))+'</span></div><div class="btnrow"><button class="btn" data-a="histOpen" data-id="'+g.id+'">檢視</button>'+(g.phase==='over'?'<button class="btn" data-a="histShare" data-id="'+g.id+'">'+(shared?'撤下':'公開')+'</button>':'')+'<button class="btn" data-a="histEdit" data-id="'+g.id+'">編輯</button><button class="btn danger" data-a="histDel" data-id="'+g.id+'">刪除</button></div></div>';
   }).join('')+'</div>';
 }
 function voteLines(G){

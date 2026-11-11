@@ -285,7 +285,7 @@ function renderPast(app){
   else if(!REV.length)h+='<section class="card"><div class="empty">目前還沒有公開的回顧</div></section>';
   else h+='<section class="card">'+REV.map(function(g){
     var w={good:'好人勝',wolf:'狼人勝',third:'第三方勝'}[g.winner]||'已結束';
-    return '<div class="vote" data-rev="'+g.id+'" style="cursor:pointer"><span class="n">'+esc(w)+'</span><div class="who">'+(g.no!=null?'第 '+g.no+' 局　':'')+fmtD(g.created)+'　'+esc(g.boardName||'')+'</div><div class="by">'+g.players+' 人 ・ 點開看逐夜回顧</div></div>';
+    return '<div class="vote" data-rev="'+g.id+'" style="cursor:pointer"><span class="n">'+esc(w)+'</span><div class="who">'+fmtD(g.created)+(g.no!=null?'　第 '+g.no+' 局':'')+'　'+esc(g.boardName||'')+'</div><div class="by">'+g.players+' 人 ・ 點開看逐夜回顧</div></div>';
   }).join('')+'</section>';
   app.innerHTML=h;
 }
