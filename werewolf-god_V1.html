@@ -594,7 +594,7 @@ function applyRemoteConfig(cfg){
 var HIST_DOC={};
 function histNumbers(){
   var list=APP.history.filter(function(x){return x.phase==='over'&&!x.isTest;}).sort(function(a,b){return (new Date(a.created).getTime()||a.id||0)-(new Date(b.created).getTime()||b.id||0)||(a.id-b.id);});
-  var m={};list.forEach(function(x,i){m[x.id]=i+1;});return m;
+  var m={},cnt={};list.forEach(function(x){var t=new Date(x.created).getTime();var k=isFinite(t)?new Date(t+8*3600000).toISOString().slice(0,10):'?';cnt[k]=(cnt[k]||0)+1;m[x.id]=cnt[k];});return m;
 }
 function histNo(e,m){if(e.phase!=='over'||e.isTest)return null;if(e.seqManual!=null&&isFinite(+e.seqManual))return +e.seqManual;return (m||histNumbers())[e.id]||null;}
 function renumberHistory(){
